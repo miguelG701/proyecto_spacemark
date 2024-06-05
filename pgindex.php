@@ -317,37 +317,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <h3>Super mercado SpaceMark</h3>
 </div>
 
-<div class="row mb-5">
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modax1" src="./IMG/1-mercado.png" style="width: 14rem;">
-          <div class="card-body">
-          <p class="h5">Garbanzos *500 GR</p>
-          <figcaption class="h5">+ Aceite Diana *2.000 ML</figcaption>
-          <p class="h5">$</p>
-          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
-          </div>                
-            <div class="modal fade"
-      id="modax1"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modax1">
+<!-- inicio -->
+<?php
+ $sql_pro = "SELECT * FROM producto";
+ $pass2 = $con->prepare($sql_pro);
+ $pass2->execute();
+ $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
+foreach ($rest_pro as $prod){
+  $call=$prod['id_prod'];
+echo
+"
+  <div class='table-responsive col-3'>
+      <div class='btn card' style='width: 15rem;'>
+          <img class='card-img-top' data-bs-toggle='modal' data-bs-target='#modax$call' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' style='width: 14rem;'>
+          <div class='card-body'>
+          <p class='h5'>".$prod['nombre_prod']."</p>
+          <figcaption class='h5'></figcaption>
+          <p class='h5'>$".$prod['precio_prod']."</p>
+          <button type='button' class='btn btn-outline-danger btn-sm' data-bs-dismiss='modal'>Agregar al carrito</button>
+          </div>               
+            <div class='modal fade'
+      id='modax$call'
+      tabindex='$call'
+      aria-hidden='true'
+      aria-labelledby='label-modax$call'>
       <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
+      <div class='modal-dialog'>
+          <div class='modal-content'>
               <!-- encabezado -->
-              <div class="modal-header">
-                  <h4 class="modal-tittle">Descripción</h4>
+              <div class='modal-header'>
+                  <h4 class='modal-tittle'>Descripción</h4>
               </div>
               <!-- cuerpo -->
-              <div class="modal-body">
-                  <h5>Descubre la excelencia en cada bocado con los Garbanzos Diana, una joya culinaria que eleva tus platillos a nuevas alturas. Estos garbanzos, parte de la distinguida línea de alimentos y bebidas de origen vegetal de Diana, se destacan por su calidad premium y su aporte nutricional excepcional.</h5>
-                  <img style="width: 15rem;" src="IMG/1-mercado.png" alt="">
+              <div class='modal-body'>
+                  <h5>".$prod['des_det_prod']."</h5>
+                  <img style='width: 15rem;' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' alt=''>
               </div>
 
               <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+              <div class='modal-footer'>
+                  <button class='btn-close' data-bs-dismiss='modal' aria-label='cerrar'></button>
               </div>
 
           </div>
@@ -355,6 +364,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       </div>
   </div>
+  ";
+  }
+  ?>
+  <!-- fin -->
   
   <div class="table-responsive col-3">
       <div class="btn card" style="width: 15rem;">                
