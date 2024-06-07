@@ -56,6 +56,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ingresar productos</title>
+    <style>
+        body {
+            background-image: url(IMG/fond_fun_prove.jpeg);
+            background-repeat: no-repeat;
+            background-size: cover; 
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        form {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        textarea,
+        input[type="submit"] {
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        textarea {
+            font-size: 16px; /* Aumentar el tamaño de la fuente */
+            line-height: 1.5; /* Aumentar el espaciado entre líneas */
+            color: #333; /* Cambiar el color del texto */
+        }
+    </style>
 </head>
 <body>
     <form action="" method="post" enctype="multipart/form-data">
