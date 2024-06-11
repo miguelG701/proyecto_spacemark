@@ -1,6 +1,6 @@
 <?php
 
-$database="mark_1";
+$database="spacemark";
 $user='root';
 $password='';
 $server="localhost";
