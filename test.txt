@@ -161,3 +161,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </html>
 </html>
+
+
+//productos codigo
+<!-- inicio -->
+<div class="row mb-5">
+<?php
+ $sql_pro = "SELECT * FROM producto";
+ $pass2 = $con->prepare($sql_pro);
+ $pass2->execute();
+ $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
+foreach ($rest_pro as $prod){
+  $call=$prod['id_prod'];
+echo
+"
+  <div class='table-responsive col-3'>
+      <div class='btn card' style='width: 15rem;'>
+          <img class='card-img-top' data-bs-toggle='modal' data-bs-target='#modax$call' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' style='width: 14rem;'>
+          <div class='card-body'>
+          <p class='h5'>".$prod['nombre_prod']."</p>
+          <figcaption class='h5'></figcaption>
+          <p class='h5'>$".$prod['precio_prod']."</p>
+          <button type='button' class='btn btn-outline-danger btn-sm' data-bs-dismiss='modal'>Agregar al carrito</button>
+          </div>               
+            <div class='modal fade'
+      id='modax$call'
+      tabindex='$call'
+      aria-hidden='true'
+      aria-labelledby='label-modax$call'>
+      <!-- caja de dialogo -->
+      <div class='modal-dialog'>
+          <div class='modal-content'>
+              <!-- encabezado -->
+              <div class='modal-header'>
+                  <h4 class='modal-tittle'>Descripción</h4>
+              </div>
+              <!-- cuerpo -->
+              <div class='modal-body'>
+                  <h5>".$prod['des_det_prod']."</h5>
+                  <img style='width: 15rem;' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' alt=''>
+              </div>
+
+              <!-- pie de pagina -->
+              <div class='modal-footer'>
+                  <button class='btn-close' data-bs-dismiss='modal' aria-label='cerrar'></button>
+              </div>
+
+          </div>
+      </div>
+      </div>
+      </div>
+  </div>
+  ";
+  }
+  ?></div>
+  <!-- fin -->

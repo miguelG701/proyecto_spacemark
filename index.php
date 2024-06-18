@@ -11,16 +11,83 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
-// Verifica si se ha enviado el formulario para cerrar sesión
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
-  // Destruye la sesión
-  session_destroy();
 
-  // Redirige al usuario a pgindex.php
-  header("Location: pgindex.php");
-  exit;
+
+// variables de alertas ini
+
+$UsersCorrect = false;
+
+$NotSelecteUsers = false;
+
+
+// variables de alertas fin
+
+// confirmar usuarios ini
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (isset($_POST['guardar'])) {
+      // Verificar si se han seleccionado usuarios para aceptar
+      if (isset($_POST['usuarios_aceptar']) && !empty($_POST['usuarios_aceptar'])) {
+          // Obtener los IDs de usuario seleccionados
+          $usuarios_aceptar = $_POST['usuarios_aceptar'];
+
+          // Actualizar el estado de aceptación para los usuarios seleccionados
+          $query = "UPDATE usuarios SET aceptado = 'si' WHERE id_usuario IN (";
+          $query .= implode(',', $usuarios_aceptar) . ")";
+          
+          // Ejecutar la consulta de actualización
+          if ($con->query($query) === TRUE) {
+            $UsersCorrect = true;
+            // Redirigir a alguna página después de actualizar la base de datos
+              header("Location: index.php");
+              exit;
+          }} else {
+            $NotSelecteUsers = true;      
+          }
+  }
 }
+
+// confirmar usuarios fin
+
+
+// // Verifica si se ha enviado el formulario para cerrar sesión
+// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
+//   // Destruye la sesión
+//   session_destroy();
+
+//   // Redirige al usuario a pgindex.php
+//   header("Location: pgindex.php");
+//   exit;
+// }
+
+
+// if ($_SERVER["REQUEST_METHOD"] == "GET") {
+//   // Verifica si 'usuario' está definido en $_SESSION
+//   if(isset($_SESSION['usuario'])) {
+//       // Obtenemos el nombre de usuario de la sesión
+//       $usuario = $_SESSION['usuario'];
+
+//       // Insertamos un registro en la tabla logs_ingreso
+//       $query = "INSERT INTO logs_ingreso (usuario, fecha_hora_ingreso) VALUES (?, NOW())";
+//       $statement = $con->prepare($query);
+//       $statement->execute([$usuario]);
+//   } else {
+//       // Si 'usuario' no está definido en $_SESSION, muestra un mensaje de error o redirige a una página de inicio de sesión
+//       echo "Error: Sesión de usuario no iniciada.";
+//       // O redirige a una página de inicio de sesión
+//       // header("Location: formulario_login.php");
+//       exit;
+//   }
+// }
+
+// Realizar la consulta a la base de datos para obtener los usuarios
+$query = "SELECT * FROM usuarios WHERE id_tipos != 1 ORDER BY id_usuario ASC LIMIT 100"; // Excluye a los administradores (id_tipos = 1)
+$statement = $con->prepare($query);
+$statement->execute();
+$usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,10 +95,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
+    <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
 </head>
 <body>
+
+<!-- alertas ini -->
+<?php
+        if ($UsersCorrect == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ Usuarios actualizados correctamente. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+
+<?php
+        if ($NotSelecteUsers == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ No se han seleccionado usuarios para aceptar. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+<!-- alertas fin -->
+
+
+
+  <!-- navergador primario inicio -->
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
@@ -44,18 +162,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
             </ul>
             <form class="d-flex m-2" role="search">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <?php
-                if($_SESSION['usuario_tipo']==1){
-                  echo'<li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">funcion admin</a>
-                </li>';
-                }
-                if($_SESSION['usuario_tipo']==1){
-                  echo'<li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">introducir producto</a>
-                </li>';
-                }
-                ?>
                 <li class="nav-item">
                   <a class="nav-link active" aria-current="page" href="#">Descubrir</a>
                 </li>
@@ -68,10 +174,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
               </ul>
             </form>
 
+          <a href="salir.php">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar Sesión</button>
+          </a>
 
-            <form action="pgindex.php" method="post">
+            <!-- <form action="pgindex.php" method="post">
     <button type="submit" class="btn btn-outline-danger btn-sm" name="cerrar_sesion">Cerrar Sesión</button>
-</form>
+</form> -->
             
       </nav>
 <!-- navergador primaria fin -->
@@ -87,31 +196,510 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
       <button class="btn btn-outline-danger m-1" type="submit">Buscar</button>
     </div>
 
-    
+            
     
   <div class="m-3 text-center">
 
     <h4><?php echo "<h4 class='text-white'>Bienvenido, " . $_SESSION['usuario_nombre'] . "</h4>";?> </h4>
 
     <h5 class=""> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
-
-  $sql_rol="SELECT * FROM rol WHERE id_rol= ?";
-  $pass = $con->prepare($sql_rol);
-  $pass->execute([$tipo_usuario]);
-  $rest_rol= $pass->fetch();
-    if ($tipo_usuario == true) {
-        echo "<p class='text-white'>".$rest_rol['cargo_rol']."</p>";
-    } else {
+    if ($tipo_usuario == 1) {
+        echo "<p class='btn btn-outline-success btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse2'>Administrador</p>";
+    } elseif ($tipo_usuario == 2) {
+        echo "<p class='btn btn-outline-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse3'>Cliente</p>";
+    } elseif ($tipo_usuario == 3) {
+        echo "<p class='btn btn-outline-primary btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse4'>Proveedor</p>";
+    } elseif ($tipo_usuario == 4) {
+      echo "<p class='btn btn-outline-warning btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse5'>Empleado</p>";
+    } elseif ($tipo_usuario == 5) {
+      echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse6'>Gerente</p>";
+     }else {
         echo "<p class='text-white'>Desconocido</p>";
     }?></h5>
 
   </div>
+
+  <!-- Administrador ini-->
+  <div class="modal fade"
+            id="modaluse2"
+            tabindex="3"
+            aria-hidden="true"
+            aria-labelledby="label-modaluse2">
+            <!-- caja de dialogo -->
+            <div class="modal-dialog">
+                <div class="modal-content">                    
+                    <!-- cuerpo -->
+                    <div class="modal-body">
+                    <form action="" method="post">
+                            <div class="modal-body">
+                                <div class="form-text text-center"><u>Opciones de Administrador</u></div>
+                                <div class="mt-3">
+                                  
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                  <li class="nav-item">
+                                    <p class="btn text-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalveruser">Ver Usuarios</p>
+                                  </li>
+                                </ul>
+                                
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                  <li class="nav-item">
+                                    <p class="btn text-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalregacce">Registros por Aceptar</p>
+                                  </li>
+                                </ul>
+                          
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Descubrir</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Lista de productos</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Lista de provedores</a>
+                                    </li>
+                                  </ul>
+                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+        </div>
+  <!-- Administrador fin-->
+
+<!-- ver usuarios ini -->
+<div class="modal fade" id="modalveruser" tabindex="4" aria-hidden="true" aria-labelledby="label-modalveruser">
+    <!-- caja de dialogo -->
+    <div class="modal-dialog">
+        <div class="modal-content"> 
+            <div class="form-text text-center"><u>Usuarios de SpaceMark</u></div>
+            <!-- cuerpo -->
+            <div class="modal-body">
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <table class="table table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Número</th>
+                                    <th scope="col">Usuario</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Tipo de Usuario</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
+                                $numero = 1;
+                                foreach ($usuarios as $usuario) {
+                                    echo "<tr>";
+                                    echo "<th scope='row'>" . $numero++ . "</th>";
+                                    echo "<td>" . $usuario['usuario'] . "</td>";
+                                    echo "<td>" . $usuario['nombre'] . "</td>";
+                                    // Consultar el tipo de usuario
+                                    $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
+                                    $statement_tipo = $con->prepare($query_tipo);
+                                    $statement_tipo->execute([$usuario['id_tipos']]);
+                                    $tipo_usuario = $statement_tipo->fetchColumn();
+                                    echo "<td>" . $tipo_usuario . "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ver usuarios fin -->
+
+
+<!-- confirmar registro ini -->
+
+<div class="modal fade" id="modalregacce" tabindex="4" aria-hidden="true" aria-labelledby="label-modalregacce">
+    <!-- caja de dialogo -->
+    <div class="modal-dialog">
+        <div class="modal-content"> 
+            <div class="form-text text-center"><u>Nuevos Usuarios</u></div>
+            <!-- cuerpo -->
+            <div class="modal-body">
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <table class="table table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Usuario</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Tipo de Usuario</th>
+                                    <th scope="col">Verificar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Consulta para obtener usuarios con "no" en la columna "aceptado"
+                                $query = "SELECT * FROM usuarios WHERE aceptado = 'no'";
+                                $statement = $con->prepare($query);
+                                $statement->execute();
+                                $usuarios = $statement->fetchAll();
+
+                                foreach ($usuarios as $usuario) {
+                                    echo "<tr>";
+                                    echo "<td>" . $usuario['usuario'] . "</td>";
+                                    echo "<td>" . $usuario['nombre'] . "</td>";
+                                    $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
+                                    $statement_tipo = $con->prepare($query_tipo);
+                                    $statement_tipo->execute([$usuario['id_tipos']]);
+                                    $tipo_usuario = $statement_tipo->fetchColumn();
+                                    echo "<td>" . $tipo_usuario . "</td>";
+                                    echo "<td>";
+                                    echo "<input class='form-check-input' type='checkbox' name='usuarios_aceptar[]' value='" . $usuario['id_usuario'] . "' id='user-" . $usuario['id_usuario'] . "'>";
+                                    echo "<label class='text-white opacity-75 form-check-label' for='user-" . $usuario['id_usuario'] . "'>SI</label>";
+                                    
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- confirmar registro fin -->
+
+<!-- Cliente ini -->
+<div class="modal fade"
+            id="modaluse3"
+            tabindex="4"
+            aria-hidden="true"
+            aria-labelledby="label-modaluse3">
+            <!-- caja de dialogo -->
+            <div class="modal-dialog">
+                <div class="modal-content">                    
+                    <!-- cuerpo -->
+                    <div class="modal-body">
+                    <form action="" method="post">
+                            <div class="modal-body">
+                                <div class="form-text text-center"><u>Opciones de Cliente</u></div>
+                                <div class="mt-3">
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Cambiar foto de perfil</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">productos Comprados</a>
+                                    </li>
+                                  </ul>
+
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Preguntas</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Opiniones</a>
+                                    </li>
+                                  </ul>
+                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+<!-- Cliente fin -->
+
+
+
+
+
+<!-- Proveedor ini -->
+<div class="modal fade"
+            id="modaluse4"
+            tabindex="5"
+            aria-hidden="true"
+            aria-labelledby="label-modaluse4">
+            <!-- caja de dialogo -->
+            <div class="modal-dialog">
+                <div class="modal-content">                    
+                    <!-- cuerpo -->
+                    <div class="modal-body">
+                    <form action="" method="post">
+                            <div class="modal-body">
+                                <div class="form-text text-center"><u>Opciones de Proveedor</u></div>
+                                <div class="mt-3">
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Ver encargos</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Productos Mandados</a>
+                                    </li>
+                                  </ul>
+
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Lista de productos</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Entregas del mes</a>
+                                    </li>
+                                  </ul>
+                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+<!-- Proveedor fin -->
+
+
+
+<!-- Empleado ini -->
+<div class="modal fade"
+            id="modaluse4"
+            tabindex="4"
+            aria-hidden="true"
+            aria-labelledby="label-modaluse4">
+            <!-- caja de dialogo -->
+            <div class="modal-dialog">
+                <div class="modal-content">                    
+                    <!-- cuerpo -->
+                    <div class="modal-body">
+                    <form action="" method="post">
+                            <div class="modal-body">
+                                <div class="form-text text-center"><u>Opciones de Empleado</u></div>
+                                <div class="mt-3">
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Cambiar foto de perfil</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">productos Comprados</a>
+                                    </li>
+                                  </ul>
+
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Preguntas</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Opiniones</a>
+                                    </li>
+                                  </ul>
+                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+<!-- Empleado fin -->
+
+
+
+
+
+<!-- Gerente ini -->
+<div class="modal fade"
+            id="modaluse5"
+            tabindex="4"
+            aria-hidden="true"
+            aria-labelledby="label-modaluse5">
+            <!-- caja de dialogo -->
+            <div class="modal-dialog">
+                <div class="modal-content">                    
+                    <!-- cuerpo -->
+                    <div class="modal-body">
+                    <form action="" method="post">
+                            <div class="modal-body">
+                                <div class="form-text text-center"><u>Opciones de Gerente</u></div>
+                                <div class="mt-3">
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Cambiar foto de perfil</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">productos Comprados</a>
+                                    </li>
+                                  </ul>
+
+                                  
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Preguntas</a>
+                                    </li>
+                                  </ul>
+
+                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" aria-current="page" href="#">Opiniones</a>
+                                    </li>
+                                  </ul>
+                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+<!-- Gerente fin -->
 
   </div>
 <script src="js/bootstrap.js"></script>
 </nav>
 <!-- navergador secundario fin -->
 
+
+ <!-- Mostrar una alerta si el usuario intenta retroceder sin cerrar sesión -->
+
+<!-- <script>
+        window.onbeforeunload = function() {
+            return "No has cerrado sesión. ¿Estás seguro de que quieres abandonar esta página?";
+        };
+</script> -->
+
+<h5 class="container"> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
+    if ($tipo_usuario == 1) {?>
+
+      <table class="table table-dark">
+      <thead>
+          <tr>
+              <th scope="col">Número</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Tipo de Usuario</th>
+              <th scope="col">Modificacion</th>
+
+          </tr>
+      </thead>
+      <tbody>
+          <?php
+          // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
+          $numero = 1;
+          foreach ($usuarios as $usuario) {
+              echo "<tr>";
+              echo "<th scope='row'>" . $numero++ . "</th>";
+              echo "<td>" . $usuario['usuario'] . "</td>";
+              echo "<td>" . $usuario['nombre'] . "</td>";
+              // Consultar el tipo de usuario
+              $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
+              $statement_tipo = $con->prepare($query_tipo);
+              $statement_tipo->execute([$usuario['id_tipos']]);
+              $tipo_usuario = $statement_tipo->fetchColumn();
+              echo "<td>" . $tipo_usuario . "</td>";
+              echo "<td>Añadir +</td>";
+
+              echo "</tr>";
+
+          }
+          ?>
+      </tbody>
+  </table>
+    </h5>
+    <?php
+    }?>
+
+
+<h5 class="container"> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
+    if ($tipo_usuario == 3) {?>
+
+<form class="m-5">
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Agregar +</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">Hay algo nuevo en el catalogo ?</div>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Destino</label>
+    <input type="password" class="form-control" id="exampleInputPassword1">
+  </div>
+  <div class="mb-3 form-check">
+    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+    <label class="form-check-label" for="exampleCheck1">Acepta el cargo del pedido</label>
+  </div>
+  <button type="submit" class="btn btn-danger">Entregar</button>
+</form>
+    </h5>
+    <?php
+    }?>
 
 <!-- carousel inicio-->
 <div class="container">
@@ -180,7 +768,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cerrar_sesion'])) {
 <div class="">
   <h3>Super mercado SpaceMark</h3>
 </div>
-<div class='row mb-5'>
+
+<div class="row mb-5">
 <!-- inicio -->
 <?php
  $sql_pro = "SELECT * FROM producto";
@@ -228,7 +817,321 @@ echo
       </div>
       </div>
   </div>
-  ";}?>
+  ";
+  }
+  ?></div>
+  <!-- fin -->
+
+<div class="row mb-5">
+  <div class="table-responsive col-3">
+      <div class="btn card" style="width: 15rem;">
+          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modax1" src="./IMG/1-mercado.png" style="width: 14rem;">
+          <div class="card-body">
+          <p class="h5">Garbanzos *500 GR</p>
+          <figcaption class="h5">+ Aceite Diana *2.000 ML</figcaption>
+          <p class="h5">$</p>
+          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
+          </div>                
+            <div class="modal fade"
+      id="modax1"
+      tabindex="1"
+      aria-hidden="true"
+      aria-labelledby="label-modax1">
+      <!-- caja de dialogo -->
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <!-- encabezado -->
+              <div class="modal-header">
+                  <h4 class="modal-tittle">Descripción</h4>
+              </div>
+              <!-- cuerpo -->
+              <div class="modal-body">
+                  <h5>Descubre la excelencia en cada bocado con los Garbanzos Diana, una joya culinaria que eleva tus platillos a nuevas alturas. Estos garbanzos, parte de la distinguida línea de alimentos y bebidas de origen vegetal de Diana, se destacan por su calidad premium y su aporte nutricional excepcional.</h5>
+                  <img style="width: 15rem;" src="IMG/1-mercado.png" alt="">
+              </div>
+
+              <!-- pie de pagina -->
+              <div class="modal-footer">
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+              </div>
+
+          </div>
+      </div>
+      </div>
+      </div>
+  </div>
+  
+  <div class="table-responsive col-3">
+      <div class="btn card" style="width: 15rem;">                
+          <img class="card-img-top rounded-start" data-bs-toggle="modal" data-bs-target="#modax2" src="./IMG/1-mercados.png" style="height: 13.4rem;">
+          <div class="card-body">
+            <p class="h5">Arveja con Zanahoria Zenu</p>
+            <figcaption class="h5">*580 GR</figcaption>
+            <p class="h5">$</p>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
+          </div>
+      <div class="modal fade"
+      id="modax2"
+      tabindex="1"
+      aria-hidden="true"
+      aria-labelledby="label-modax2">
+      <!-- caja de dialogo -->
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <!-- encabezado -->
+              <div class="modal-header">
+                <h4 class="modal-tittle">Descripción</h4>
+            </div>
+            <!-- cuerpo -->
+            <div class="modal-body">
+                <h5>Avena Alpina es una bebida con leche y avena, ultra alta temperatura UAT (UHT), que por las características de su empaque no necesita refrigeración.</h5>
+                <img style="width: 15rem;" src="IMG/1-mercados.png" alt="">
+            </div>
+
+              <!-- pie de pagina -->
+              <div class="modal-footer">
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+              </div>
+
+          </div>
+      </div>
+      </div>
+      </div>
+  </div>
+
+  <div class="table-responsive col-3">
+      <div class="btn card" style="width: 15rem;">
+      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal3" src="./IMG/la-bon yurt.png">
+      <div class="card-body">
+        <p class="h5">Bon Yurt Alpina</p>
+        <br>
+        <figcaption class="h5">*170 GR</figcaption>
+        <p class="h5">$</p>
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>        </div>
+      <div class="modal fade"
+      id="modal3"
+      tabindex="1"
+      aria-hidden="true"
+      aria-labelledby="label-modal3">
+      <!-- caja de dialogo -->
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <!-- encabezado -->
+              <div class="modal-header">
+                <h4 class="modal-tittle">Descripción</h4>
+            </div>
+            <!-- cuerpo -->
+            <div class="modal-body">
+                <h5>No solo es su sabor, es una experiencia de consumo única: abrir la base láctea y mezclarla con el topping, BON YURT DOS PALABRAS QUE TE HACEN FELIZ.</h5>
+                <img style="width: 15rem;" src="IMG/la-bon yurt.png" alt="">
+            </div>
+
+              <!-- pie de pagina -->
+              <div class="modal-footer">
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+
+              </div>
+
+          </div>
+      </div>
+      </div>
+      </div>
+  </div>
+
+  <div class="table-responsive col-3">
+    <div class="btn card" style="width: 15rem;">                
+        <img class="card-img-top rounded-start" data-bs-toggle="modal" data-bs-target="#modal4" src="./IMG/la-KUMIS-ALPINA_F.png">
+        <div class="card-body">
+          <p class="h5">Kumis En Bolsa Alpina</p>
+          <figcaption class="h5">*1.000 GR
+          </figcaption>
+          <p class="h5">$</p>
+          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>          </div>
+    <div class="modal fade"
+    id="modal4"
+    tabindex="1"
+    aria-hidden="true"
+    aria-labelledby="label-modal4">
+    <!-- caja de dialogo -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- encabezado -->
+            <div class="modal-header">
+              <h4 class="modal-tittle">Descripción</h4>
+          </div>
+          <!-- cuerpo -->
+          <div class="modal-body">
+              <h5>Kumis Alpina es esa tradición, un producto incondicional que ha estado presente de generación en generación en todas las familias colombianas. A todos nos encanta y estamos seguros de que nos seguirá acompañando por muchas generaciones más.</h5>
+              <img style="width: 15rem;" src="IMG/la-KUMIS-ALPINA_F.png" alt="">
+          </div>
+
+            <!-- pie de pagina -->
+            <div class="modal-footer">
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    </div>
+
+  </div>
+  
+<div class="row mt-5">
+  <div class="table-responsive col-3">
+      <div class="btn card" style="width: 15rem;">
+          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal5" src="./IMG/la-QUESO-FINESSE_F.png">
+          <div class="card-body">
+            <p class="h5">Queso Finesses Alpina</p>
+            <figcaption class="h5">*450 GR
+            </figcaption>
+            <p class="h5">$</p>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>           </div>                
+            <div class="modal fade"
+      id="modal5"
+      tabindex="1"
+      aria-hidden="true"
+      aria-labelledby="label-modal5">
+      <!-- caja de dialogo -->
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <!-- encabezado -->
+              <div class="modal-header">
+                <h4 class="modal-tittle">Descripción</h4>
+            </div>
+            <!-- cuerpo -->
+            <div class="modal-body">
+                <h5>Finesse es una marca que se enfoca en el cuidado de la figura, a lo largo de los años se ha convertido en el aliado perfecto para las mujeres. Finesse se aleja de los castigos, las dietas extremas o sacrificios.</h5>
+                <img style="width: 15rem;" src="IMG/la-QUESO-FINESSE_F.png" alt="">
+            </div>
+
+              <!-- pie de pagina -->
+              <div class="modal-footer">
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+              </div>
+
+          </div>
+      </div>
+      </div>
+      </div>
+  </div>
+  
+
+  <div class="table-responsive col-3">
+    <div class="btn card" style="width: 15rem;">
+        <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal6" src="./IMG/la-yogurt yogo yogo.png">
+        <div class="card-body">
+            <p class="h5">Yogurt Yogo x3 Alpina</p>
+            <figcaption class="h5">*1.000 GR
+            </figcaption>
+            <p class="h5">$</p>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>         </div>                
+          <div class="modal fade"
+    id="modal6"
+    tabindex="1"
+    aria-hidden="true"
+    aria-labelledby="label-modal6">
+    <!-- caja de dialogo -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- encabezado -->
+            <div class="modal-header">
+              <h4 class="modal-tittle">Descripción</h4>
+          </div>
+          <!-- cuerpo -->
+          <div class="modal-body">
+              <h5>Sumérgete en el refrescante sabor a fresa con este envase de Yogo Maxilitro de 1.1 litros. Una opción práctica para tener siempre disponible tu Yogurt favorito.</h5>
+              <img style="width: 15rem;" src="IMG/la-yogurt yogo yogo.png" alt="">
+          </div>
+
+            <!-- pie de pagina -->
+            <div class="modal-footer">
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+<div class="table-responsive col-3">
+  <div class="btn card" style="width: 15rem;">
+      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal7" src="./IMG/la-Yogurt_griego_1000.png">
+      <div class="card-body">
+        <p class="h5">Yogurt Griego Dejamu Natural</p>
+        <figcaption class="h5">*450 GR
+        </figcaption>
+        <p class="h5">$</p>
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>       </div>                
+        <div class="modal fade"
+  id="modal7"
+  tabindex="1"
+  aria-hidden="true"
+  aria-labelledby="label-modal7">
+  <!-- caja de dialogo -->
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- encabezado -->
+          <div class="modal-header">
+            <h4 class="modal-tittle">Descripción</h4>
+        </div>
+        <!-- cuerpo -->
+        <div class="modal-body">
+            <h5>El yogurt griego natural contiene mas proteínas que el yogurt natural, pues en su proceso de realización se retira el suero de leche y la lactosa, por ello está entre los alimentos saludables más altos en proteínas.</h5>
+            <img style="width: 15rem;" src="IMG/la-Yogurt_griego_1000.png" alt="">
+        </div>
+
+          <!-- pie de pagina -->
+          <div class="modal-footer">
+              <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+          </div>
+
+      </div>
+  </div>
+  </div>
+  </div>
+</div>
+
+<div class="table-responsive col-3">
+  <div class="btn card" style="width: 15rem;">
+      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal8" src="./IMG/la-YOX-MULTIFRUTAS_F.png">
+      <div class="card-body">
+        <p class="h5">Yox Multifruta Bellota Alpina</p>
+        <figcaption class="h5">*100 GR
+        </figcaption>
+        <p class="h5">$</p>
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>       </div>                
+        <div class="modal fade"
+  id="modal8"
+  tabindex="1"
+  aria-hidden="true"
+  aria-labelledby="label-modal8">
+  <!-- caja de dialogo -->
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- encabezado -->
+          <div class="modal-header">
+            <h4 class="modal-tittle">Descripción</h4>
+        </div>
+        <!-- cuerpo -->
+        <div class="modal-body">
+            <h5>Yox con Defensis es una un alimento lácteo con nuestra fórmula especial: Vitamina C y Zinc que contribuyen a reforzar el sistema de defensas consumiéndolo diariamente. Además contiene miles de probióticos que contribuyen al bienestar del cuerpo.</h5>
+            <img style="width: 15rem;" src="IMG/la-YOX-MULTIFRUTAS_F.png" alt="">
+        </div>
+
+          <!-- pie de pagina -->
+          <div class="modal-footer">
+              <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+          </div>
+
+      </div>
+  </div>
+  </div>
+  </div>
+</div>
+</div>
+</div>
 <!-- fin de Super mercado de SpaceMark -->
 
 <!-- inicio de productos lacteos -->
@@ -236,9 +1139,11 @@ echo
   <h3>Productos Lacteos</h3>
 </div>
 
+
+<div class="row mb-5">
 <!-- inicio -->
 <?php
- $sql_pro = "SELECT * FROM producto";
+ $sql_pro = "SELECT * FROM producto WHERE tipologia_prod like '%lacteo%'";
  $pass2 = $con->prepare($sql_pro);
  $pass2->execute();
  $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
@@ -283,7 +1188,10 @@ echo
       </div>
       </div>
   </div>
-  ";}?>
+  ";
+  }
+  ?></div>
+  <!-- fin -->
 
 <div class="row mb-5">
   <div class="table-responsive col-3">

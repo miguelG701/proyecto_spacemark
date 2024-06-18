@@ -3,73 +3,149 @@ include_once 'conexion.php';
 
 session_start();
 
+// variables de alertas ini
+$acept = false;
+
+$UsAndConFals = false;
+
+$completCampos = false;
+
+$UsOrNameIn = false;
+
+$Userrep = false;
+
+$Admincon = false;
+
+
+// variables de alertas fin
+
+
+
 // registro ini
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST['registrar'])) {
-      if (isset($_POST['nombre']) && isset($_POST['correo']) && isset($_POST['telefono']) && isset($_POST['usuario']) && isset($_POST['contrasena']) && isset($_POST['tipo_usuario'])) {
-          $nombre = $_POST['nombre'];
-          $correo = $_POST['correo'];
-          $telefono = $_POST['telefono'];
-          $usuario = $_POST['usuario'];
-          $contrasena = $_POST['contrasena'];
-          $tipo_usuario = $_POST['tipo_usuario'];
+    if (isset($_POST['registrar'])) {
+        if (isset($_POST['nombre']) && isset($_POST['correo']) && isset($_POST['telefono']) && isset($_POST['usuario']) && isset($_POST['contrasena']) && isset($_POST['tipo_usuario'])) {
+            $nombre = $_POST['nombre'];
+            $correo = $_POST['correo'];
+            $telefono = $_POST['telefono'];
+            $usuario = $_POST['usuario'];
+            $contrasena = $_POST['contrasena'];
+            $tipo_usuario = $_POST['tipo_usuario'];
+            $contrasena_cifrada = sha1($contrasena);
 
-          // Realizar la inserción en la base de datos sin cifrar la contraseña
-          $query = "INSERT INTO usuario (id_usuario, cuenta_us, nombre_us, correo_us, telefono_us, contrasena_us, id_tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
-          $statement = $con->prepare($query);
-          $statement->execute([ null, $usuario, $nombre, $correo, $telefono, $contrasena, $tipo_usuario]);
-        
-          header("Location: pgindex.php");
-          exit;
-      } else {
-          echo "Por favor, complete todos los campos.";
-      }
-  }
+            // Verificar si el usuario ya existe
+            $query_check_user = "SELECT * FROM usuarios WHERE usuario = ?";
+            $statement_check_user = $con->prepare($query_check_user);
+            $statement_check_user->execute([$usuario]);
+            $usuario_existente = $statement_check_user->fetch();
+
+            if ($usuario_existente) {
+                // Si el usuario ya existe, mostrar una alerta
+                $Userrep = true;
+
+            } else {
+                // Si el usuario no existe, realizar la inserción en la base de datos
+                $aceptado = "no"; // Por defecto, se establece en "no"
+                $query_insert = "INSERT INTO usuarios (usuario, nombre, correo_electronico, telefono, contraseña_usuario, id_tipos, aceptado) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $statement_insert = $con->prepare($query_insert);
+                $statement_insert->execute([$usuario, $nombre, $correo, $telefono, $contrasena_cifrada, $tipo_usuario, $aceptado]);
+                
+                header("Location: pgindex.php");
+                exit;
+            }
+        } else {
+            // echo'<div class="alert alert-primary" role="alert">
+            //         Por favor, complete todos los campos
+            //     </div>';        
+        }
+    }
 }
-
-
 // registro fin
+
+
 
 
 // Inicio de sesión
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST['iniciar'])) {
-      if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
-          $usuario = $_POST['usuario'];
-          $contrasena = $_POST['contrasena'];
+    if (isset($_POST['iniciar'])) {
+        if (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
+            $usuario = $_POST['usuario'];
+            $contrasena = $_POST['contrasena'];
+            $contrasena_cifrada2= sha1($contrasena);
 
-          // Consulta para obtener el usuario de la base de datos
-          $query = "SELECT * FROM usuario WHERE cuenta_us = ?";
-          $statement = $con->prepare($query);
-          $statement->execute([$usuario]);
-          $usuario_db = $statement->fetch();
 
-          if ($usuario_db && $contrasena === $usuario_db['contrasena_us']) {
-              // La contraseña es correcta, iniciar sesión
-              if(empty($usuario_db['autorizacion'])|| $usuario_db['autorizacion']=='no'){
-            echo "<script> alert('El usuario no esta autorizado') </script>";  
-            
-            }else{
-            $_SESSION['usuario_id'] = $usuario_db['id_usuario'];
-              $_SESSION['usuario_nombre'] = $usuario_db['nombre_us'];
-              $_SESSION['usuario_tipo'] = $usuario_db['id_tipo'];
-              
-              header("Location: index.php");exit;
+            // Consulta para obtener el usuario de la base de datos
+            $query = "SELECT * FROM usuarios WHERE usuario = ?";
+            $statement = $con->prepare($query);
+            $statement->execute([$usuario]);
+            $usuario_db = $statement->fetch();
+
+            if ($usuario_db && $contrasena_cifrada2 === $usuario_db['contraseña_usuario']) {
+                // Verificar si el usuario ha sido aceptado
+                $aceptado = $usuario_db['aceptado'];
+                if ($aceptado === 'si') {
+                    // La contraseña es correcta y el usuario ha sido aceptado, iniciar sesión
+                    $_SESSION['usuario_id'] = $usuario_db['id_usuario'];
+                    $_SESSION['usuario_nombre'] = $usuario_db['nombre'];
+                    $_SESSION['usuario_tipo'] = $usuario_db['id_tipos'];
+                  
+                    header("Location: index.php");
+                    exit;
+                } else {
+                    $acept = true;                 
+                }
+            } else {
+                $UsAndConFals = true;           
             }
-              
-          } else {
-              echo "Usuario o contraseña incorrectos.";
-          }
-      } else {
-          echo "Por favor, complete todos los campos.";
-      }
-  }
+        } else {
+            $completCampos = true;        
+        }
+    }
 }
 
+
+
+
+// Verificar si se envió el formulario para enviar el código de recuperación y guardar contraseña o actualizar
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['guardar_contraseña'])) {
+        $usuario = $_POST['usuario'];
+        $nombre = $_POST['nombre'];
+        $contrasena = $_POST['contrasena'];
+        $contrasena_cifrada3 = sha1($contrasena);
+
+        // Consultar si el usuario y el nombre coinciden en la base de datos
+        $query = "SELECT * FROM usuarios WHERE usuario = ? AND nombre = ?";
+        $statement = $con->prepare($query);
+        $statement->execute([$usuario, $nombre]);
+        $usuario_db = $statement->fetch();
+
+        if ($usuario_db) {
+            // Verificar si el usuario es administrador
+            if ($usuario_db['id_tipos'] == 1) {
+                // Si el usuario es administrador, mostrar una alerta indicando que no se puede actualizar la contraseña
+                $Admincon = true;            
+            } else {
+                // Si el usuario no es administrador, actualizar la contraseña en la base de datos para el usuario correspondiente
+                $query_update = "UPDATE usuarios SET contraseña_usuario = ? WHERE usuario = ?";
+                $statement_update = $con->prepare($query_update);
+                $statement_update->execute([$contrasena_cifrada3, $usuario]);
+
+                // Redirigir a alguna página después de guardar la contraseña
+                // Esto es opcional, puedes redirigir a donde desees
+                header("Location: pgindex.php");
+                exit;
+            }
+        } else {
+            $UsOrNameIn = true;        
+        }
+    }
+}
+
+
+
 ?>
-
-
 
 
 
@@ -79,11 +155,152 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
+    <link rel="stylesheet" href="CSS/alerta.css">
+
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
 </head>
 <body>
   <!-- navergador primario inicio -->
+
+  <!-- alertas de sesion ini  -->
+  <?php
+        if ($acept == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+                <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ El usuario no ha sido aceptado !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+        <?php }
+        ?>
+
+
+
+<?php
+        if ($UsAndConFals == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ El usuario o contraseña son incorrectos. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+
+
+
+<?php
+        if ($completCampos == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ Por favor, complete todos los campos. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+
+
+<?php
+        if ($UsOrNameIn == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ Usuario o nombre incorrectos. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+
+<?php
+        if ($Userrep == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ El usuario ya existe. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+
+<?php
+        if ($Admincon == true){
+        
+        ?>
+         <div class="alerta_posit">
+         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </symbol> -->
+            	</svg>
+            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
+              <h4 class="alert-heading">  	
+                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
+                    </svg>¡ El usuario que estás intentando actualizar es un administrador y no se puede cambiar la contraseña. !
+                </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <p class="mb-0"> </p>
+            </div>
+            </div>
+<?php }
+?>
+  <!-- alertas de sesion fin  -->
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
@@ -109,19 +326,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
 
 
-
-          
-
-
-
-
             <!-- registro -->
-            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal0">Registro</button>
+            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalreg0">Registro</button>
             <div class="modal fade"
-            id="modal0"
+            id="modalreg0"
             tabindex="1"
             aria-hidden="true"
-            aria-labelledby="label-modal0">
+            aria-labelledby="label-modalreg0">
             <!-- caja de dialogo -->
             <div class="modal-dialog">
                 <div class="modal-content">                    
@@ -133,42 +344,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="mt-3">
                                     <div class="row mb-3">
                                         <div class="col-12"> 
-                                            <input type="text" class="form-control" name="nombre" placeholder="Nombre">
+                                            <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
                                         </div>
                                         <div class="form-group form-text">
                                             <div id="ayuda-correo" class="form-text">
                                                 Correo Personal
-                                                <input type="text" class="form-control" name="correo" aria-describedby="ayuda-correo" placeholder="Correo">
+                                                <input type="text" class="form-control" name="correo" aria-describedby="ayuda-correo" placeholder="Correo" required>
                                             </div>
                                         </div>
                                     </div>
-                        
+                            
                                     <div class="row mb-3">
-                                      <div class="col-md-6 mb-3">
-                                          <div class="form-text">Numero Celular</div>
-                                          <input type="int" name="telefono" placeholder="+57" class="form-control" id="inputZip">
-                                      </div>
-                                      
-                                      <div class="col-lg-6">
-                                          <div class="form-text">Tipo de Usuario</div>
-                                            <select class="form-select" name="tipo_usuario">
-                                                <option value="2">Usuario</option>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-text">Numero Celular</div>
+                                            <input type="number" name="telefono" placeholder="+57" class="form-control" id="inputZip" required>
+                                        </div>
+                                        
+                                        <div class="col-lg-6">
+                                            <div class="form-text">Tipo de Usuario</div>
+                                            <select class="form-select" name="tipo_usuario" required>
+                                                <option value="">Selecciona un tipo de usuario</option>
+                                                <!-- <option value="1">Administrador</option> -->
+                                                <option value="2">Cliente</option>
                                                 <option value="3">Proveedor</option>
+                                                <option value="4">Empleado</option>
+                                                <option value="5">Gerente</option>
+
                                             </select>
-                                      </div>
+                                        </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-lg-6 mb-3">
                                             <div class="form-text">Usuario</div>
-                                            <input type="text" name="usuario" placeholder="User" class="form-control" id="inputZip">
+                                            <input type="text" name="usuario" placeholder="User" class="form-control" id="inputZip" required>
                                         </div>
                                         <div class="col-lg-6 mb-3">
                                             <div class="form-text">Contraseña</div>
-                                            <input type="password" name="contrasena" placeholder="Password" class="form-control" id="inputZip">
+                                            <input type="password" name="contrasena" placeholder="Password" class="form-control" id="inputZip" required>
                                         </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                      <div class="form-check">
+                                      <input class="form-check-input" type="checkbox" name="terminos" required>
+                                        <label class="text-white opacity-75 form-check-label" for="terminos">
+                                            Acepta los términos y condiciones
+                                        </label>
+                                      </div>
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-outline-danger btn-sm" name="registrar">Registrar</button>
                             </div>
@@ -177,6 +403,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
           </div>
+        
+
           </div>
         </div>
       </nav>
@@ -200,12 +428,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     
     <!-- inico de sesion -->
-      <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal1">Iniciar Sesion</button>
+      <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalini1">Iniciar Sesion</button>
             <div class="modal fade"
-            id="modal1"
+            id="modalini1"
             tabindex="2"
             aria-hidden="true"
-            aria-labelledby="label-modal1">
+            aria-labelledby="label-modalini1">
             <!-- caja de dialogo -->
             <div class="modal-dialog">
                 <div class="modal-content">                    
@@ -217,29 +445,85 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="mt-3">
                                     <div class="row mb-3">
                                         <div class="col-12"> 
-                                            <input type="text" class="form-control" name="usuario" placeholder="Usuario">
+                                            <input type="text" class="form-control" name="usuario" placeholder="Usuario" required>
                                         </div>
                                         <div class="form-group form-text">
                                             <div id="ayuda-correo" class="form-text">
                                                 Contraseña
-                                                <input type="password" class="form-control" name="contrasena" aria-describedby="ayuda-correo" placeholder="Password">
+                                                <input type="password" class="form-control" name="contrasena" aria-describedby="ayuda-correo" placeholder="Password" required>
                                             </div>
                                         </div>
                                     </div>
+                                    <button type="submit" class="col-12 btn btn-outline-success btn-sm" name="iniciar">Iniciar Sesion</button>
+
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-outline-success btn-sm" name="iniciar">Iniciar Sesion</button>
+                                
+                            
+                                <div class="col-12 btn text-info" data-bs-toggle="modal" data-bs-target="#modalrecuper">
+                                    <u>Olvidaste tu contraseña ?</u>
+                                </div>
+                                
+                            
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            
           </div>
           </div>
         </div>
 
       <!-- fin del incio de sesion  -->
+
+
+
+
+
+<!-- recupera con ini -->
+<div class="modal fade" id="modalrecuper" tabindex="3" aria-labelledby="label-modalrecuper">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <div class="form-text text-center"><u>Recupera tu contraseña</u></div>
+                        <div class="mt-3">
+                            <div class="row mb-3">
+                                <div class="col-12"> 
+                                    <input type="text" class="form-control" name="usuario" placeholder="Usuario" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12"> 
+                                <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12"> 
+                                    <input type="password" class="form-control" name="contrasena" placeholder="Nueva Contraseña" required>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Agregar campo oculto para enviar el ID del usuario -->
+                        <input type="hidden" name="usuario_id" value="<?php echo isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : ''; ?>">
+                        <button type="submit" class="col-12 btn btn-outline-success btn-sm" name="guardar_contraseña">Guardar Contraseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--recupera con fin-->
+
+
+
 
   </div>
 <script src="js/bootstrap.js"></script>
@@ -247,6 +531,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </nav>
 
 <!-- navergador secundario fin -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Mostrar una alerta si el usuario intenta retroceder sin iniciar sesión -->
+
+<!-- <script>
+        window.onbeforeunload = function() {
+            return "Por favor, inicia sesión para acceder a esta página.";
+        };
+</script> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- carousel inicio-->
@@ -317,7 +643,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <h3>Super mercado SpaceMark</h3>
 </div>
 
+
+
 <!-- inicio -->
+<div class="row mb-5">
 <?php
  $sql_pro = "SELECT * FROM producto";
  $pass2 = $con->prepare($sql_pro);
@@ -366,8 +695,48 @@ echo
   </div>
   ";
   }
-  ?>
+  ?></div>
   <!-- fin -->
+
+
+<div class="row mb-5">
+  <div class=" col-3">
+      <div class="btn card" style="width: 15rem;">
+          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modax1" src="./IMG/1-mercado.png" style="width: 14rem;">
+          <div class="card-body">
+          <p class="h5">Garbanzos *500 GR</p>
+          <figcaption class="h5">+ Aceite Diana *2.000 ML</figcaption>
+          <p class="h5">$</p>
+          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
+          </div>                
+            <div class="modal fade"
+      id="modax1"
+      tabindex="1"
+      aria-hidden="true"
+      aria-labelledby="label-modax1">
+      <!-- caja de dialogo -->
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <!-- encabezado -->
+              <div class="modal-header">
+                  <h4 class="modal-tittle">Descripción</h4>
+              </div>
+              <!-- cuerpo -->
+              <div class="modal-body">
+                  <h5>Descubre la excelencia en cada bocado con los Garbanzos Diana, una joya culinaria que eleva tus platillos a nuevas alturas. Estos garbanzos, parte de la distinguida línea de alimentos y bebidas de origen vegetal de Diana, se destacan por su calidad premium y su aporte nutricional excepcional.</h5>
+                  <img style="width: 15rem;" src="IMG/1-mercado.png" alt="">
+              </div>
+
+              <!-- pie de pagina -->
+              <div class="modal-footer">
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+              </div>
+
+          </div>
+      </div>
+      </div>
+      </div>
+  </div>
   
   <div class="table-responsive col-3">
       <div class="btn card" style="width: 15rem;">                
@@ -647,9 +1016,10 @@ echo
   <h3>Productos Lacteos</h3>
 </div>
 
+<div class="row mb-5">
 <!-- inicio -->
 <?php
- $sql_pro = "SELECT * FROM producto";
+ $sql_pro = "SELECT * FROM producto WHERE tipologia_prod like '%lacteo%'";
  $pass2 = $con->prepare($sql_pro);
  $pass2->execute();
  $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
@@ -694,7 +1064,10 @@ echo
       </div>
       </div>
   </div>
-  ";}?>
+  ";
+  }
+  ?></div>
+  <!-- fin -->
 
 
 <div class="row mb-5">
