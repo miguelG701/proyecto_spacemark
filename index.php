@@ -81,10 +81,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // }
 
 // Realizar la consulta a la base de datos para obtener los usuarios
-$query = "SELECT * FROM usuarios WHERE id_tipos != 1 ORDER BY id_usuario ASC LIMIT 100"; // Excluye a los administradores (id_tipos = 1)
-$statement = $con->prepare($query);
-$statement->execute();
-$usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -189,12 +185,32 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 <!-- navergador secundario inicio -->
 <nav class="shadow mb-4 bg-white navbar navbar-expand-lg bg-body-tertiary rounded-bottom" data-bs-theme="dark">
   <div class="container-fluid">
-    <div class="collapse navbar-collapse mb-3" id="navbarSupportedContent">
-      <div class="col-5">
-        <input class="form-control me-2" type="search" placeholder="¿ Que deseas comprar ?" aria-label="Search">
-      </div>  
-      <button class="btn btn-outline-danger m-1" type="submit">Buscar</button>
-    </div>
+
+<!-- buscador ini -->
+<div class="collapse navbar-collapse mb-3" id="navbarSupportedContent">
+  <div class="col-5">
+    <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
+  </div>  
+    <button id="search-button" class="btn btn-outline-danger m-1" type="submit">Buscar</button>
+</div>
+
+<script>
+document.getElementById('search-button').addEventListener('click', function(event) {
+  event.preventDefault();
+  var searchTerm = document.getElementById('search-input').value.toLowerCase();
+  var products = document.querySelectorAll('.col-md-3');
+  
+  products.forEach(function(product) {
+    var productName = product.querySelector('.product-name').textContent.toLowerCase();
+    if (productName.includes(searchTerm)) {
+      product.style.display = 'block';
+    } else {
+      product.style.display = 'none';
+    }
+  });
+});
+</script>
+<!-- buscador fin -->
 
             
     
@@ -221,112 +237,42 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 
   <!-- Administrador ini-->
   <div class="modal fade"
-            id="modaluse2"
-            tabindex="3"
-            aria-hidden="true"
-            aria-labelledby="label-modaluse2">
-            <!-- caja de dialogo -->
-            <div class="modal-dialog">
-                <div class="modal-content">                    
-                    <!-- cuerpo -->
-                    <div class="modal-body">
+         id="modaluse2"
+         tabindex="-1"
+         aria-hidden="true"
+         aria-labelledby="label-modaluse2">
+        <!-- Caja de diálogo -->
+        <div class="modal-dialog">
+            <div class="modal-content">                    
+                <!-- Cuerpo -->
+                <div class="modal-body">
                     <form action="" method="post">
-                            <div class="modal-body">
-                                <div class="form-text text-center"><u>Opciones de Administrador</u></div>
-                                <div class="mt-3">
-                                  
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                  <li class="nav-item">
-                                    <p class="btn text-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalveruser">Ver Usuarios</p>
-                                  </li>
-                                </ul>
-                                
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                  <li class="nav-item">
-                                    <p class="btn text-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalregacce">Registros por Aceptar</p>
-                                  </li>
-                                </ul>
-                          
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Descubrir</a>
-                                    </li>
-                                  </ul>
+                        <div class="modal-body">
+                            <div class="form-text text-center mb-3"><u>Opciones de Administrador</u></div>
+                            <div class="list-group">
+                                <a href="veruser.php" class="list-group-item list-group-item-action">Ver Usuarios</a>
+                                <a href="aceptaruser.php" class="list-group-item list-group-item-action">Registros por Aceptar</a>
+                                <a href="mandarproducto.php" class="list-group-item list-group-item-action">Enviar Producto</a>
+                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action">Confirmar Producto</a>
+                                <a href="gestionproveedores.php" class="list-group-item list-group-item-action">Gestión de Proveedores</a>
+                                <a href="gestiongerentes.php" class="list-group-item list-group-item-action">Gestión de Gerentes</a>
+                                <a href="gestionempleados.php" class="list-group-item list-group-item-action">Gestión de Empleados</a>
+                                <a href="listaproducto.php" class="list-group-item list-group-item-action">Lista de Productos</a>
+                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Lista de productos</a>
-                                    </li>
-                                  </ul>
-
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Lista de provedores</a>
-                                    </li>
-                                  </ul>
-                                    
-                                </div>
                             </div>
-                            <div class="modal-footer">
-                                
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </form>
                 </div>
-            </div>
-          </div>
-          </div>
-        </div>
-  <!-- Administrador fin-->
-
-<!-- ver usuarios ini -->
-<div class="modal fade" id="modalveruser" tabindex="4" aria-hidden="true" aria-labelledby="label-modalveruser">
-    <!-- caja de dialogo -->
-    <div class="modal-dialog">
-        <div class="modal-content"> 
-            <div class="form-text text-center"><u>Usuarios de SpaceMark</u></div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <form action="" method="post">
-                    <div class="modal-body">
-                        <table class="table table-dark">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Número</th>
-                                    <th scope="col">Usuario</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Tipo de Usuario</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
-                                $numero = 1;
-                                foreach ($usuarios as $usuario) {
-                                    echo "<tr>";
-                                    echo "<th scope='row'>" . $numero++ . "</th>";
-                                    echo "<td>" . $usuario['usuario'] . "</td>";
-                                    echo "<td>" . $usuario['nombre'] . "</td>";
-                                    // Consultar el tipo de usuario
-                                    $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
-                                    $statement_tipo = $con->prepare($query_tipo);
-                                    $statement_tipo->execute([$usuario['id_tipos']]);
-                                    $tipo_usuario = $statement_tipo->fetchColumn();
-                                    echo "<td>" . $tipo_usuario . "</td>";
-                                    echo "</tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                    </div>
-                </form>
             </div>
         </div>
     </div>
-</div>
-<!-- ver usuarios fin -->
+
+
 
 
 <!-- confirmar registro ini -->
@@ -378,7 +324,7 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
                         </table>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar">Guardar</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </form>
             </div>
@@ -388,239 +334,161 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- confirmar registro fin -->
 
-<!-- Cliente ini -->
+
+<!-- Administrador fin /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+
+
+<!-- Cliente ini /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 <div class="modal fade"
-            id="modaluse3"
-            tabindex="4"
-            aria-hidden="true"
-            aria-labelledby="label-modaluse3">
-            <!-- caja de dialogo -->
-            <div class="modal-dialog">
-                <div class="modal-content">                    
-                    <!-- cuerpo -->
-                    <div class="modal-body">
+         id="modaluse3"
+         tabindex="-1"
+         aria-hidden="true"
+         aria-labelledby="label-modaluse3">
+        <!-- Caja de diálogo -->
+        <div class="modal-dialog">
+            <div class="modal-content">                    
+                <!-- Cuerpo -->
+                <div class="modal-body">
                     <form action="" method="post">
-                            <div class="modal-body">
-                                <div class="form-text text-center"><u>Opciones de Cliente</u></div>
-                                <div class="mt-3">
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Cambiar foto de perfil</a>
-                                    </li>
-                                  </ul>
-
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">productos Comprados</a>
-                                    </li>
-                                  </ul>
-
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Preguntas</a>
-                                    </li>
-                                  </ul>
-
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Opiniones</a>
-                                    </li>
-                                  </ul>
-                                    
-                                </div>
+                        <div class="modal-body">
+                            <div class="form-text text-center mb-3"><u>Opciones de Cliente</u></div>
+                            <div class="list-group">
+                                <a href="opcionesuser.php" class="list-group-item list-group-item-action">Opiniones de perfil</a>
+                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
+                                <a href="solihelpsuser.php" class="list-group-item list-group-item-action">Solicitud de ayuda</a>
+                                <a href="soliprogreso.php" class="list-group-item list-group-item-action">Progreso de la solicitud</a>
                             </div>
-                            <div class="modal-footer">
-                                
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </form>
                 </div>
             </div>
-          </div>
-          </div>
         </div>
+    </div>
 
-<!-- Cliente fin -->
-
-
-
+<!-- Cliente fin /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 
 
-<!-- Proveedor ini -->
+
+
+
+<!-- Proveedor ini //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 <div class="modal fade"
-            id="modaluse4"
-            tabindex="5"
-            aria-hidden="true"
-            aria-labelledby="label-modaluse4">
-            <!-- caja de dialogo -->
-            <div class="modal-dialog">
-                <div class="modal-content">                    
-                    <!-- cuerpo -->
-                    <div class="modal-body">
+         id="modaluse4"
+         tabindex="-1"
+         aria-hidden="true"
+         aria-labelledby="label-modaluse4">
+        <!-- Caja de diálogo -->
+        <div class="modal-dialog">
+            <div class="modal-content">                    
+                <!-- Cuerpo -->
+                <div class="modal-body">
                     <form action="" method="post">
-                            <div class="modal-body">
-                                <div class="form-text text-center"><u>Opciones de Proveedor</u></div>
-                                <div class="mt-3">
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Ver encargos</a>
-                                    </li>
-                                  </ul>
+                        <div class="modal-body">
+                            <div class="form-text text-center mb-3"><u>Opciones de Proveedor</u></div>
+                            <div class="list-group">
+                                <a href="soliproducto.php" class="list-group-item list-group-item-action">Ver encargos</a>
+                                <a href="mandarproducto.php" class="list-group-item list-group-item-action">Enviar Producto</a>
+                                <a href="verproductosmandados.php" class="list-group-item list-group-item-action">Productos Mandados</a>
+                                <a href="productosmes.php" class="list-group-item list-group-item-action">Productos del mes</a>
+                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Productos Mandados</a>
-                                    </li>
-                                  </ul>
-
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Lista de productos</a>
-                                    </li>
-                                  </ul>
-
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Entregas del mes</a>
-                                    </li>
-                                  </ul>
-                                    
-                                </div>
                             </div>
-                            <div class="modal-footer">
-                                
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </form>
                 </div>
             </div>
-          </div>
-          </div>
         </div>
+    </div>
+<!-- Proveedor fin /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 
-<!-- Proveedor fin -->
 
 
-
-<!-- Empleado ini -->
+<!-- Empleado ini /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 <div class="modal fade"
-            id="modaluse5"
-            tabindex="4"
-            aria-hidden="true"
-            aria-labelledby="label-modaluse5">
-            <!-- caja de dialogo -->
-            <div class="modal-dialog">
-                <div class="modal-content">                    
-                    <!-- cuerpo -->
-                    <div class="modal-body">
+         id="modaluse5"
+         tabindex="-1"
+         aria-hidden="true"
+         aria-labelledby="label-modaluse5">
+        <!-- Caja de diálogo -->
+        <div class="modal-dialog">
+            <div class="modal-content">                    
+                <!-- Cuerpo -->
+                <div class="modal-body">
                     <form action="" method="post">
-                            <div class="modal-body">
-                                <div class="form-text text-center"><u>Opciones de Empleado</u></div>
-                                <div class="mt-3">
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Cambiar foto de perfil</a>
-                                    </li>
-                                  </ul>
+                        <div class="modal-body">
+                            <div class="form-text text-center mb-3"><u>Opciones de Empleado</u></div>
+                            <div class="list-group">
+                                <a href="gestionproductos.php" class="list-group-item list-group-item-action">Gestionar productos</a>
+                                <a href="gestionarventas.php" class="list-group-item list-group-item-action">Gestionar ventas</a>
+                                <a href="solitcliente.php" class="list-group-item list-group-item-action">Ver solicitudes de clientes</a>
+                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="fun_Emp.php">productos Comprados</a>
-                                    </li>
-                                  </ul>
-
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Preguntas</a>
-                                    </li>
-                                  </ul>
-
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Opiniones</a>
-                                    </li>
-                                  </ul>
-                                    
-                                </div>
                             </div>
-                            <div class="modal-footer">
-                                
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </form>
                 </div>
             </div>
-          </div>
-          </div>
         </div>
-
-<!-- Empleado fin -->
-
-
+    </div>
+<!-- Empleado fin /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 
 
 
-<!-- Gerente ini -->
+
+
+<!-- Gerente ini /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 <div class="modal fade"
-            id="modaluse5"
-            tabindex="4"
-            aria-hidden="true"
-            aria-labelledby="label-modaluse5">
-            <!-- caja de dialogo -->
-            <div class="modal-dialog">
-                <div class="modal-content">                    
-                    <!-- cuerpo -->
-                    <div class="modal-body">
+         id="modaluse6"
+         tabindex="-1"
+         aria-hidden="true"
+         aria-labelledby="label-modaluse6">
+        <!-- Caja de diálogo -->
+        <div class="modal-dialog">
+            <div class="modal-content">                    
+                <!-- Cabecera del modal -->
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Cuerpo -->
+                <div class="modal-body">
                     <form action="" method="post">
-                            <div class="modal-body">
-                                <div class="form-text text-center"><u>Opciones de Gerente</u></div>
-                                <div class="mt-3">
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Cambiar foto de perfil</a>
-                                    </li>
-                                  </ul>
+                        <div class="modal-body">
+                            <div class="form-text text-center mb-3"><u>Opciones de Gerente</u></div>
+                            <div class="list-group">
+                                <a href="gestioninventario.php" class="list-group-item list-group-item-action">Gestion de Productos</a>
+                                <a href="gestionpromo.php" class="list-group-item list-group-item-action">Gestion de Promociones</a>
+                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action">Confirmar Producto</a>
+                                <a href="solicitudproductos.php" class="list-group-item list-group-item-action">Solicitar Producto</a>
+                                <a href="verproductossolicitados.php" class="list-group-item list-group-item-action">Ver progreso solicitud</a>
+                                <a href="gestionproveedores.php" class="list-group-item list-group-item-action">Gestion de Proveedores</a>
+                                <a href="gestionempleados.php" class="list-group-item list-group-item-action">Gestion de Empleados</a>
+                                <a href="listaproducto.php" class="list-group-item list-group-item-action">Lista de productos</a>
+                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">productos Comprados</a>
-                                    </li>
-                                  </ul>
-
-                                  
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Preguntas</a>
-                                    </li>
-                                  </ul>
-
-                                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">Opiniones</a>
-                                    </li>
-                                  </ul>
-                                    
-                                </div>
                             </div>
-                            <div class="modal-footer">
-                                
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </form>
                 </div>
             </div>
-          </div>
-          </div>
         </div>
-
-<!-- Gerente fin -->
+    </div>
+<!-- Gerente fin /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 
   </div>
 <script src="js/bootstrap.js"></script>
@@ -636,70 +504,57 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
         };
 </script> -->
 
+<style>
+        .table-container {
+            overflow: hidden;
+            border-radius: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+
 <h5 class="container"> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
     if ($tipo_usuario == 1) {?>
 
-      <table class="table table-dark">
-      <thead>
-          <tr>
-              <th scope="col">Número</th>
-              <th scope="col">Usuario</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Tipo de Usuario</th>
-              <th scope="col">Modificacion</th>
-
-          </tr>
-      </thead>
-      <tbody>
-          <?php
-          // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
-          $numero = 1;
-          foreach ($usuarios as $usuario) {
-              echo "<tr>";
-              echo "<th scope='row'>" . $numero++ . "</th>";
-              echo "<td>" . $usuario['usuario'] . "</td>";
-              echo "<td>" . $usuario['nombre'] . "</td>";
-              // Consultar el tipo de usuario
-              $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
-              $statement_tipo = $con->prepare($query_tipo);
-              $statement_tipo->execute([$usuario['id_tipos']]);
-              $tipo_usuario = $statement_tipo->fetchColumn();
-              echo "<td>" . $tipo_usuario . "</td>";
-              echo "<td>Añadir +</td>";
-
-              echo "</tr>";
-
-          }
-          ?>
-      </tbody>
-  </table>
-    </h5>
-    <?php
-    }?>
+<div class="container mt-5">
+        <h2 class="mb-4">Lista de Usuarios por Aceptar</h2>
+        <div class="table-container">
+            <table class="table table-striped table-bordered table-hover table-light m-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Número</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Tipo de Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
+                    $numero = 1;
+                    foreach ($usuarios as $usuario) {
+                        echo "<tr>";
+                        echo "<th scope='row'>" . $numero++ . "</th>";
+                        echo "<td>" . $usuario['usuario'] . "</td>";
+                        echo "<td>" . $usuario['nombre'] . "</td>";
+                        // Consultar el tipo de usuario
+                        $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
+                        $statement_tipo = $con->prepare($query_tipo);
+                        $statement_tipo->execute([$usuario['id_tipos']]);
+                        $tipo_usuario = $statement_tipo->fetchColumn();
+                        echo "<td>" . $tipo_usuario . "</td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 
-<h5 class="container"> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
-    if ($tipo_usuario == 3) {?>
+  </h5>
+  <?php
+  }?>
 
-<form class="m-5">
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Agregar +</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-    <div id="emailHelp" class="form-text">Hay algo nuevo en el catalogo ?</div>
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Destino</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="mb-3 form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Acepta el cargo del pedido</label>
-  </div>
-  <button type="submit" class="btn btn-danger">Entregar</button>
-</form>
-    </h5>
-    <?php
-    }?>
 
 <!-- carousel inicio-->
 <div class="container">
@@ -765,744 +620,142 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 <!-- carousel fin-->
 
 <!-- inicio de Super mercado de SpaceMark -->
-<div class="">
-  <h3>Super mercado SpaceMark</h3>
-</div>
 
-<div class="row mb-5">
-<!-- inicio -->
+
 <?php
- $sql_pro = "SELECT * FROM producto";
- $pass2 = $con->prepare($sql_pro);
- $pass2->execute();
- $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
-foreach ($rest_pro as $prod){
-  $call=$prod['id_prod'];
-echo
-"
-  <div class='table-responsive col-3'>
-      <div class='btn card' style='width: 15rem;'>
-          <img class='card-img-top' data-bs-toggle='modal' data-bs-target='#modax$call' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' style='width: 14rem;'>
-          <div class='card-body'>
-          <p class='h5'>".$prod['nombre_prod']."</p>
-          <figcaption class='h5'></figcaption>
-          <p class='h5'>$".$prod['precio_prod']."</p>
-          <button type='button' class='btn btn-outline-danger btn-sm' data-bs-dismiss='modal'>Agregar al carrito</button>
-          </div>               
-            <div class='modal fade'
-      id='modax$call'
-      tabindex='$call'
-      aria-hidden='true'
-      aria-labelledby='label-modax$call'>
-      <!-- caja de dialogo -->
-      <div class='modal-dialog'>
-          <div class='modal-content'>
-              <!-- encabezado -->
-              <div class='modal-header'>
-                  <h4 class='modal-tittle'>Descripción</h4>
-              </div>
-              <!-- cuerpo -->
-              <div class='modal-body'>
-                  <h5>".$prod['des_det_prod']."</h5>
-                  <img style='width: 15rem;' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' alt=''>
-              </div>
+// Consulta para obtener los productos con cantidad mayor a cero
+$query = "SELECT * FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
+$statement = $con->prepare($query);
+$statement->execute();
+$productos = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-              <!-- pie de pagina -->
-              <div class='modal-footer'>
-                  <button class='btn-close' data-bs-dismiss='modal' aria-label='cerrar'></button>
-              </div>
+// Agrupar productos por categoría
+$productosPorCategoria = [];
+foreach ($productos as $producto) {
+    $categoria = $producto['Categoria'];
+    if (!isset($productosPorCategoria[$categoria])) {
+        $productosPorCategoria[$categoria] = [];
+    }
+    $productosPorCategoria[$categoria][] = $producto;
+}
+?>
+<style>
+.card {
+    height: 100%;
+}
 
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-  ";
-  }
-  ?></div>
-  <!-- fin -->
+.fixed-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
 
-<div class="row mb-5">
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modax1" src="./IMG/1-mercado.png" style="width: 14rem;">
-          <div class="card-body">
-          <p class="h5">Garbanzos *500 GR</p>
-          <figcaption class="h5">+ Aceite Diana *2.000 ML</figcaption>
-          <p class="h5">$</p>
-          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
-          </div>                
-            <div class="modal fade"
-      id="modax1"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modax1">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                  <h4 class="modal-tittle">Descripción</h4>
-              </div>
-              <!-- cuerpo -->
-              <div class="modal-body">
-                  <h5>Descubre la excelencia en cada bocado con los Garbanzos Diana, una joya culinaria que eleva tus platillos a nuevas alturas. Estos garbanzos, parte de la distinguida línea de alimentos y bebidas de origen vegetal de Diana, se destacan por su calidad premium y su aporte nutricional excepcional.</h5>
-                  <img style="width: 15rem;" src="IMG/1-mercado.png" alt="">
-              </div>
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
 
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-  
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">                
-          <img class="card-img-top rounded-start" data-bs-toggle="modal" data-bs-target="#modax2" src="./IMG/1-mercados.png" style="height: 13.4rem;">
-          <div class="card-body">
-            <p class="h5">Arveja con Zanahoria Zenu</p>
-            <figcaption class="h5">*580 GR</figcaption>
-            <p class="h5">$</p>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
-          </div>
-      <div class="modal fade"
-      id="modax2"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modax2">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                <h4 class="modal-tittle">Descripción</h4>
+.product-name {
+    margin-bottom: auto;
+}
+</style>
+<div class="container mt-4">
+    <?php foreach ($productosPorCategoria as $categoria => $productos): ?>
+        <h2><?php echo htmlspecialchars($categoria); ?></h2>
+        <div class="row">
+            <?php foreach ($productos as $producto): ?>
+                <div class="col-md-3 mb-4" id="product-<?php echo $producto['IDP']; ?>">
+                    <div class="card h-100">
+                        <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
+                            <img class="card-img-top fixed-img" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
+                        <?php else: ?>
+                            <img class="card-img-top fixed-img" src="uploads/default.jpg" alt="Imagen no disponible">
+                        <?php endif; ?>
+                        <div class="card-body d-flex flex-column">
+                            <p class="h5 product-name"><?php echo htmlspecialchars($producto['Nombre']); ?></p>
+                            <p class="h5 mt-auto">$<?php echo htmlspecialchars($producto['Precio']); ?></p>
+                            <button type="button" class="btn btn-outline-danger btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modal-<?php echo $producto['IDP']; ?>">Comprar</button>
+                       </div>
+                      </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal-<?php echo $producto['IDP']; ?>" tabindex="-1" aria-labelledby="label-modal-<?php echo $producto['IDP']; ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>">Compra del producto <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
+                                                    <img class="img-fluid" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
+                                                <?php else: ?>
+                                                    <img class="img-fluid" src="uploads/default.jpg" alt="Imagen no disponible">
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
+                                                <form id="compra-form-<?php echo $producto['IDP']; ?>" action="procesar_compra.php" method="post">
+                                                    <div class="mb-3 d-flex align-items-center">
+                                                        <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>
+                                                        <input type="number" class="form-control" id="cantidad-<?php echo $producto['IDP']; ?>" name="cantidad" min="1" max="<?php echo htmlspecialchars($producto['Cantidad']); ?>" value="1" required onchange="calcularTotal(<?php echo $producto['IDP']; ?>)">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="metodo_pago-<?php echo $producto['IDP']; ?>" class="form-label">Método de Pago:</label>
+                                                        <select class="form-control" id="metodo_pago-<?php echo $producto['IDP']; ?>" name="metodo_pago" required>
+                                                            <option value="Efectivo">Efectivo</option>
+                                                            <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                                                            <option value="Transferencia">Transferencia Bancaria</option>
+                                                        </select>
+                                                    </div>
+                                                    <input type="hidden" name="id_producto" value="<?php echo $producto['IDP']; ?>">
+                                                    <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION['usuario_id']); ?>">
+                                                    <p>Precio: $<span id="precio-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Precio']); ?></span></p>
+                                                    <p>Total: $<span id="total-<?php echo $producto['IDP']; ?>">0.00</span></p>
+                                                    <input type="hidden" name="accion" value="comprar">
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
+                                        <button type="button" class="btn btn-secondary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <h5>Avena Alpina es una bebida con leche y avena, ultra alta temperatura UAT (UHT), que por las características de su empaque no necesita refrigeración.</h5>
-                <img style="width: 15rem;" src="IMG/1-mercados.png" alt="">
-            </div>
-
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal3" src="./IMG/la-bon yurt.png">
-      <div class="card-body">
-        <p class="h5">Bon Yurt Alpina</p>
-        <br>
-        <figcaption class="h5">*170 GR</figcaption>
-        <p class="h5">$</p>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>        </div>
-      <div class="modal fade"
-      id="modal3"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modal3">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                <h4 class="modal-tittle">Descripción</h4>
-            </div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <h5>No solo es su sabor, es una experiencia de consumo única: abrir la base láctea y mezclarla con el topping, BON YURT DOS PALABRAS QUE TE HACEN FELIZ.</h5>
-                <img style="width: 15rem;" src="IMG/la-bon yurt.png" alt="">
-            </div>
-
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-
-  <div class="table-responsive col-3">
-    <div class="btn card" style="width: 15rem;">                
-        <img class="card-img-top rounded-start" data-bs-toggle="modal" data-bs-target="#modal4" src="./IMG/la-KUMIS-ALPINA_F.png">
-        <div class="card-body">
-          <p class="h5">Kumis En Bolsa Alpina</p>
-          <figcaption class="h5">*1.000 GR
-          </figcaption>
-          <p class="h5">$</p>
-          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>          </div>
-    <div class="modal fade"
-    id="modal4"
-    tabindex="1"
-    aria-hidden="true"
-    aria-labelledby="label-modal4">
-    <!-- caja de dialogo -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- encabezado -->
-            <div class="modal-header">
-              <h4 class="modal-tittle">Descripción</h4>
-          </div>
-          <!-- cuerpo -->
-          <div class="modal-body">
-              <h5>Kumis Alpina es esa tradición, un producto incondicional que ha estado presente de generación en generación en todas las familias colombianas. A todos nos encanta y estamos seguros de que nos seguirá acompañando por muchas generaciones más.</h5>
-              <img style="width: 15rem;" src="IMG/la-KUMIS-ALPINA_F.png" alt="">
-          </div>
-
-            <!-- pie de pagina -->
-            <div class="modal-footer">
-                <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-            </div>
-
-        </div>
+        <?php endforeach; ?>
     </div>
-    </div>
-    </div>
+    
+<!-- aumenta el total del producto al cambiar la cantidad ini -->
+<script>
+function calcularTotal(idProducto) {
+    // Obtener el precio del producto
+    var precio = parseFloat(document.getElementById('precio-' + idProducto).textContent)
+    // Obtener la cantidad seleccionada por el usuario
+    var cantidad = parseInt(document.getElementById('cantidad-' + idProducto).value)
+    // Calcular el total
+    var total = precio * cantidad
+    // Mostrar el total calculado en el span correspondiente
+    document.getElementById('total-' + idProducto).textContent = total.toFixed(2);
+}
+</script>
 
-  </div>
-  
-<div class="row mt-5">
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal5" src="./IMG/la-QUESO-FINESSE_F.png">
-          <div class="card-body">
-            <p class="h5">Queso Finesses Alpina</p>
-            <figcaption class="h5">*450 GR
-            </figcaption>
-            <p class="h5">$</p>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>           </div>                
-            <div class="modal fade"
-      id="modal5"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modal5">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                <h4 class="modal-tittle">Descripción</h4>
-            </div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <h5>Finesse es una marca que se enfoca en el cuidado de la figura, a lo largo de los años se ha convertido en el aliado perfecto para las mujeres. Finesse se aleja de los castigos, las dietas extremas o sacrificios.</h5>
-                <img style="width: 15rem;" src="IMG/la-QUESO-FINESSE_F.png" alt="">
-            </div>
+<script>
+    function agregarAlCarrito(idProducto) {
+    var form = document.getElementById('compra-form-' + idProducto);
+    form.accion.value = 'carrito';
+    form.submit();
+}
+</script>
 
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-              </div>
+<!-- aumenta el total del producto al cambiar la cantidad fin -->
 
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-  
-
-  <div class="table-responsive col-3">
-    <div class="btn card" style="width: 15rem;">
-        <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal6" src="./IMG/la-yogurt yogo yogo.png">
-        <div class="card-body">
-            <p class="h5">Yogurt Yogo x3 Alpina</p>
-            <figcaption class="h5">*1.000 GR
-            </figcaption>
-            <p class="h5">$</p>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>         </div>                
-          <div class="modal fade"
-    id="modal6"
-    tabindex="1"
-    aria-hidden="true"
-    aria-labelledby="label-modal6">
-    <!-- caja de dialogo -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- encabezado -->
-            <div class="modal-header">
-              <h4 class="modal-tittle">Descripción</h4>
-          </div>
-          <!-- cuerpo -->
-          <div class="modal-body">
-              <h5>Sumérgete en el refrescante sabor a fresa con este envase de Yogo Maxilitro de 1.1 litros. Una opción práctica para tener siempre disponible tu Yogurt favorito.</h5>
-              <img style="width: 15rem;" src="IMG/la-yogurt yogo yogo.png" alt="">
-          </div>
-
-            <!-- pie de pagina -->
-            <div class="modal-footer">
-                <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-            </div>
-
-        </div>
-    </div>
-    </div>
-    </div>
-</div>
-
-<div class="table-responsive col-3">
-  <div class="btn card" style="width: 15rem;">
-      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal7" src="./IMG/la-Yogurt_griego_1000.png">
-      <div class="card-body">
-        <p class="h5">Yogurt Griego Dejamu Natural</p>
-        <figcaption class="h5">*450 GR
-        </figcaption>
-        <p class="h5">$</p>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>       </div>                
-        <div class="modal fade"
-  id="modal7"
-  tabindex="1"
-  aria-hidden="true"
-  aria-labelledby="label-modal7">
-  <!-- caja de dialogo -->
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <!-- encabezado -->
-          <div class="modal-header">
-            <h4 class="modal-tittle">Descripción</h4>
-        </div>
-        <!-- cuerpo -->
-        <div class="modal-body">
-            <h5>El yogurt griego natural contiene mas proteínas que el yogurt natural, pues en su proceso de realización se retira el suero de leche y la lactosa, por ello está entre los alimentos saludables más altos en proteínas.</h5>
-            <img style="width: 15rem;" src="IMG/la-Yogurt_griego_1000.png" alt="">
-        </div>
-
-          <!-- pie de pagina -->
-          <div class="modal-footer">
-              <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-          </div>
-
-      </div>
-  </div>
-  </div>
-  </div>
-</div>
-
-<div class="table-responsive col-3">
-  <div class="btn card" style="width: 15rem;">
-      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal8" src="./IMG/la-YOX-MULTIFRUTAS_F.png">
-      <div class="card-body">
-        <p class="h5">Yox Multifruta Bellota Alpina</p>
-        <figcaption class="h5">*100 GR
-        </figcaption>
-        <p class="h5">$</p>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>       </div>                
-        <div class="modal fade"
-  id="modal8"
-  tabindex="1"
-  aria-hidden="true"
-  aria-labelledby="label-modal8">
-  <!-- caja de dialogo -->
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <!-- encabezado -->
-          <div class="modal-header">
-            <h4 class="modal-tittle">Descripción</h4>
-        </div>
-        <!-- cuerpo -->
-        <div class="modal-body">
-            <h5>Yox con Defensis es una un alimento lácteo con nuestra fórmula especial: Vitamina C y Zinc que contribuyen a reforzar el sistema de defensas consumiéndolo diariamente. Además contiene miles de probióticos que contribuyen al bienestar del cuerpo.</h5>
-            <img style="width: 15rem;" src="IMG/la-YOX-MULTIFRUTAS_F.png" alt="">
-        </div>
-
-          <!-- pie de pagina -->
-          <div class="modal-footer">
-              <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-          </div>
-
-      </div>
-  </div>
-  </div>
-  </div>
-</div>
-</div>
-</div>
 <!-- fin de Super mercado de SpaceMark -->
-
-<!-- inicio de productos lacteos -->
-<div class="">
-  <h3>Productos Lacteos</h3>
-</div>
-
-
-<div class="row mb-5">
-<!-- inicio -->
-<?php
- $sql_pro = "SELECT * FROM producto WHERE tipologia_prod like '%lacteo%'";
- $pass2 = $con->prepare($sql_pro);
- $pass2->execute();
- $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
-foreach ($rest_pro as $prod){
-  $call=$prod['id_prod'];
-echo
-"
-  <div class='table-responsive col-3'>
-      <div class='btn card' style='width: 15rem;'>
-          <img class='card-img-top' data-bs-toggle='modal' data-bs-target='#modax$call' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' style='width: 14rem;'>
-          <div class='card-body'>
-          <p class='h5'>".$prod['nombre_prod']."</p>
-          <figcaption class='h5'></figcaption>
-          <p class='h5'>$".$prod['precio_prod']."</p>
-          <button type='button' class='btn btn-outline-danger btn-sm' data-bs-dismiss='modal'>Agregar al carrito</button>
-          </div>               
-            <div class='modal fade'
-      id='modax$call'
-      tabindex='$call'
-      aria-hidden='true'
-      aria-labelledby='label-modax$call'>
-      <!-- caja de dialogo -->
-      <div class='modal-dialog'>
-          <div class='modal-content'>
-              <!-- encabezado -->
-              <div class='modal-header'>
-                  <h4 class='modal-tittle'>Descripción</h4>
-              </div>
-              <!-- cuerpo -->
-              <div class='modal-body'>
-                  <h5>".$prod['des_det_prod']."</h5>
-                  <img style='width: 15rem;' src='data:image/jpg;base64,".base64_encode($prod['img_prod'])."' alt=''>
-              </div>
-
-              <!-- pie de pagina -->
-              <div class='modal-footer'>
-                  <button class='btn-close' data-bs-dismiss='modal' aria-label='cerrar'></button>
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-  ";
-  }
-  ?></div>
-  <!-- fin -->
-
-<div class="row mb-5">
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal1" src="./IMG/la-ALPINITO-FRESA_F.png">
-          <div class="card-body">
-          <p class="h5">Alpinito De Fresa Alpina</p>
-          <figcaption class="h5">*45 GR</figcaption>
-          <p class="h5">$</p>
-          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>
-          </div>                
-            <div class="modal fade"
-      id="modal1"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modal1">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                  <h4 class="modal-tittle">Descripción</h4>
-              </div>
-              <!-- cuerpo -->
-              <div class="modal-body">
-                  <h5>Alpinito es un queso fresco, blando, semimagro, con dulce de frutas, que aporta hierro, zinc, ácido fólico, vitamina D y vitamina B12.</h5>
-                  <img style="width: 15rem;" src="IMG/la-ALPINITO-FRESA_F.png" alt="">
-              </div>
-
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-  
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">                
-          <img class="card-img-top rounded-start" data-bs-toggle="modal" data-bs-target="#modal2" src="./IMG/la-avena-canela.png">
-          <div class="card-body">
-            <p class="h5">Avena Canela Alpina</p>
-            <figcaption class="h5">*250 GR</figcaption>
-            <p class="h5">$</p>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>            </div>
-      <div class="modal fade"
-      id="modal2"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modal2">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                <h4 class="modal-tittle">Descripción</h4>
-            </div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <h5>Avena Alpina es una bebida con leche y avena, ultra alta temperatura UAT (UHT), que por las características de su empaque no necesita refrigeración.</h5>
-                <img style="width: 15rem;" src="IMG/la-avena-canela.png" alt="">
-            </div>
-
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal3" src="./IMG/la-bon yurt.png">
-      <div class="card-body">
-        <p class="h5">Bon Yurt Alpina</p>
-        <br>
-        <figcaption class="h5">*170 GR</figcaption>
-        <p class="h5">$</p>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>        </div>
-      <div class="modal fade"
-      id="modal3"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modal3">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                <h4 class="modal-tittle">Descripción</h4>
-            </div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <h5>No solo es su sabor, es una experiencia de consumo única: abrir la base láctea y mezclarla con el topping, BON YURT DOS PALABRAS QUE TE HACEN FELIZ.</h5>
-                <img style="width: 15rem;" src="IMG/la-bon yurt.png" alt="">
-            </div>
-
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-
-  <div class="table-responsive col-3">
-    <div class="btn card" style="width: 15rem;">                
-        <img class="card-img-top rounded-start" data-bs-toggle="modal" data-bs-target="#modal4" src="./IMG/la-KUMIS-ALPINA_F.png">
-        <div class="card-body">
-          <p class="h5">Kumis En Bolsa Alpina</p>
-          <figcaption class="h5">*1.000 GR
-          </figcaption>
-          <p class="h5">$</p>
-          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>          </div>
-    <div class="modal fade"
-    id="modal4"
-    tabindex="1"
-    aria-hidden="true"
-    aria-labelledby="label-modal4">
-    <!-- caja de dialogo -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- encabezado -->
-            <div class="modal-header">
-              <h4 class="modal-tittle">Descripción</h4>
-          </div>
-          <!-- cuerpo -->
-          <div class="modal-body">
-              <h5>Kumis Alpina es esa tradición, un producto incondicional que ha estado presente de generación en generación en todas las familias colombianas. A todos nos encanta y estamos seguros de que nos seguirá acompañando por muchas generaciones más.</h5>
-              <img style="width: 15rem;" src="IMG/la-KUMIS-ALPINA_F.png" alt="">
-          </div>
-
-            <!-- pie de pagina -->
-            <div class="modal-footer">
-                <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-            </div>
-
-        </div>
-    </div>
-    </div>
-    </div>
-
-  </div>
-  
-<div class="row mt-5">
-  <div class="table-responsive col-3">
-      <div class="btn card" style="width: 15rem;">
-          <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal5" src="./IMG/la-QUESO-FINESSE_F.png">
-          <div class="card-body">
-            <p class="h5">Queso Finesses Alpina</p>
-            <figcaption class="h5">*450 GR
-            </figcaption>
-            <p class="h5">$</p>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>           </div>                
-            <div class="modal fade"
-      id="modal5"
-      tabindex="1"
-      aria-hidden="true"
-      aria-labelledby="label-modal5">
-      <!-- caja de dialogo -->
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <!-- encabezado -->
-              <div class="modal-header">
-                <h4 class="modal-tittle">Descripción</h4>
-            </div>
-            <!-- cuerpo -->
-            <div class="modal-body">
-                <h5>Finesse es una marca que se enfoca en el cuidado de la figura, a lo largo de los años se ha convertido en el aliado perfecto para las mujeres. Finesse se aleja de los castigos, las dietas extremas o sacrificios.</h5>
-                <img style="width: 15rem;" src="IMG/la-QUESO-FINESSE_F.png" alt="">
-            </div>
-
-              <!-- pie de pagina -->
-              <div class="modal-footer">
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-              </div>
-
-          </div>
-      </div>
-      </div>
-      </div>
-  </div>
-  
-
-  <div class="table-responsive col-3">
-    <div class="btn card" style="width: 15rem;">
-        <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal6" src="./IMG/la-yogurt yogo yogo.png">
-        <div class="card-body">
-            <p class="h5">Yogurt Yogo x3 Alpina</p>
-            <figcaption class="h5">*1.000 GR
-            </figcaption>
-            <p class="h5">$</p>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>         </div>                
-          <div class="modal fade"
-    id="modal6"
-    tabindex="1"
-    aria-hidden="true"
-    aria-labelledby="label-modal6">
-    <!-- caja de dialogo -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- encabezado -->
-            <div class="modal-header">
-              <h4 class="modal-tittle">Descripción</h4>
-          </div>
-          <!-- cuerpo -->
-          <div class="modal-body">
-              <h5>Sumérgete en el refrescante sabor a fresa con este envase de Yogo Maxilitro de 1.1 litros. Una opción práctica para tener siempre disponible tu Yogurt favorito.</h5>
-              <img style="width: 15rem;" src="IMG/la-yogurt yogo yogo.png" alt="">
-          </div>
-
-            <!-- pie de pagina -->
-            <div class="modal-footer">
-                <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-            </div>
-
-        </div>
-    </div>
-    </div>
-    </div>
-</div>
-
-<div class="table-responsive col-3">
-  <div class="btn card" style="width: 15rem;">
-      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal7" src="./IMG/la-Yogurt_griego_1000.png">
-      <div class="card-body">
-        <p class="h5">Yogurt Griego Dejamu Natural</p>
-        <figcaption class="h5">*450 GR
-        </figcaption>
-        <p class="h5">$</p>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>       </div>                
-        <div class="modal fade"
-  id="modal7"
-  tabindex="1"
-  aria-hidden="true"
-  aria-labelledby="label-modal7">
-  <!-- caja de dialogo -->
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <!-- encabezado -->
-          <div class="modal-header">
-            <h4 class="modal-tittle">Descripción</h4>
-        </div>
-        <!-- cuerpo -->
-        <div class="modal-body">
-            <h5>El yogurt griego natural contiene mas proteínas que el yogurt natural, pues en su proceso de realización se retira el suero de leche y la lactosa, por ello está entre los alimentos saludables más altos en proteínas.</h5>
-            <img style="width: 15rem;" src="IMG/la-Yogurt_griego_1000.png" alt="">
-        </div>
-
-          <!-- pie de pagina -->
-          <div class="modal-footer">
-              <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-          </div>
-
-      </div>
-  </div>
-  </div>
-  </div>
-</div>
-
-<div class="table-responsive col-3">
-  <div class="btn card" style="width: 15rem;">
-      <img class="card-img-top" data-bs-toggle="modal" data-bs-target="#modal8" src="./IMG/la-YOX-MULTIFRUTAS_F.png">
-      <div class="card-body">
-        <p class="h5">Yox Multifruta Bellota Alpina</p>
-        <figcaption class="h5">*100 GR
-        </figcaption>
-        <p class="h5">$</p>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Agregar al carrito</button>       </div>                
-        <div class="modal fade"
-  id="modal8"
-  tabindex="1"
-  aria-hidden="true"
-  aria-labelledby="label-modal8">
-  <!-- caja de dialogo -->
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <!-- encabezado -->
-          <div class="modal-header">
-            <h4 class="modal-tittle">Descripción</h4>
-        </div>
-        <!-- cuerpo -->
-        <div class="modal-body">
-            <h5>Yox con Defensis es una un alimento lácteo con nuestra fórmula especial: Vitamina C y Zinc que contribuyen a reforzar el sistema de defensas consumiéndolo diariamente. Además contiene miles de probióticos que contribuyen al bienestar del cuerpo.</h5>
-            <img style="width: 15rem;" src="IMG/la-YOX-MULTIFRUTAS_F.png" alt="">
-        </div>
-
-          <!-- pie de pagina -->
-          <div class="modal-footer">
-              <button class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-          </div>
-
-      </div>
-  </div>
-  </div>
-  </div>
-</div>
-</div>
-</div>
-<!-- fin de productos lacteos -->
 
 <div class="">
   <h3>Aprovecha estos descuentos para el hogar</h3>
@@ -1549,5 +802,8 @@ echo
 
   </footer>
 </div>
+
+<script src="JS/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

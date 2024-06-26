@@ -10,7 +10,7 @@ $conex=new mysqli($server,$user,$password,$database);
 
 try{
 $con = new PDO('mysql:host=localhost;dbname='.$database, $user, $password);
-  // echo"conectado";
+  //echo"conectado";
 
 } catch(PDOException $e){
     echo "ERROR".$e->getMessage();
