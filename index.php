@@ -7,7 +7,7 @@ session_start();
 // Verifica si el usuario está autenticado
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
-    header("Location: formulario_login.php");
+    header("Location: pgindex.php");
     exit;
 }
 
@@ -508,10 +508,10 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- Empleado ini -->
 <div class="modal fade"
-            id="modaluse4"
+            id="modaluse5"
             tabindex="4"
             aria-hidden="true"
-            aria-labelledby="label-modaluse4">
+            aria-labelledby="label-modaluse5">
             <!-- caja de dialogo -->
             <div class="modal-dialog">
                 <div class="modal-content">                    
@@ -530,7 +530,7 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 
                                   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                     <li class="nav-item">
-                                      <a class="nav-link active" aria-current="page" href="#">productos Comprados</a>
+                                      <a class="nav-link active" aria-current="page" href="fun_Emp.php">productos Comprados</a>
                                     </li>
                                   </ul>
 

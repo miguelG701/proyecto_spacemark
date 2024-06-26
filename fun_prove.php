@@ -1,6 +1,12 @@
 <?php 
 include_once 'conexion.php';
-
+session_start();
+// Verifica si se ha enviado el formulario para cerrar sesión
+if (!isset($_SESSION['usuario_nombre'])) {
+    // Destruye la sesión
+    session_destroy();
+    // Redirige al usuario a pgindex.php
+    header("Location: pgindex.php");}
 function checkImage($file) {
     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
     $fileInfo = pathinfo($file['name']);
@@ -108,10 +114,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form action="" method="post" enctype="multipart/form-data">
         <h1>ingresar productos</h1>
         <input type="text" name="nombre" placeholder="nombre">
-        <input type="number" name="precio" placeholder="precio"><br><br>
-        <input type="text" name="tipo" placeholder="tipo de producto"><br><br>
-        <input type="file" name="imgs"><br><br>
-        <input type="text" name="desc" placeholder="descripcion">
+        <input type="number" name="precio" placeholder="precio"><br>
+        <input type="text" name="tipo" placeholder="tipo de producto"><br>
+        <input type="file" name="imgs"><br>
+        <textarea name="desc" placeholder="descripcion" style="height:100px;"></textarea>
         <input type="submit" name="guardar" value="agregar producto">
     </form>
 </body>

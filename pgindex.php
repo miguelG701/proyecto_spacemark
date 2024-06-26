@@ -648,7 +648,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!-- inicio -->
 <div class="row mb-5">
 <?php
- $sql_pro = "SELECT * FROM producto";
+ $sql_pro = "SELECT * FROM productos";
  $pass2 = $con->prepare($sql_pro);
  $pass2->execute();
  $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
@@ -1019,7 +1019,7 @@ echo
 <div class="row mb-5">
 <!-- inicio -->
 <?php
- $sql_pro = "SELECT * FROM producto WHERE tipologia_prod like '%lacteo%'";
+ $sql_pro = "SELECT * FROM productos WHERE tipologia_prod like '%lacteo%'";
  $pass2 = $con->prepare($sql_pro);
  $pass2->execute();
  $rest_pro = $pass2->fetchAll(PDO::FETCH_ASSOC);
