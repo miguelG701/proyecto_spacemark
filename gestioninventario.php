@@ -7,6 +7,12 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
+// Obtener categorías disponibles
+$query_categorias = "SELECT Nombre_Categoria FROM categorias";
+$statement_categorias = $con->prepare($query_categorias);
+$statement_categorias->execute();
+$categorias = $statement_categorias->fetchAll(PDO::FETCH_ASSOC);
+
 // Gestionar inventario ini
 if (isset($_POST['guardar_inventario'])) {
     $cambios = 0;
@@ -34,6 +40,12 @@ if (isset($_POST['guardar_inventario'])) {
             $statement->bindParam(':id', $id);
             $statement->execute();
         } else {
+            // Validar precios y cantidades
+            if ($producto['precio'] < 0 || $producto['cantidad'] < 0) {
+                echo "<script>alert('El precio y la cantidad no pueden ser menores a 0.'); window.location.href='gestioninventario.php';</script>";
+                exit;
+            }
+            
             // Actualizar el producto
             $query = "UPDATE productos SET 
                         Nombre = :nombre,
@@ -55,7 +67,7 @@ if (isset($_POST['guardar_inventario'])) {
         }
     }
     // Redirigir o mostrar un mensaje de éxito
-    echo "<script>alert('Inventario actualizado correctamente.'); window.location.href='index.php';</script>";
+    echo "<script>alert('Inventario actualizado correctamente.'); window.location.href='gestioninventario.php';</script>";
     exit;
 }
 // Gestionar inventario fin
@@ -115,7 +127,7 @@ if (isset($_POST['btn_buscar'])) {
         <!-- ver inventario lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-            <h1 class=" mt-5">Gestion productos</h1>
+            <h1 class="mt-5">Gestion productos</h1>
                 <div class="row justify-content-center">
                     <div class="col-5 mt-5">
                         <input type="text" name="busqueda" placeholder="Nombre o Categoría..." class="form-control" value="<?php echo htmlspecialchars($busqueda_text); ?>">
@@ -154,9 +166,13 @@ if (isset($_POST['btn_buscar'])) {
                         foreach ($inventarios as $inventario) {
                             echo "<tr>";
                             echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][nombre]' value='" . htmlspecialchars($inventario['Nombre']) . "'></td>";
-                            echo "<td><input type='number' step='0.01' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][precio]' value='" . htmlspecialchars($inventario['Precio']) . "'></td>";
-                            echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][categoria]' value='" . htmlspecialchars($inventario['Categoria']) . "'></td>";
-                            echo "<td><input type='number' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][cantidad]' value='" . htmlspecialchars($inventario['Cantidad']) . "'></td>";
+                            echo "<td><input type='number' step='0.01' min='0' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][precio]' value='" . htmlspecialchars($inventario['Precio']) . "'></td>";
+                            echo "<td><select class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][categoria]'>";
+                            foreach ($categorias as $categoria) {
+                                echo "<option value='" . htmlspecialchars($categoria['Nombre_Categoria']) . "'" . ($categoria['Nombre_Categoria'] == $inventario['Categoria'] ? ' selected' : '') . ">" . htmlspecialchars($categoria['Nombre_Categoria']) . "</option>";
+                            }
+                            echo "</select></td>";
+                            echo "<td><input type='number' min='0' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][cantidad]' value='" . htmlspecialchars($inventario['Cantidad']) . "'></td>";
                             echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][descripcion]' value='" . htmlspecialchars($inventario['Descripcion']) . "'></td>";
                             
                             echo "<td>";

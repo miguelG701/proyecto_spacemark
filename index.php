@@ -90,6 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
@@ -392,7 +393,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             <div class="list-group">
                                 <a href="soliproducto.php" class="list-group-item list-group-item-action">Ver encargos</a>
                                 <a href="mandarproducto.php" class="list-group-item list-group-item-action">Enviar Producto</a>
-                                <a href="verproductosmandados.php" class="list-group-item list-group-item-action">Productos Mandados</a>
+                                <a href="verproductosmandados.php" class="list-group-item list-group-item-action">Productos Enviados</a>
                                 <a href="productosmes.php" class="list-group-item list-group-item-action">Productos del mes</a>
                                 <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
                                 <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>

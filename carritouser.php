@@ -11,7 +11,7 @@ if (!isset($_SESSION['usuario_id'])) {
 $usuario_id = $_SESSION['usuario_id'];
 
 // Consulta para obtener el historial de ventas del usuario con el estado "En Carrito"
-$query = "SELECT hv.ID, p.Nombre as NombreProducto, hv.Cantidad, hv.Metodo_pago, hv.Total, hv.Estado
+$query = "SELECT hv.ID, p.IDP, p.Nombre as NombreProducto, hv.Cantidad, hv.Metodo_pago, hv.Total, hv.Estado
           FROM historial_ventas hv
           INNER JOIN productos p ON hv.IDP = p.IDP
           WHERE hv.id_usuario = :usuario_id AND hv.Estado = 'En Carrito'";
@@ -36,6 +36,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['finalizar_compra'])) {
         // Manejo de errores si falla la transacción
         $con->rollback();
         echo "Error al finalizar la compra: " . $e->getMessage();
+    }
+    header("Location: carritouser.php");
+    exit();
+}
+
+// Función para cancelar la compra y devolver la cantidad al stock
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
+    $id_historial = $_POST['id_historial'];
+    $cantidad = $_POST['cantidad'];
+    $id_producto = $_POST['id_producto'];
+
+    try {
+        $con->beginTransaction();
+
+        // Eliminar el registro de historial_ventas
+        $delete_query = "DELETE FROM historial_ventas WHERE ID = :id_historial";
+        $delete_statement = $con->prepare($delete_query);
+        $delete_statement->bindParam(':id_historial', $id_historial);
+        $delete_statement->execute();
+
+        // Devolver la cantidad al stock en productos
+        $update_stock_query = "UPDATE productos SET Cantidad = Cantidad + :cantidad WHERE IDP = :id_producto";
+        $update_stock_statement = $con->prepare($update_stock_query);
+        $update_stock_statement->bindParam(':cantidad', $cantidad);
+        $update_stock_statement->bindParam(':id_producto', $id_producto);
+        $update_stock_statement->execute();
+
+        $con->commit();
+    } catch (PDOException $e) {
+        // Manejo de errores si falla la transacción
+        $con->rollback();
+        echo "Error al cancelar la compra: " . $e->getMessage();
     }
     header("Location: carritouser.php");
     exit();
@@ -106,6 +138,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['finalizar_compra'])) {
                             <td>
                                 <?php if ($venta['Estado'] === 'En Carrito'): ?>
                                     <button type="submit" name="finalizar_compra" class="btn btn-primary btn-sm" onclick="return confirm('¿Estás seguro de finalizar la compra?')">Finalizar Compra</button>
+                                    <button type="submit" name="cancelar_compra" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de cancelar la compra?')" value="<?= $venta['ID'] ?>">Cancelar Compra</button>
+                                    <input type="hidden" name="id_historial" value="<?= htmlspecialchars($venta['ID']) ?>">
+                                    <input type="hidden" name="cantidad" value="<?= htmlspecialchars($venta['Cantidad']) ?>">
+                                    <input type="hidden" name="id_producto" value="<?= htmlspecialchars($venta['IDP']) ?>">
                                 <?php endif; ?>
                             </td>
                         </tr>

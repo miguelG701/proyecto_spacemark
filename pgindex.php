@@ -349,7 +349,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <div class="form-group form-text">
                                             <div id="ayuda-correo" class="form-text">
                                                 Correo Personal
-                                                <input type="text" class="form-control" name="correo" aria-describedby="ayuda-correo" placeholder="Correo" required>
+                                                <input type="email" class="form-control" name="correo" aria-describedby="ayuda-correo" placeholder="Correo" required>
                                             </div>
                                         </div>
                                     </div>

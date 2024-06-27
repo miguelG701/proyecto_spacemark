@@ -109,6 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #333; /* Cambiar el color del texto */
         }
     </style>
+    <script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
 </head>
 <body>
     <form action="" method="post" enctype="multipart/form-data">

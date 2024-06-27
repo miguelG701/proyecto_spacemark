@@ -8,6 +8,8 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
+//mensaje de error
+
 // confirmar usuarios ini
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -16,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['usuarios_aceptar']) && !empty($_POST['usuarios_aceptar'])) {
             // Obtener los IDs de usuario seleccionados para aceptar
             $usuarios_aceptar = $_POST['usuarios_aceptar'];
-  
+            
             // Actualizar el estado de aceptación y el tipo de usuario para los usuarios seleccionados
             foreach ($usuarios_aceptar as $id_usuario) {
                 $tipo_usuario = $_POST['tipo_usuario'][$id_usuario];
@@ -24,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $statement_aceptar = $con->prepare($query_aceptar);
                 $statement_aceptar->execute([':tipo_usuario' => $tipo_usuario, ':id_usuario' => $id_usuario]);
             }
+            
         }
 
         // Verificar si se han seleccionado usuarios para eliminar
@@ -34,13 +37,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Eliminar los usuarios seleccionados
             $query_eliminar = "DELETE FROM usuarios WHERE id_usuario IN (" . implode(',', $usuarios_eliminar) . ")";
             $con->query($query_eliminar);
-        }
 
+        }
         // Redirigir a alguna página después de actualizar la base de datos
-        echo "<script>alert('Confirmación exitosa.'); window.location.href='index.php';</script>";
+        echo "<script>window.location.href='aceptaruser.php';</script>"; 
         exit;
+        
+        
     }
+    
 }
+
+//mensajes de pagina2
+
 
 // confirmar usuarios fin
 
@@ -87,11 +96,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     
+
+
+
+
+
+
 <div class="container">
     <!-- confirmar registro ini -->
 
     <form id="userForm" action="" method="post">
         <div class="">
+        
         <h2 class="mb-4">Usuarios por Aceptar</h2>
             <table class="table table-dark">
                 <thead>
@@ -169,7 +185,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     });
 </script>
-
 </body>
 </html>
 

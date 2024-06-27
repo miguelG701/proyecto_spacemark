@@ -12,17 +12,28 @@ if (!isset($_SESSION['usuario_id'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_nueva_categoria'])) {
     $nueva_categoria = $_POST['nueva_categoria'];
 
-    // Insertar la nueva categoría si no existe
-    $query_insert_categoria = "INSERT INTO categorias (Nombre_Categoria) VALUES (?)";
-    $statement_insert_categoria = $con->prepare($query_insert_categoria);
-    $statement_insert_categoria->execute([$nueva_categoria]);
+    // Verificar si la categoría ya existe
+    $query_check_categoria = "SELECT COUNT(*) FROM categorias WHERE Nombre_Categoria = ?";
+    $statement_check_categoria = $con->prepare($query_check_categoria);
+    $statement_check_categoria->execute([$nueva_categoria]);
+    $categoria_existente = $statement_check_categoria->fetchColumn();
 
-    // Redirigir para recargar la página y actualizar las opciones del select
-    echo "<script>alert('Añadió la categoría de forma exitosa.'); window.location.href='mandarproducto.php';</script>";
+    if ($categoria_existente > 0) {
+        // Si la categoría ya existe, mostrar alerta y no insertar
+        echo "<script>alert('La categoría ya existe.'); window.location.href='mandarproducto.php';</script>";
+    } else {
+        // Insertar la nueva categoría si no existe
+        $query_insert_categoria = "INSERT INTO categorias (Nombre_Categoria) VALUES (?)";
+        $statement_insert_categoria = $con->prepare($query_insert_categoria);
+        $statement_insert_categoria->execute([$nueva_categoria]);
+
+        // Redirigir para recargar la página y actualizar las opciones del select
+        echo "<script>alert('Añadió la categoría de forma exitosa.'); window.location.href='mandarproducto.php';</script>";
+    }
 }
 
 // Agregar productos
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['btn_nueva_categoria'])) {
     $nombre = $_POST['nombre'];
     $precio = floatval($_POST['precio']);  // Convertir a número flotante para asegurar precisión
     $categoria = $_POST['categoria'];

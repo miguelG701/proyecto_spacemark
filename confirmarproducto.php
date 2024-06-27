@@ -36,6 +36,7 @@ if (isset($_POST['guardar_producto'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
