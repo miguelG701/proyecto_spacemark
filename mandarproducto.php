@@ -1,7 +1,7 @@
 <?php 
-
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -20,7 +20,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_nueva_categoria'])
 
     if ($categoria_existente > 0) {
         // Si la categoría ya existe, mostrar alerta y no insertar
-        echo "<script>alert('La categoría ya existe.'); window.location.href='mandarproducto.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'La categoría ya existe.',
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href='mandarproducto.php';
+                });
+              </script>";
     } else {
         // Insertar la nueva categoría si no existe
         $query_insert_categoria = "INSERT INTO categorias (Nombre_Categoria) VALUES (?)";
@@ -28,7 +37,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_nueva_categoria'])
         $statement_insert_categoria->execute([$nueva_categoria]);
 
         // Redirigir para recargar la página y actualizar las opciones del select
-        echo "<script>alert('Añadió la categoría de forma exitosa.'); window.location.href='mandarproducto.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Añadió la categoría de forma exitosa.',
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href='mandarproducto.php';
+                });
+              </script>";
     }
 }
 
@@ -43,7 +61,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['btn_nueva_categoria']
   
     // Validar que precio y cantidad no sean negativos
     if ($precio < 0 || $cantidad < 0) {
-        echo "<script>alert('El precio y la cantidad no pueden ser negativos.'); window.location.href='mandarproducto.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'El precio y la cantidad no pueden ser negativos.',
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href='mandarproducto.php';
+                });
+              </script>";
         exit;
     }
   
@@ -65,7 +92,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['btn_nueva_categoria']
     $statement_insert = $con->prepare($query_insert);
     $statement_insert->execute([$nombre, $precio, $categoria, $cantidad, $descripcion, $foto_name, $estado]);
   
-    echo "<script>alert('Añadió el producto de forma exitosa.'); window.location.href='mandarproducto.php';</script>";
+    echo "<script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Añadió el producto de forma exitosa.',
+                showConfirmButton: false,
+                timer: 2000
+            }).then(() => {
+                window.location.href='mandarproducto.php';
+            });
+          </script>";
     exit;
 }
 
@@ -86,6 +122,7 @@ $categorias = $statement_categorias->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             background-color: #212529;

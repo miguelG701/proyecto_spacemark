@@ -1,6 +1,7 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php"); // Asegúrate de incluir SweetAlert si no lo has hecho aún
 
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
@@ -22,7 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $venta = $statement->fetch(PDO::FETCH_ASSOC);
 
     if (!$venta) {
-        echo "<script>alert('Error al obtener los datos de la compra.'); window.location.href='historial_ventas.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al obtener los datos de la compra.',
+                    icon: 'error'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'historial_ventas.php';
+                    }
+                });
+              </script>";
         exit;
     }
 
@@ -38,7 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $producto = $statement->fetch(PDO::FETCH_ASSOC);
 
     if (!$producto) {
-        echo "<script>alert('Error al obtener los datos del producto.'); window.location.href='historial_ventas.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al obtener los datos del producto.',
+                    icon: 'error'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'historial_ventas.php';
+                    }
+                });
+              </script>";
         exit;
     }
 
@@ -50,7 +71,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $nueva_cantidad_stock = $cantidad_stock - $cantidad_diferencia;
 
     if ($nueva_cantidad_stock < 0) {
-        echo "<script>alert('Cantidad excede el stock disponible.'); window.location.href='historial_ventas.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Cantidad excede el stock disponible.',
+                    icon: 'error'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'historial_ventas.php';
+                    }
+                });
+              </script>";
         exit;
     }
 
@@ -77,7 +108,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
         $statement->bindParam(':id_historial', $id_historial);
         $statement->execute();
 
-        echo "<script>alert('Compra cancelada y cantidad devuelta al stock.'); window.location.href='gestionarventas.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Éxito',
+                    text: 'Compra cancelada y cantidad devuelta al stock.',
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'gestionarventas.php';
+                    }
+                });
+              </script>";
         exit;
     }
 
@@ -94,7 +135,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $statement->bindParam(':id_historial', $id_historial);
     $statement->execute();
 
-    echo "<script>alert('Historial de ventas actualizado correctamente.'); window.location.href='gestionarventas.php';</script>";
+    echo "<script>
+            Swal.fire({
+                title: 'Éxito',
+                text: 'Historial de ventas actualizado correctamente.',
+                icon: 'success'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'gestionarventas.php';
+                }
+            });
+          </script>";
     exit;
 }
 
@@ -121,7 +172,6 @@ $historial = $statement->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
@@ -217,5 +267,6 @@ $historial = $statement->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <div class="col-12 text-center">
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 <?php 
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -41,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Redirigir de nuevo a la página para ver los cambios
-    echo "<script>alert('Ejecución exitosa.'); window.location.href='solitcliente.php';</script>";
+    echo "<script>swal.fire({title:'Ejecución exitosa.',
+    icon: 'success'}).then(function(){window.location.href='index.php';});</script>";
     exit;
 }
 ?>
@@ -49,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceMark - Solicitudes de Cliente</title>

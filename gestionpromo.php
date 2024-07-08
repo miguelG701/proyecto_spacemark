@@ -1,6 +1,8 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -55,7 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Redirigir para evitar reenvío del formulario
-        echo "<script>alert('¡Promoción actualizada exitosamente!'); window.location.href='gestionpromo.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: '¡Promoción actualizada exitosamente!',
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'gestionpromo.php';
+                    }
+                });
+              </script>";
         exit;
     } elseif (isset($_POST['nueva_promocion'])) {
         // Procesar el formulario para agregar una nueva promoción
@@ -85,7 +96,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Redirigir para evitar reenvío del formulario
-        echo "<script>alert('¡Nueva promoción agregada exitosamente!'); window.location.href='gestionpromo.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: '¡Nueva promoción agregada exitosamente!',
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'gestionpromo.php';
+                    }
+                });
+              </script>";
         exit;
     }
 }
@@ -145,6 +165,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             justify-content: center;
         }
     </style>
+    <!-- Scripts de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -205,7 +227,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="form-group col-md-6">
                     <label for="Descuento">Descuento (%):</label>
-                    <input type="number" step="0.01" class="form-control" id="Descuento" name="Descuento" required>
+                    <input type="number" step="0.01" class="form-control" id="Descuento" name="Descuento" required min="0">
                 </div>
             </div>
             <div class="form-row">

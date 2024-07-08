@@ -1,27 +1,7 @@
 <?php
 include_once 'conexion.php';
-
+include_once "sweetarch.php";
 session_start();
-
-// variables de alertas ini
-$acept = false;
-
-$UsAndConFals = false;
-
-$completCampos = false;
-
-$UsOrNameIn = false;
-
-$Userrep = false;
-
-$Admincon = false;
-
-
-// variables de alertas fin
-
-
-
-// registro ini
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['registrar'])) {
@@ -42,7 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($usuario_existente) {
                 // Si el usuario ya existe, mostrar una alerta
-                $Userrep = true;
+                echo "<script>
+                swal.fire({ title:'¡ El usuario ya existe. !',
+                icon: 'warning',
+                button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
 
             } else {
                 // Si el usuario no existe, realizar la inserción en la base de datos
@@ -50,14 +33,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $query_insert = "INSERT INTO usuarios (usuario, nombre, correo_electronico, telefono, contraseña_usuario, id_tipos, aceptado) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $statement_insert = $con->prepare($query_insert);
                 $statement_insert->execute([$usuario, $nombre, $correo, $telefono, $contrasena_cifrada, $tipo_usuario, $aceptado]);
-                
-                header("Location: pgindex.php");
+                echo "<script>
+            swal.fire({ title:'¡ El usuario ha sido registrado !',
+            icon: 'success',
+            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
                 exit;
             }
-        } else {
-            // echo'<div class="alert alert-primary" role="alert">
-            //         Por favor, complete todos los campos
-            //     </div>';        
         }
     }
 }
@@ -93,13 +74,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: index.php");
                     exit;
                 } else {
-                    $acept = true;                 
+                echo "<script>
+            swal.fire({ title:'¡ El usuario no ha sido aceptado !',
+            icon: 'warning',
+            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
                 }
             } else {
-                $UsAndConFals = true;           
+                echo "<script>
+            swal.fire({ title:'¡ El usuario o contraseña son incorrectos. !',
+            icon: 'warning',
+            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";           
             }
         } else {
-            $completCampos = true;        
+            echo "<script>
+        swal.fire({ title:'¡ Por favor, complete todos los campos. !',
+        icon: 'warning',
+        button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
         }
     }
 }
@@ -125,7 +115,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verificar si el usuario es administrador
             if ($usuario_db['id_tipos'] == 1) {
                 // Si el usuario es administrador, mostrar una alerta indicando que no se puede actualizar la contraseña
-                $Admincon = true;            
+                echo "<script>
+                swal.fire({ title:'¡ El usuario que estás intentando actualizar es un administrador y no se puede cambiar la contraseña. !',
+                icon: 'warning',
+                button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
             } else {
                 // Si el usuario no es administrador, actualizar la contraseña en la base de datos para el usuario correspondiente
                 $query_update = "UPDATE usuarios SET contraseña_usuario = ? WHERE usuario = ?";
@@ -138,11 +131,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit;
             }
         } else {
-            $UsOrNameIn = true;        
+            echo "<script>
+        swal.fire ({ title:'¡ Usuario o nombre incorrectos. !',
+        icon: 'warning',
+        button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";   
         }
     }
 }
-
 
 
 ?>
@@ -164,142 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <!-- navergador primario inicio -->
 
   <!-- alertas de sesion ini  -->
-  <?php
-        if ($acept == true){
-        
-        ?>
-         <div class="alerta_posit">
-         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
-                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </symbol> -->
-            	</svg>
-            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
-                <h4 class="alert-heading">  	
-                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
-                    </svg>¡ El usuario no ha sido aceptado !
-                </h4>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <p class="mb-0"> </p>
-            </div>
-            </div>
-        <?php }
-        ?>
 
-
-
-<?php
-        if ($UsAndConFals == true){
-        
-        ?>
-         <div class="alerta_posit">
-         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
-                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </symbol> -->
-            	</svg>
-            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
-              <h4 class="alert-heading">  	
-                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
-                    </svg>¡ El usuario o contraseña son incorrectos. !
-                </h4>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <p class="mb-0"> </p>
-            </div>
-            </div>
-<?php }
-?>
-
-
-
-<?php
-        if ($completCampos == true){
-        
-        ?>
-         <div class="alerta_posit">
-         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
-                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </symbol> -->
-            	</svg>
-            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
-              <h4 class="alert-heading">  	
-                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
-                    </svg>¡ Por favor, complete todos los campos. !
-                </h4>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <p class="mb-0"> </p>
-            </div>
-            </div>
-<?php }
-?>
-
-
-<?php
-        if ($UsOrNameIn == true){
-        
-        ?>
-         <div class="alerta_posit">
-         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
-                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </symbol> -->
-            	</svg>
-            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
-              <h4 class="alert-heading">  	
-                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
-                    </svg>¡ Usuario o nombre incorrectos. !
-                </h4>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <p class="mb-0"> </p>
-            </div>
-            </div>
-<?php }
-?>
-
-<?php
-        if ($Userrep == true){
-        
-        ?>
-         <div class="alerta_posit">
-         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
-                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </symbol> -->
-            	</svg>
-            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
-              <h4 class="alert-heading">  	
-                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
-                    </svg>¡ El usuario ya existe. !
-                </h4>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <p class="mb-0"> </p>
-            </div>
-            </div>
-<?php }
-?>
-
-<?php
-        if ($Admincon == true){
-        
-        ?>
-         <div class="alerta_posit">
-         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-              <!-- <symbol id="check-circle-fill" viewBox="0 0 16 16">
-                <path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </symbol> -->
-            	</svg>
-            <div class="alert alert-success  ajuste_color_alerta  fade show alert-dismissible" role="alert">
-              <h4 class="alert-heading">  	
-                    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"  style="width: 20px; height: 20px;" ><use xlink:href="#check-circle-fill"/>
-                    </svg>¡ El usuario que estás intentando actualizar es un administrador y no se puede cambiar la contraseña. !
-                </h4>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <p class="mb-0"> </p>
-            </div>
-            </div>
-<?php }
-?>
   <!-- alertas de sesion fin  -->
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">

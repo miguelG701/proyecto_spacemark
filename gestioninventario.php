@@ -1,6 +1,8 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -26,7 +28,15 @@ if (isset($_POST['guardar_inventario'])) {
             
             $cambios++;
             if ($cambios > 1) {
-                echo "<script>alert('Solo se puede modificar un producto a la vez.'); window.location.href='gestioninventario.php';</script>";
+                echo "<script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Solo se puede modificar un producto a la vez.'
+                        }).then(() => {
+                            window.location.href='gestioninventario.php';
+                        });
+                      </script>";
                 exit;
             }
         }
@@ -42,7 +52,15 @@ if (isset($_POST['guardar_inventario'])) {
         } else {
             // Validar precios y cantidades
             if ($producto['precio'] < 0 || $producto['cantidad'] < 0) {
-                echo "<script>alert('El precio y la cantidad no pueden ser menores a 0.'); window.location.href='gestioninventario.php';</script>";
+                echo "<script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'El precio y la cantidad no pueden ser menores a 0.'
+                        }).then(() => {
+                            window.location.href='gestioninventario.php';
+                        });
+                      </script>";
                 exit;
             }
             
@@ -67,7 +85,15 @@ if (isset($_POST['guardar_inventario'])) {
         }
     }
     // Redirigir o mostrar un mensaje de éxito
-    echo "<script>alert('Inventario actualizado correctamente.'); window.location.href='gestioninventario.php';</script>";
+    echo "<script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: 'Inventario actualizado correctamente.'
+            }).then(() => {
+                window.location.href='gestioninventario.php';
+            });
+          </script>";
     exit;
 }
 // Gestionar inventario fin
@@ -87,6 +113,7 @@ if (isset($_POST['btn_buscar'])) {
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>SpaceMark</title>
     <style>
         body {
@@ -135,6 +162,7 @@ if (isset($_POST['btn_buscar'])) {
                     <div class="col-5 mt-5">
                         <button class="btn btn-primary" type="submit" name="btn_buscar">Buscar</button>
                         <a href="index.php" class="btn btn-danger">Regresar</a>
+                        <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_inventario">Guardar Cambios</button>
                     </div>
                 </div>
   

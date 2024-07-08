@@ -1,6 +1,7 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
 
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
@@ -19,19 +20,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validación del nombre (no debe contener números)
     if (preg_match('/[0-9]/', $nombre)) {
-        echo "<script>alert('El nombre no debe contener números.'); window.location.href='perfil.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El nombre no debe contener números.'
+                }).then(function() {
+                    window.location.href = 'perfil.php';
+                });
+             </script>";
         exit;
     }
 
     // Validación del correo electrónico
     if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        echo "<script>alert('Formato de correo electrónico inválido.'); window.location.href='perfil.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Formato de correo electrónico inválido.'
+                }).then(function() {
+                    window.location.href = 'perfil.php';
+                });
+             </script>";
         exit;
     }
 
     // Validación del teléfono (debe ser numérico)
     if (!ctype_digit($telefono)) {
-        echo "<script>alert('El teléfono debe contener solo números.'); window.location.href='perfil.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El teléfono debe contener solo números.'
+                }).then(function() {
+                    window.location.href = 'perfil.php';
+                });
+             </script>";
         exit;
     }
 
@@ -41,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nombreArchivo = $_FILES['foto']['name']; // Nombre original del archivo
 
         // Definir la ruta de destino para guardar el archivo (en la misma carpeta que este script PHP)
-        $rutaDestino = dirname(__FILE__) . "/" . $nombreArchivo;
+        $rutaDestino = dirname(__FILE__) . "/C:/xampp/htdocs/SpaceMark2/IMG" . $nombreArchivo;
 
         // Mover el archivo de la carpeta temporal a la carpeta definitiva
         if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
@@ -56,15 +81,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $statement->bindParam(':nombre', $nombre);
             $statement->bindParam(':correo', $correo);
             $statement->bindParam(':telefono', $telefono);
-            $statement->bindParam(':foto', $nombreArchivo); // Solo guardamos el nombre del archivo en la base de datos
+            // $statement->bindParam(':foto', $nombreArchivo); // Solo guardamos el nombre del archivo en la base de datos
             $statement->bindParam(':usuario_id', $usuario_id);
-            $statement->execute();
+            $result = $statement->execute();
 
-            // Redirigir o mostrar un mensaje de éxito
-            echo "<script>alert('Perfil actualizado correctamente.'); window.location.href='index.php';</script>";
+            if ($result) {
+                echo "<script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            text: 'Perfil actualizado correctamente.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(function() {
+                            window.location.href = 'opcionesuser.php';
+                        });
+                     </script>";
+            } else {
+                echo "<script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al actualizar el perfil.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(function() {
+                            window.location.href = 'perfil.php';
+                        });
+                     </script>";
+            }
             exit;
         } else {
-            echo "<script>alert('Error al mover el archivo.'); window.location.href='perfil.php';</script>";
+            echo "<script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al mover el archivo.'
+                    }).then(function() {
+                        window.location.href = 'perfil.php';
+                    });
+                 </script>";
             exit;
         }
     } else {
@@ -79,10 +137,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $statement->bindParam(':correo', $correo);
         $statement->bindParam(':telefono', $telefono);
         $statement->bindParam(':usuario_id', $usuario_id);
-        $statement->execute();
+        $result = $statement->execute();
 
-        // Redirigir o mostrar un mensaje de éxito
-        echo "<script>alert('Perfil actualizado correctamente.'); window.location.href='opcionesuser.php';</script>";
+        if ($result) {
+            echo "<script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Perfil actualizado correctamente.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(function() {
+                        window.location.href = 'opcionesuser.php';
+                    });
+                 </script>";
+        } else {
+            echo "<script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al actualizar el perfil.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(function() {
+                        window.location.href = 'perfil.php';
+                    });
+                 </script>";
+        }
         exit;
     }
 }
@@ -98,7 +181,6 @@ $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
@@ -150,10 +232,10 @@ $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
                 <label for="telefono">Teléfono:</label>
                 <input type="tel" class="form-control" id="telefono" name="telefono" value="<?= htmlspecialchars($usuario['telefono']) ?>" pattern="[0-9]+" title="Ingrese un número de teléfono válido (solo números)" required>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="foto">Cambiar Foto de Perfil:</label>
                 <input type="file" class="form-control-file" id="foto" name="foto">
-            </div>
+            </div> -->
             <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
         </form>
     </div>
@@ -167,6 +249,6 @@ $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
     </div>
     <!-- Scripts de Bootstrap y otros -->
     <script src="JS/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
-

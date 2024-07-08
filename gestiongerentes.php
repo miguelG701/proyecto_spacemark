@@ -1,6 +1,8 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -13,14 +15,15 @@ if (isset($_GET['search'])) {
     $searchQuery = trim($_GET['search']);
 }
 
-// Gestionar empleados ini
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['guardar_empleado'])) {
+// Gestionar proveedores ini
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['guardar_gerente'])) {
     foreach ($_POST['usuario'] as $id => $usuario) {
         $nombre = $_POST['nombre'][$id] ?? null;
         $telefono = $_POST['telefono'][$id] ?? null;
         $correo_electronico = $_POST['correo_electronico'][$id] ?? null;
         $tipo_usuario = $_POST['tipo_usuario'][$id] ?? null;
-  
+
         if ($usuario && $nombre && $telefono && $correo_electronico && $tipo_usuario) {
             $query = "UPDATE usuarios SET usuario = ?, nombre = ?, telefono = ?, correo_electronico = ?, id_tipos = ? WHERE id_usuario = ?";
             $statement = $con->prepare($query);
@@ -30,36 +33,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['guardar_empleado'])) {
             echo "Faltan datos para el usuario con ID $id";
         }
     }
-  
-    // Redirigir a la página anterior
-    echo "<script>alert('Tipos de usuarios actualizados correctamente.'); window.location.href='gestiongerentes.php';</script>";
-    exit;
+
+    // Mostrar alerta de éxito y redirigir
+    echo "<script>
+            window.onload = function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Gerentes actualizados correctamente.',
+                    onClose: () => {
+                        window.location.href = 'gestiongerentes.php';
+                    }
+                });
+            }
+          </script>";
 }
 
-// Obtener los empleados (con o sin búsqueda)
-$query_empleados = "SELECT * FROM usuarios WHERE id_tipos = 5 AND aceptado = 'si'";
+// Obtener los proveedores (con o sin búsqueda)
+$query_proveedores = "SELECT * FROM usuarios WHERE id_tipos = 5 AND aceptado = 'si'";
 if ($searchQuery) {
-    $query_empleados .= " AND (usuario LIKE :searchQuery OR nombre LIKE :searchQuery)";
+    $query_proveedores .= " AND (usuario LIKE :searchQuery OR nombre LIKE :searchQuery)";
 }
-$statement_empleados = $con->prepare($query_empleados);
+$statement_proveedores = $con->prepare($query_proveedores);
 if ($searchQuery) {
-    $statement_empleados->bindValue(':searchQuery', '%' . $searchQuery . '%');
+    $statement_proveedores->bindValue(':searchQuery', '%' . $searchQuery . '%');
 }
-$statement_empleados->execute();
-$empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
+$statement_proveedores->execute();
+$proveedores = $statement_proveedores->fetchAll(PDO::FETCH_ASSOC);
 
+// Inicializar $proveedores si está vacío
+if (!$proveedores) {
+    $proveedores = array();
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
+
+    <!-- Incluir SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             background-color: #212529;
@@ -97,6 +117,10 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
             background-color: #dc3545;
             color: #ffffff;
         }
+        .btn-regresar {
+            margin-top: 20px; /* Espacio superior */
+            margin-bottom: 20px; /* Espacio inferior */
+        }
     </style>
 </head>
 <body>
@@ -104,24 +128,26 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
         <!-- Formulario de búsqueda -->
         <form method="GET" action="">
             <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                </div>
                 <input type="text" class="form-control" id="search" name="search" placeholder="Nombre o usuario" value="<?php echo htmlspecialchars($searchQuery); ?>" aria-label="Buscar" aria-describedby="search-label">
                 <div class="input-group-append">
                     <button type="submit" class="btn btn-outline-danger">Buscar</button>
                 </div>
             </div>
         </form>
-            <!-- Botón de regresar -->
-    <div class="row mt-3">
-        <div class="col-12 text-center">
-            <a href="index.php" class="btn btn-danger">Regresar</a>
-        </div>
-    </div>
-    
 
-        <!-- ver Empleados lista ini -->
+        <!-- Botón de regresar -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <a href="index.php" class="btn btn-danger btn-regresar">Regresar</a>
+            </div>
+        </div>
+
+        <!-- ver proveedores lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-                <h2 class="mb-4">Gestión de Gerentes </h2>
+                <h2 class="mb-4">Gestión de Gerentes</h2>
                 <table class="table table-dark">
                     <thead>
                         <tr>
@@ -135,22 +161,22 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php
-                        // Mostrar en la tabla Empleados aceptados
+                        // Mostrar en la tabla proveedor aceptados
                         $numero = 1;
-                        foreach ($empleados as $empleado) {
+                        foreach ($proveedores as $proveedor) {
                             echo "<tr>";
                             echo "<td>" . $numero++ . "</td>";
-                            echo "<td><input type='text' class='form-control' name='usuario[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['usuario']) . "' readonly></td>";
-                            echo "<td><input type='text' class='form-control' name='nombre[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['nombre']) . "' readonly></td>";
-                            echo "<td><input type='text' class='form-control' name='telefono[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['telefono']) . "'></td>";
-                            echo "<td><input type='email' class='form-control' name='correo_electronico[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['correo_electronico']) . "'></td>";
+                            echo "<td><input type='text' class='form-control' name='usuario[" . htmlspecialchars($proveedor['id_usuario']) . "]' value='" . htmlspecialchars($proveedor['usuario']) . "' readonly ></td>";
+                            echo "<td><input type='text' class='form-control' name='nombre[" . htmlspecialchars($proveedor['id_usuario']) . "]' value='" . htmlspecialchars($proveedor['nombre']) . "' readonly ></td>";
+                            echo "<td><input type='text' class='form-control' name='telefono[" . htmlspecialchars($proveedor['id_usuario']) . "]' value='" . htmlspecialchars($proveedor['telefono']) . "'></td>";
+                            echo "<td><input type='email' class='form-control' name='correo_electronico[" . htmlspecialchars($proveedor['id_usuario']) . "]' value='" . htmlspecialchars($proveedor['correo_electronico']) . "'></td>";
                             echo "<td>";
-                            echo "<select name='tipo_usuario[" . htmlspecialchars($empleado['id_usuario']) . "]' class='form-control'>";
-                            echo "<option value='1'" . ($empleado['id_tipos'] == 1 ? ' selected' : '') . ">Administrador</option>";
-                            echo "<option value='2'" . ($empleado['id_tipos'] == 2 ? ' selected' : '') . ">Cliente</option>";
-                            echo "<option value='3'" . ($empleado['id_tipos'] == 3 ? ' selected' : '') . ">Proveedor</option>";
-                            echo "<option value='4'" . ($empleado['id_tipos'] == 4 ? ' selected' : '') . ">Empleado</option>";
-                            echo "<option value='5'" . ($empleado['id_tipos'] == 5 ? ' selected' : '') . ">Gerente</option>";
+                            echo "<select name='tipo_usuario[" . htmlspecialchars($proveedor['id_usuario']) . "]' class='form-control'>";
+                            echo "<option value='1'" . ($proveedor['id_tipos'] == 1 ? ' selected' : '') . ">Administrador</option>";
+                            echo "<option value='2'" . ($proveedor['id_tipos'] == 2 ? ' selected' : '') . ">Cliente</option>";
+                            echo "<option value='3'" . ($proveedor['id_tipos'] == 3 ? ' selected' : '') . ">Proveedor</option>";
+                            echo "<option value='4'" . ($proveedor['id_tipos'] == 4 ? ' selected' : '') . ">Empleado</option>";
+                            echo "<option value='5'" . ($proveedor['id_tipos'] == 5 ? ' selected' : '') . ">Gerente</option>";
                             echo "</select>";
                             echo "</td>";
                             echo "</tr>";
@@ -160,13 +186,16 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_empleado">Guardar Cambios</button>
+                <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_gerente">Guardar Cambios</button>
             </div>
         </form>
 
-        <!-- ver Empleados lista fin -->
+        <!-- ver proveedores lista fin -->
     </div>
 
-
+    <!-- Incluir SweetAlert script -->
+    <script>
+        // Tu script de SweetAlert aquí si es necesario
+    </script>
 </body>
 </html>

@@ -1,24 +1,27 @@
 <?php 
-
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
     exit;
 }
 
-//mensaje de error
-
-// confirmar usuarios ini
+// Variable para almacenar el mensaje de éxito o error
+$alert_message = '';
+$alert_type = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['guardar'])) {
+        $success = false;
+
         // Verificar si se han seleccionado usuarios para aceptar
         if (isset($_POST['usuarios_aceptar']) && !empty($_POST['usuarios_aceptar'])) {
             // Obtener los IDs de usuario seleccionados para aceptar
             $usuarios_aceptar = $_POST['usuarios_aceptar'];
-            
+  
             // Actualizar el estado de aceptación y el tipo de usuario para los usuarios seleccionados
             foreach ($usuarios_aceptar as $id_usuario) {
                 $tipo_usuario = $_POST['tipo_usuario'][$id_usuario];
@@ -26,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $statement_aceptar = $con->prepare($query_aceptar);
                 $statement_aceptar->execute([':tipo_usuario' => $tipo_usuario, ':id_usuario' => $id_usuario]);
             }
-            
+            $success = true;
         }
 
         // Verificar si se han seleccionado usuarios para eliminar
@@ -37,24 +40,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Eliminar los usuarios seleccionados
             $query_eliminar = "DELETE FROM usuarios WHERE id_usuario IN (" . implode(',', $usuarios_eliminar) . ")";
             $con->query($query_eliminar);
-
+            $success = true;
         }
-        // Redirigir a alguna página después de actualizar la base de datos
-        echo "<script>window.location.href='aceptaruser.php';</script>"; 
+
+        if ($success) {
+            $alert_message = 'La operación se realizó correctamente.';
+            $alert_type = 'success';
+        } else {
+            $alert_message = 'No se seleccionaron usuarios para aceptar o eliminar.';
+            $alert_type = 'error';
+        }
+
+        // Redirigir a la misma página para mostrar la alerta
+        echo "<script>
+            window.location.href = 'aceptaruser.php?message=" . $alert_message . "&type=" . $alert_type . "';
+        </script>";
         exit;
-        
-        
     }
-    
 }
 
-//mensajes de pagina2
-
-
-// confirmar usuarios fin
-
+if (isset($_GET['message']) && isset($_GET['type'])) {
+    $alert_message = $_GET['message'];
+    $alert_type = $_GET['type'];
+}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -96,18 +105,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     
-
-
-
-
-
-
 <div class="container">
+    <!-- Mostrar alerta SweetAlert si hay un mensaje -->
+    <?php if (!empty($alert_message)): ?>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script>
+            swal({
+                title: "<?= $alert_message ?>",
+                icon: "<?= $alert_type ?>"
+            });
+        </script>
+    <?php endif; ?>
+
     <!-- confirmar registro ini -->
 
     <form id="userForm" action="" method="post">
         <div class="">
-        
         <h2 class="mb-4">Usuarios por Aceptar</h2>
             <table class="table table-dark">
                 <thead>
@@ -174,17 +187,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </div>
 
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
     document.getElementById('userForm').addEventListener('submit', function(event) {
         let aceptarCheckboxes = document.querySelectorAll('input[name="usuarios_aceptar[]"]:checked');
         let eliminarCheckboxes = document.querySelectorAll('input[name="usuarios_eliminar[]"]:checked');
 
         if (aceptarCheckboxes.length === 0 && eliminarCheckboxes.length === 0) {
-            alert('Por favor, selecciona al menos uno de los checkboxes.');
             event.preventDefault(); // Previene el envío del formulario
+            swal({
+                title: 'Error',
+                text: 'Por favor, selecciona al menos uno de los checkboxes.',
+                icon: 'error'
+            });
         }
     });
 </script>
+
 </body>
 </html>
-

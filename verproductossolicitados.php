@@ -1,6 +1,8 @@
 <?php 
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -18,7 +20,7 @@ $query = "SELECT s.id_solicitud, s.nombre, s.categoria, s.cantidad, s.descripcio
 
 $statement = $con->prepare($query);
 $statement->execute();
-$solicitudes = $statement->fetchAll();
+$solicitudes = $statement->fetchAll(PDO::FETCH_ASSOC); // Asegurarse de que fetchAll devuelva un array asociativo
 
 // Procesar la actualización o eliminación de solicitudes
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['solicitud_id'])) {
@@ -30,15 +32,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['solicitud_id'])) {
         $query_delete = "DELETE FROM solicitudes WHERE id_solicitud = ?";
         $statement_delete = $con->prepare($query_delete);
         $statement_delete->execute([$solicitud_id]);
+        $message = 'Solicitud eliminada.';
     } else {
         // Actualizar el estado de la solicitud
         $query_update = "UPDATE solicitudes SET estado = ? WHERE id_solicitud = ?";
         $statement_update = $con->prepare($query_update);
         $statement_update->execute([$nuevo_estado, $solicitud_id]);
+        $message = 'Estado de solicitud actualizado.';
     }
 
-    // Recargar la página para reflejar los cambios
-    echo "<script>alert('Estado de solicitud actualizado.'); window.location.href='verproductossolicitados.php';</script>";
+    // Redirigir con un mensaje de SweetAlert
+    echo "<script>
+            Swal.fire({
+                title: 'Éxito',
+                text: '$message',
+                icon: 'success'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'verproductossolicitados.php';
+                }
+            });
+          </script>";
     exit;
 }
 ?>
@@ -46,7 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['solicitud_id'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceMark - Solicitudes de Productos</title>
@@ -59,6 +72,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['solicitud_id'])) {
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
         }
     </style>
+    <!-- Scripts de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">

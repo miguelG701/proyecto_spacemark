@@ -1,25 +1,7 @@
 <?php
 session_start();
+include_once("sweetarch.php");
 
-$mensaje1=false;
-$mensaje2=false;
-$mensaje3=false;
-
-?>
-
- <!DOCTYPE html>
- <html lang="en">
- <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
- </head>
- <body>
- </body>
- </html>
-
-<?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['id_producto'], $_POST['id_usuario'], $_POST['cantidad'], $_POST['metodo_pago'], $_POST['accion'])) {
         include_once "conexion.php";
@@ -70,86 +52,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $con->commit();
 
                 $mensaje = ($accion == 'carrito') ? 'Producto añadido al carrito.' : 'Compra realizada con éxito.';
-                echo "<script>alert('$mensaje'); window.location.href='index.php';</script>";
+                echo "<script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            text: '$mensaje',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(function() {
+                            window.location.href = 'index.php';
+                        });
+                      </script>";
             } catch (PDOException $e) {
                 $con->rollback();
-                echo "Error al procesar la operación: " . $e->getMessage();
+                echo "<script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al procesar la operación.'
+                        }).then(function() {
+                            window.location.href = 'index.php';
+                        });
+                      </script>";
             }
         } else {
-            // $mensaje1 = true;window.location.href='index.php';
             echo "<script>
-            swal({ title:'Error',
-            text:'La cantidad seleccionada supera la cantidad disponible en el stock... o Es menor a 1 Por favor, selecciona una cantidad valida.',
-            icon: 'error',
-            button: 'Ok'}).then(function(){window.location.href='index.php';});   
-            
-            </script>";
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La cantidad seleccionada supera la cantidad disponible en el stock o es menor a 1. Por favor, selecciona una cantidad válida.'
+                    }).then(function() {
+                        window.location.href = 'index.php';
+                    });
+                  </script>";
         }
     } else {
-        // $mensaje2 = true;
-        echo "Error: Faltan datos necesarios para procesar la operación.";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Faltan datos necesarios para procesar la operación.'
+                }).then(function() {
+                    window.location.href = 'index.php';
+                });
+              </script>";
     }
 } else {
-    // $mensaje3 = true;
-    echo "<script src='sweetalert2.all.min.js' > swal('Compra exitosa.'); window.location.href='index.php';</script>";
+    echo "<script>alert('Compra exitosa.'); window.location.href='index.php';</script>";
     exit;
 }
 ?>
-<?php
-// if ($mensaje1 == true) {
-//     echo '<div class="alerta_posit">';
-//     echo '<svg xmlns="http://www.w3.org/2000/svg" class="d-none">';
-//     // echo '<symbol id="check-circle-fill" viewBox="0 0 16 16">';
-//     // echo '<path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>';
-//     // echo '</symbol>';
-//     echo '</svg>';
-//     echo '<div class="alert alert-success ajuste_color_alerta fade show alert-dismissible" role="alert">';
-//     echo '<h4 class="alert-heading">';
-//     echo '<svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:" style="width: 20px; height: 20px;">';
-//     echo '<use xlink:href="#check-circle-fill"/>';
-//     echo '</svg>';
-//     echo '¡La cantidad seleccionada supera la cantidad disponible en el stock...<br> o Es menor a 1 Por favor, selecciona una cantidad valida. !';
-//     echo '</h4>';
-//     echo '<button name="cerrar" onclick="redirigir()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-//     echo '<p class="mb-0"> </p>';
-//     echo '</div>';
-//     echo '</div>';
-// }
-// if ($mensaje2 == true) {
-//     echo '<div class="alerta_posit">';
-//     echo '<svg xmlns="http://www.w3.org/2000/svg" class="d-none">';
-//     // echo '<symbol id="check-circle-fill" viewBox="0 0 16 16">';
-//     // echo '<path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>';
-//     // echo '</symbol>';
-//     echo '</svg>';
-//     echo '<div class="alert alert-success ajuste_color_alerta fade show alert-dismissible" role="alert">';
-//     echo '<h4 class="alert-heading">';
-//     echo '<svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:" style="width: 20px; height: 20px;">';
-//     echo '<use xlink:href="#check-circle-fill"/>';
-//     echo '</svg>';
-//     echo 'Error: Faltan datos necesarios para procesar la operación.';
-//     echo '</h4>';
-//     echo '<button name="cerrar" onclick="redirigir()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-//     echo '<p class="mb-0"> </p>';
-//     echo '</div>';
-//     echo '</div>';
-// }
-// if ($mensaje3 == true) {
-//     echo '<div class="alerta_posit">';
-//     echo '<svg xmlns="http://www.w3.org/2000/svg" class="d-none">';
-//     // echo '<symbol id="check-circle-fill" viewBox="0 0 16 16">';
-//     // echo '<path fill="green" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>';
-//     // echo '</symbol>';
-//     echo '</svg>';
-//     echo '<div class="alert alert-success ajuste_color_alerta fade show alert-dismissible" role="alert">';
-//     echo '<h4 class="alert-heading">';
-//     echo '<svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:" style="width: 20px; height: 20px;">';
-//     echo '<use xlink:href="#check-circle-fill"/>';
-//     echo '</svg>';
-//     echo 'Compra exitosa.';
-//     echo '</h4>';
-//     echo '<button name="cerrar" onclick="redirigir()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-//     echo '<p class="mb-0"> </p>';
-//     echo '</div>';
-//     echo '</div>';
-// }?>

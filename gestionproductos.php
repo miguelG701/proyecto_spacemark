@@ -1,6 +1,7 @@
 <?php 
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php"); // Asegúrate de incluir SweetAlert si no lo has hecho aún
 
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
@@ -33,9 +34,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $statement->bindParam(':id_producto', $id_producto);
 
     if ($statement->execute()) {
-        echo "<script>alert('Producto actualizado correctamente.'); window.location.href='gestionproductos.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Éxito',
+                    text: 'Producto actualizado correctamente.',
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'gestionproductos.php';
+                    }
+                });
+              </script>";
     } else {
-        echo "<script>alert('Error al actualizar el producto.'); window.location.href='index.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al actualizar el producto.',
+                    icon: 'error'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'index.php';
+                    }
+                });
+              </script>";
     }
     exit;
 }
@@ -57,7 +78,6 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceMark</title>
@@ -70,6 +90,8 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
         }
     </style>
+    <!-- Script de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -124,7 +146,6 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </form>
     </div>
-    <div class="col-12 text-center"></div>
     <!-- Scripts de Bootstrap y otros -->
     <script src="JS/bootstrap.bundle.min.js"></script>
     <script>
@@ -132,7 +153,11 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
             const inputs = document.querySelectorAll('input[type="number"]');
             for (let input of inputs) {
                 if (input.value < 0) {
-                    alert('El precio no puede ser negativo.');
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'El precio no puede ser negativo.',
+                        icon: 'error'
+                    });
                     return false;
                 }
             }
@@ -141,4 +166,3 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
     </script>
 </body>
 </html>
-

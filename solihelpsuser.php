@@ -1,6 +1,7 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
 
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
@@ -16,7 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validar que el nombre no esté vacío
     if (empty($nombre)) {
-        echo "<script>alert('El campo nombre es obligatorio.'); window.location.href='index.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El campo nombre es obligatorio.'
+                }).then(function() {
+                    window.location.href = 'index.php';
+                });
+              </script>";
         exit;
     }
 
@@ -29,9 +38,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $statement->bindParam(':id_usuario', $id_usuario);
 
     if ($statement->execute()) {
-        echo "<script>alert('Solicitud enviada correctamente.'); window.location.href='index.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Solicitud enviada correctamente.',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(function() {
+                    window.location.href = 'index.php';
+                });
+              </script>";
     } else {
-        echo "<script>alert('Error al enviar la solicitud.'); window.location.href='index.php';</script>";
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al enviar la solicitud.'
+                }).then(function() {
+                    window.location.href = 'index.php';
+                });
+              </script>";
     }
 }
 ?>
@@ -39,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceMark</title>
@@ -85,5 +112,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Scripts de Bootstrap y otros -->
     <script src="JS/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -32,8 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['guardar_empleado'])) {
     }
   
     // Redirigir a la página anterior
-    echo "<script>alert('Tipos de usuarios actualizados correctamente.'); window.location.href='gestionempleados.php';</script>";
-    exit;
+    echo "<script>
+            window.onload = function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Empleados actualizados correctamente.',
+                    onClose: () => {
+                        window.location.href = 'gestionempleados.php';
+                    }
+                });
+            }
+          </script>";
 }
 
 // Obtener los empleados (con o sin búsqueda)
@@ -53,14 +65,16 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
-    <style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
         body {
             background-color: #212529;
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */

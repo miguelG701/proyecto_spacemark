@@ -1,6 +1,8 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -32,9 +34,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['guardar_proveedores'])
         }
     }
 
-    // Redirigir a la página anterior
-    echo "<script>alert('Proveedores actualizados correctamente.'); window.location.href='gestionproveedores.php';</script>";
-    exit;
+    // Mostrar alerta de éxito y redirigir
+    echo "<script>
+            window.onload = function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Proveedores actualizados correctamente.',
+                    onClose: () => {
+                        window.location.href = 'gestionproveedores.php';
+                    }
+                });
+            }
+          </script>";
 }
 
 // Obtener los proveedores (con o sin búsqueda)
@@ -48,20 +60,26 @@ if ($searchQuery) {
 }
 $statement_proveedores->execute();
 $proveedores = $statement_proveedores->fetchAll(PDO::FETCH_ASSOC);
+
+// Inicializar $proveedores si está vacío
+if (!$proveedores) {
+    $proveedores = array();
+}
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
+
+    <!-- Incluir SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             background-color: #212529;
@@ -108,18 +126,19 @@ $proveedores = $statement_proveedores->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="container">
         <!-- Formulario de búsqueda -->
-         
         <form method="GET" action="">
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-        </div>
-        <input type="text" class="form-control" id="search" name="search" placeholder="Nombre o usuario" value="<?php echo htmlspecialchars($searchQuery); ?>" aria-label="Buscar" aria-describedby="search-label">
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-outline-danger">Buscar</button>
-        </div>
-    </div>
-</form>
-<div class="row">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                </div>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Nombre o usuario" value="<?php echo htmlspecialchars($searchQuery); ?>" aria-label="Buscar" aria-describedby="search-label">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-danger">Buscar</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Botón de regresar -->
+        <div class="row">
             <div class="col-12 text-center">
                 <a href="index.php" class="btn btn-danger btn-regresar">Regresar</a>
             </div>
@@ -173,6 +192,10 @@ $proveedores = $statement_proveedores->fetchAll(PDO::FETCH_ASSOC);
 
         <!-- ver proveedores lista fin -->
     </div>
-    
+
+    <!-- Incluir SweetAlert script -->
+    <script>
+        // Tu script de SweetAlert aquí si es necesario
+    </script>
 </body>
 </html>

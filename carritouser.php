@@ -1,6 +1,7 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
 
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
@@ -32,13 +33,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['finalizar_compra'])) {
         $update_statement->execute();
 
         $con->commit();
+
+        echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Compra Finalizada',
+                    text: 'Tu compra ha sido finalizada exitosamente.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'carritouser.php';
+                    }
+                });
+              </script>";
     } catch (PDOException $e) {
         // Manejo de errores si falla la transacción
         $con->rollback();
-        echo "Error al finalizar la compra: " . $e->getMessage();
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al finalizar la compra: " . $e->getMessage() . "',
+                    confirmButtonText: 'OK'
+                });
+              </script>";
     }
-    header("Location: carritouser.php");
-    exit();
 }
 
 // Función para cancelar la compra y devolver la cantidad al stock
@@ -64,13 +83,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
         $update_stock_statement->execute();
 
         $con->commit();
+
+        echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Compra Cancelada',
+                    text: 'Tu compra ha sido cancelada exitosamente.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'carritouser.php';
+                    }
+                });
+              </script>";
     } catch (PDOException $e) {
         // Manejo de errores si falla la transacción
         $con->rollback();
-        echo "Error al cancelar la compra: " . $e->getMessage();
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al cancelar la compra: " . $e->getMessage() . "',
+                    confirmButtonText: 'OK'
+                });
+              </script>";
     }
-    header("Location: carritouser.php");
-    exit();
 }
 ?>
 
@@ -82,6 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>SpaceMark - Carrito de Compras</title>
     <style>
         body {

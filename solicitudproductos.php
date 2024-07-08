@@ -1,6 +1,8 @@
 <?php
 include_once 'conexion.php';
 session_start();
+include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
@@ -27,7 +29,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validar que la cantidad no sea negativa
     if ($cantidad < 0) {
-        echo "<script>alert('La cantidad no puede ser negativa.'); window.history.back();</script>";
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'La cantidad no puede ser negativa.',
+                    icon: 'error'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.history.back();
+                    }
+                });
+              </script>";
         exit;
     }
 
@@ -38,14 +50,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $statement_insert->execute([$nombre, $categoria, $cantidad, $descripcion, $estado, $id_usuario]);
 
     // Redirigir a una página de confirmación o a donde sea necesario
-    echo "<script>alert('Solicitud enviada.'); window.location.href='solicitudproductos.php';</script>";
+    echo "<script>
+            Swal.fire({
+                title: 'Solicitud enviada',
+                icon: 'success'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'solicitudproductos.php';
+                }
+            });
+          </script>";
     exit;
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceMark</title>
@@ -58,6 +78,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
         }
     </style>
+    <!-- Scripts de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -104,7 +126,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function validateForm() {
             const cantidad = document.getElementById('cantidad').value;
             if (cantidad < 0) {
-                alert('La cantidad no puede ser negativa.');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'La cantidad no puede ser negativa.',
+                    icon: 'error'
+                });
                 return false;
             }
             return true;
