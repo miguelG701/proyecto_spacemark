@@ -4,7 +4,6 @@ session_start();
 include_once("sweetarch.php");
 
 if (!isset($_SESSION['usuario_id'])) {
-    // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
     exit;
 }
@@ -26,8 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['finalizar_compra'])) {
     try {
         $con->beginTransaction();
 
-        // Actualizar el estado de los productos en el carrito a "Pendiente"
-        $update_query = "UPDATE historial_ventas SET Estado = 'Pendiente' WHERE id_usuario = :usuario_id AND Estado = 'En Carrito'";
+        // Actualizar el estado de los productos en el carrito a "Pendiente" y la fecha a current_timestamp()
+        $update_query = "UPDATE historial_ventas SET Estado = 'Pendiente', Fecha = current_timestamp() WHERE id_usuario = :usuario_id AND Estado = 'En Carrito'";
         $update_statement = $con->prepare($update_query);
         $update_statement->bindParam(':usuario_id', $usuario_id);
         $update_statement->execute();
@@ -47,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['finalizar_compra'])) {
                 });
               </script>";
     } catch (PDOException $e) {
-        // Manejo de errores si falla la transacción
         $con->rollback();
         echo "<script>
                 Swal.fire({
@@ -97,7 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
                 });
               </script>";
     } catch (PDOException $e) {
-        // Manejo de errores si falla la transacción
         $con->rollback();
         echo "<script>
                 Swal.fire({
@@ -124,21 +121,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
     <style>
         body {
             background-color: #212529;
-            color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
-            padding-top: 20px; /* Espaciado superior */
+            color: #ffffff;
+            padding-top: 20px;
         }
         .container {
-            background-color: #343a40; /* Fondo oscuro para el contenedor */
-            color: #ffffff; /* Texto blanco */
-            padding: 20px; /* Espaciado interior */
-            border-radius: 10px; /* Bordes redondeados para el contenedor */
-            margin-top: 20px; /* Margen superior */
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
         }
         .table-dark {
-            background-color: #343a40; /* Color de fondo oscuro para la tabla */
-            color: #ffffff; /* Texto blanco */
-            border-radius: 10px; /* Bordes redondeados para la tabla */
-            margin-top: 20px; /* Margen superior */
+            background-color: #343a40;
+            color: #ffffff;
+            border-radius: 10px;
+            margin-top: 20px;
         }
         .btn-danger {
             background-color: #dc3545;

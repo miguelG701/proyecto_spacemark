@@ -259,6 +259,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="gestionempleados.php" class="list-group-item list-group-item-action">Gestión de Empleados</a>
                                 <a href="listaproducto.php" class="list-group-item list-group-item-action">Lista de Productos</a>
                                 <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
                                 <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
                             </div>
@@ -356,6 +357,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="opcionesuser.php" class="list-group-item list-group-item-action">Opiniones de perfil</a>
                                 <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
                                 <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
+                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
                                 <a href="solihelpsuser.php" class="list-group-item list-group-item-action">Solicitud de ayuda</a>
                                 <a href="soliprogreso.php" class="list-group-item list-group-item-action">Progreso de la solicitud</a>
                             </div>
@@ -395,6 +397,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="verproductosmandados.php" class="list-group-item list-group-item-action">Productos Enviados</a>
                                 <a href="productosmes.php" class="list-group-item list-group-item-action">Productos del mes</a>
                                 <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
                                 <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
                             </div>
@@ -430,6 +433,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="gestionarventas.php" class="list-group-item list-group-item-action">Gestionar ventas</a>
                                 <a href="solitcliente.php" class="list-group-item list-group-item-action">Ver solicitudes de clientes</a>
                                 <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
                                 <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
                             </div>
@@ -476,6 +480,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="gestionempleados.php" class="list-group-item list-group-item-action">Gestion de Empleados</a>
                                 <a href="listaproducto.php" class="list-group-item list-group-item-action">Lista de productos</a>
                                 <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
+                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
                                 <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
 
                             </div>
