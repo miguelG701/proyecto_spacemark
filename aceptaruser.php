@@ -121,7 +121,9 @@ if (isset($_GET['message']) && isset($_GET['type'])) {
 
     <form id="userForm" action="" method="post">
         <div class="">
-        <h2 class="mb-4">Usuarios por Aceptar</h2>
+            
+        <h2 class="mb-4"><img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Usuarios por Aceptar</h2>
             <table class="table table-dark">
                 <thead>
                     <tr>
@@ -201,6 +203,23 @@ if (isset($_GET['message']) && isset($_GET['type'])) {
                 icon: 'error'
             });
         }
+    });
+
+    // Asegurar que solo se pueda seleccionar una opción (aceptar o eliminar) por usuario
+    document.querySelectorAll('input[name="usuarios_aceptar[]"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            let id_usuario = this.value;
+            let eliminarCheckbox = document.querySelector('input[name="usuarios_eliminar[]"][value="' + id_usuario + '"]');
+            eliminarCheckbox.checked = false;
+        });
+    });
+
+    document.querySelectorAll('input[name="usuarios_eliminar[]"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            let id_usuario = this.value;
+            let aceptarCheckbox = document.querySelector('input[name="usuarios_aceptar[]"][value="' + id_usuario + '"]');
+            aceptarCheckbox.checked = false;
+        });
     });
 </script>
 

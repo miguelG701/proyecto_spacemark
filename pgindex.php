@@ -29,23 +29,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             } else {
                 // Si el usuario no existe, realizar la inserción en la base de datos
-                $aceptado = "no"; // Por defecto, se establece en "no"
+                $aceptado = ($tipo_usuario == 2) ? "si" : "no"; // Si es cliente (id_tipos = 2), aceptado por defecto "si"
                 $query_insert = "INSERT INTO usuarios (usuario, nombre, correo_electronico, telefono, contraseña_usuario, id_tipos, aceptado) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $statement_insert = $con->prepare($query_insert);
                 $statement_insert->execute([$usuario, $nombre, $correo, $telefono, $contrasena_cifrada, $tipo_usuario, $aceptado]);
                 echo "<script>
-            swal.fire({ title:'¡ El usuario ha sido registrado !',
-            icon: 'success',
-            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
+                swal.fire({ title:'¡ El usuario ha sido registrado !',
+                icon: 'success',
+                button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
                 exit;
             }
         }
     }
 }
-// registro fin
-
-
-
 
 // Inicio de sesión
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -54,7 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usuario = $_POST['usuario'];
             $contrasena = $_POST['contrasena'];
             $contrasena_cifrada2= sha1($contrasena);
-
 
             // Consulta para obtener el usuario de la base de datos
             $query = "SELECT * FROM usuarios WHERE usuario = ?";
@@ -75,27 +70,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     exit;
                 } else {
                 echo "<script>
-            swal.fire({ title:'¡ El usuario no ha sido aceptado !',
-            icon: 'warning',
-            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
+                swal.fire({ title:'¡ El usuario no ha sido aceptado !',
+                icon: 'warning',
+                button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
                 }
             } else {
                 echo "<script>
-            swal.fire({ title:'¡ El usuario o contraseña son incorrectos. !',
-            icon: 'warning',
-            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";           
+                swal.fire({ title:'¡ El usuario o contraseña son incorrectos. !',
+                icon: 'warning',
+                button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";           
             }
         } else {
             echo "<script>
-        swal.fire({ title:'¡ Por favor, complete todos los campos. !',
-        icon: 'warning',
-        button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
+            swal.fire({ title:'¡ Por favor, complete todos los campos. !',
+            icon: 'warning',
+            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";
         }
     }
 }
-
-
-
 
 // Verificar si se envió el formulario para enviar el código de recuperación y guardar contraseña o actualizar
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -126,20 +118,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $statement_update->execute([$contrasena_cifrada3, $usuario]);
 
                 // Redirigir a alguna página después de guardar la contraseña
-                // Esto es opcional, puedes redirigir a donde desees
                 header("Location: pgindex.php");
                 exit;
             }
         } else {
             echo "<script>
-        swal.fire ({ title:'¡ Usuario o nombre incorrectos. !',
-        icon: 'warning',
-        button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";   
+            swal.fire ({ title:'¡ Usuario o nombre incorrectos. !',
+            icon: 'warning',
+            button: 'Aceptar'}).then(function(){window.location.href='pgindex.php';});</script>";   
         }
     }
 }
-
-
 ?>
 
 
@@ -164,6 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
+        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
           <a class="navbar-brand" href="#">SpaceMark</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -171,23 +161,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             </ul>
-            <form class="d-flex m-2" role="search">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Descubrir</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Lista de compras</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Categorias</a>
-                </li>
-              </ul>
-            </form>
+
 
 
             <!-- registro -->
-            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalreg0">Registro</button>
+            <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalreg0">Registro</button>
             <div class="modal fade"
             id="modalreg0"
             tabindex="1"
@@ -200,6 +178,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="modal-body">
                     <form action="" method="post">
                             <div class="modal-body">
+                            <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                                 <div class="form-text text-center"><u>Registro</u></div>
                                 <div class="mt-3">
                                     <div class="row mb-3">
@@ -248,7 +229,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <div class="form-check">
                                       <input class="form-check-input" type="checkbox" name="terminos" required>
                                         <label class="text-white opacity-75 form-check-label" for="terminos">
-                                            Acepta los términos y condiciones
+                                            Acepta los términos y condiciones.
+                                            <p>Consentimiento de Cookies. Al continuar navegando en Spacemark, aceptas el uso de cookies de acuerdo con nuestra política de cookies.</p>
+                                            <div class="nav-item"><a href="CondicionesUso.php" class="nav-link px-2 text-body-secondary"><u>Condiciones de uso</u></a></div>
+
                                         </label>
                                       </div>
                                     </div>
@@ -278,22 +262,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container-fluid">
 
 <!-- buscador ini -->
+<!-- Buscador con filtro de categoría -->
 <div class="collapse navbar-collapse mb-3" id="navbarSupportedContent">
-  <div class="col-5">
-    <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
-  </div>  
-    <button id="search-button" class="btn btn-outline-danger m-1" type="submit">Buscar</button>
+  <div class="row w-100">
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
+      <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
+      <select id="category-select" class="form-control m-1">
+        <option value="">Todas las Categorías</option>
+        <!-- Las categorías se llenan dinámicamente desde el backend -->
+        <?php
+        // Consulta para obtener las categorías
+        $query_categorias = "SELECT DISTINCT Categoria FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
+        $stmt_categorias = $con->prepare($query_categorias);
+        $stmt_categorias->execute();
+        $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($categorias as $categoria) {
+            echo "<option value='" . htmlspecialchars($categoria['Categoria']) . "'>" . htmlspecialchars($categoria['Categoria']) . "</option>";
+        }
+        ?>
+      </select>
+    </div>
+    <div class="col-lg-4 col-md-12 col-sm-12 text-lg-start text-center">
+      <button id="search-button" class="btn btn-outline-primary w-100" type="button">Buscar</button>
+    </div>
+  </div>
 </div>
+
 
 <script>
 document.getElementById('search-button').addEventListener('click', function(event) {
   event.preventDefault();
   var searchTerm = document.getElementById('search-input').value.toLowerCase();
-  var products = document.querySelectorAll('.col-md-3');
+  var selectedCategory = document.getElementById('category-select').value;
+  var products = document.querySelectorAll('.col-md-3'); // Asegúrate de que tus productos tengan esta clase
   
   products.forEach(function(product) {
     var productName = product.querySelector('.product-name').textContent.toLowerCase();
-    if (productName.includes(searchTerm)) {
+    var productCategory = product.dataset.category; // Asegúrate de que tus productos tengan el atributo data-category
+    
+    var matchesSearchTerm = productName.includes(searchTerm);
+    var matchesCategory = (selectedCategory === '' || productCategory === selectedCategory);
+    
+    if (matchesSearchTerm && matchesCategory) {
       product.style.display = 'block';
     } else {
       product.style.display = 'none';
@@ -307,7 +320,7 @@ document.getElementById('search-button').addEventListener('click', function(even
     
     
     <!-- inico de sesion -->
-      <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalini1">Iniciar Sesion</button>
+      <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalini1">Iniciar Sesion</button>
             <div class="modal fade"
             id="modalini1"
             tabindex="2"
@@ -320,6 +333,9 @@ document.getElementById('search-button').addEventListener('click', function(even
                     <div class="modal-body">
                     <form action="" method="post">
                             <div class="modal-body">
+                            <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                                 <div class="form-text text-center"><u>Inicio de Sesion</u></div>
                                 <div class="mt-3">
                                     <div class="row mb-3">
@@ -371,6 +387,9 @@ document.getElementById('search-button').addEventListener('click', function(even
             <div class="modal-body">
                 <form action="" method="post">
                     <div class="modal-body">
+                    <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                         <div class="form-text text-center"><u>Recupera tu contraseña</u></div>
                         <div class="mt-3">
                             <div class="row mb-3">
@@ -565,7 +584,7 @@ foreach ($productos as $producto) {
         <h2><?php echo htmlspecialchars($categoria); ?></h2>
         <div class="row">
             <?php foreach ($productos as $producto): ?>
-                <div class="col-md-3 mb-4" id="product-<?php echo $producto['IDP']; ?>">
+                <div class="col-md-3 mb-4" data-category="<?php echo htmlspecialchars($categoria); ?>">
                     <div class="card h-100">
                         <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
                             <img class="card-img-top fixed-img" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
@@ -579,14 +598,13 @@ foreach ($productos as $producto) {
                        </div>
                       </div>
                     
-
-
                         <!-- Modal -->
                         <div class="modal fade" id="modal-<?php echo $producto['IDP']; ?>" tabindex="-1" aria-labelledby="label-modal-<?php echo $producto['IDP']; ?>" aria-hidden="true">
                           <div class="modal-dialog">
                               <div class="modal-content">
                                   <div class="modal-header">
-                                      <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>">Compra del producto <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
+                                  <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="30" class="me-2">
+                                      <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>"> <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
                                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                   </div>
                                   <div class="modal-body">
@@ -621,10 +639,10 @@ foreach ($productos as $producto) {
                                           </div>
                                       </div>
                                   </div>
-                                  <div class="modal-footer">
-                                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalini1">Comprar</button>
-                                      <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalini1">Añadir al Carrito</button>
-                                  </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalini1" title="Debes iniciar sesión para comprar">Comprar</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalini1" title="Debes iniciar sesión para añadir al carrito">Añadir al Carrito</button>
+                                    </div>
                               </div>
                           </div>
                       </div>
@@ -681,15 +699,14 @@ function calcularTotal(idProducto) {
 <div class="container mt-5">
   <footer class="py-3 my-4">
     <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Condiciones de uso</u></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Declaración de privacidad y de cookies</u></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Consentimiento de cookie</u></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Cómo funciona el sitio</u></a></li>
+    <li class="nav-item"><a href="CondicionesUso.php" class="nav-link px-2 text-body-secondary"><u>Condiciones de uso</u></a></li>
+    <li class="nav-item"><a href="DeclaracionPrivacidad.php" class="nav-link px-2 text-body-secondary"><u>Declaración de privacidad y de cookies</u></a></li>
+      <li class="nav-item"><a href="FuncionSitio.php" class="nav-link px-2 text-body-secondary"><u>Cómo funciona el sitio</u></a></li>
     </ul>
     <ul class="nav justify-content-center list-unstyled d-flex">
-      <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
-      <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
-      <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li>
+      <li class="ms-3"><a class="link-body-emphasis" href="https://x.com/spacemarksag" target="_blank"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
+      <li class="ms-3"><a class="link-body-emphasis" href="https://www.instagram.com/spacemarksag/?utm_source=ig_web_button_share_sheet" target="_blank"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
+      <!-- <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li> -->
     </ul>
     <p class="text-center text-body-secondary mt-4">&copy; 2024 SpaceMark, Inc</p>
     <p class="text-center text-body-secondary mt-4"><small>2023 SpaceMark. Todos los derechos reservados. Todas las marcas registradas pertenecen a sus respectivos dueños en EE. UU. y otros países. Todos los precios incluyen IVA (donde sea aplicable).

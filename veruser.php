@@ -1,5 +1,4 @@
 <?php 
-
 include_once 'conexion.php';
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
@@ -8,11 +7,21 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
-$query = "SELECT * FROM usuarios WHERE id_tipos != 1 AND aceptado = 'si' ORDER BY id_usuario ASC LIMIT 100"; // Excluye a los administradores (id_tipos = 1)
-$statement = $con->prepare($query);
-$statement->execute();
-$usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
+// Verificar si hay un término de búsqueda
+$searchTerm = isset($_POST['search']) ? $_POST['search'] : '';
 
+// Construir la consulta SQL con la cláusula WHERE para buscar por Usuario, Nombre o Tipo de Usuario
+$query = "SELECT u.*, t.nom_tipos FROM usuarios u 
+          JOIN tipos_usuarios t ON u.id_tipos = t.id_tipos 
+          WHERE u.id_tipos != 1 AND u.aceptado = 'si' 
+          AND (u.usuario LIKE :searchTerm 
+          OR u.nombre LIKE :searchTerm 
+          OR t.nom_tipos LIKE :searchTerm)
+          ORDER BY u.id_usuario ASC LIMIT 100"; // Excluye a los administradores (id_tipos = 1)
+
+$statement = $con->prepare($query);
+$statement->execute(['searchTerm' => '%' . $searchTerm . '%']);
+$usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -59,8 +68,15 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
     <!-- ver usuarios ini -->
     <form action="" method="post">
         <div class="modal-body">
-        <h2 class="mb-4">Lista de Usuarios</h2>
-
+            <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Lista de Usuarios</h2>
+            <!-- Barra de búsqueda -->
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Buscar por Usuario, Nombre o Tipo de Usuario" value="<?php echo htmlspecialchars($searchTerm); ?>">
+                    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                </div>
+            </div>
             <table class="table table-dark">
                 <thead>
                     <tr>
@@ -77,14 +93,9 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
                     foreach ($usuarios as $usuario) {
                         echo "<tr>";
                         echo "<th scope='row'>" . $numero++ . "</th>";
-                        echo "<td>" . $usuario['usuario'] . "</td>";
-                        echo "<td>" . $usuario['nombre'] . "</td>";
-                        // Consultar el tipo de usuario
-                        $query_tipo = "SELECT nom_tipos FROM tipos_usuarios WHERE id_tipos = ?";
-                        $statement_tipo = $con->prepare($query_tipo);
-                        $statement_tipo->execute([$usuario['id_tipos']]);
-                        $tipo_usuario = $statement_tipo->fetchColumn();
-                        echo "<td>" . $tipo_usuario . "</td>";
+                        echo "<td>" . htmlspecialchars($usuario['usuario']) . "</td>";
+                        echo "<td>" . htmlspecialchars($usuario['nombre']) . "</td>";
+                        echo "<td>" . htmlspecialchars($usuario['nom_tipos']) . "</td>";
                         echo "</tr>";
                     }
                     ?>

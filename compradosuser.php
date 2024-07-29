@@ -62,7 +62,8 @@ $historial_ventas = $statement->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container">
-        <h2>Historial de Compras</h2>
+        <h2>        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Historial de Compras</h2>
         <table class="table table-dark">
             <thead>
                 <tr>

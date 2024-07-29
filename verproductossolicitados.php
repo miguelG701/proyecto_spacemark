@@ -77,7 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['solicitud_id'])) {
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mt-4 mb-4">Solicitudes de Productos Pedidos</h2>
+        <h2 class="text-center mt-4 mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Solicitudes de Productos Pedidos</h2>
         <table class="table table-dark">
             <thead>
                 <tr>

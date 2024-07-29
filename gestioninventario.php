@@ -154,7 +154,8 @@ if (isset($_POST['btn_buscar'])) {
         <!-- ver inventario lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-            <h1 class="mt-5">Gestion productos</h1>
+            <h1 class="mt-5">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Gestion productos</h1>
                 <div class="row justify-content-center">
                     <div class="col-5 mt-5">
                         <input type="text" name="busqueda" placeholder="Nombre o Categoría..." class="form-control" value="<?php echo htmlspecialchars($busqueda_text); ?>">

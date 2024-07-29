@@ -149,7 +149,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
 </head>
 <body>
     <div class="container">
-        <h2>Carrito de Compras</h2>
+        <h2>        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Carrito de Compras</h2>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <table class="table table-dark">
                 <thead>
