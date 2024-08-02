@@ -147,7 +147,8 @@ if (!$proveedores) {
         <!-- ver proveedores lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-                <h2 class="mb-4">Gestión de proveedores</h2>
+                <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Gestión de proveedores</h2>
                 <table class="table table-dark">
                     <thead>
                         <tr>

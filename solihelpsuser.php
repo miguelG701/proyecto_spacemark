@@ -82,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mt-4 mb-4">Solicitud de Usuario</h2>
+        <h2 class="text-center mt-4 mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Solicitud de Usuario</h2>
         <form action="" method="post" enctype="multipart/form-data" class="bg-dark p-4 rounded">
             <div class="row mb-3">
                 <div class="col-md-4 mb-3">

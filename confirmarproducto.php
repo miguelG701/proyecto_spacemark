@@ -103,7 +103,8 @@ if (isset($_POST['guardar_producto'])) {
 
         <form action="" method="POST">
             <div class="modal-body">
-            <h2 class="mb-4">Confirmar Producto</h2>
+            <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Confirmar Producto</h2>
 
                 <table class="table table-dark">
                     <thead>

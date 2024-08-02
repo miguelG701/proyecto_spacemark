@@ -63,8 +63,9 @@ $productos = $statement->fetchAll();
 <body>
     <div class="container">
         <!-- Buscar productos por mes -->
-        <nav class="navbar navbar-dark bg-dark">
-            <a class="navbar-brand">Buscar por mes</a>
+        <nav class="navbar navbar-dark">
+            <a class="navbar-brand">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Buscar por mes</a>
             <form class="form-inline" method="POST">
                 <div class="input-group">
                     <input class="form-control mr-sm-2" type="month" name="fecha" placeholder="Fecha" aria-label="Fecha" value="<?php echo htmlspecialchars($buscarFecha); ?>">

@@ -50,47 +50,67 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
     
-<div class="container"><!-- ver productos mandados ini -->
-
-            <form action="" method="POST">
-            <div class="modal-body">
-                <table class="table table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Categoria</th>
-                            <th scope="col">Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $query = "SELECT * FROM productos WHERE Estado = 'Pendiente'";
-                        $statement = $con->prepare($query);
-                        $statement->execute();
-                        $productos = $statement->fetchAll();
-
-                        foreach ($productos as $producto) {
-                            echo "<tr>";
-                            echo "<td>" . htmlspecialchars($producto['Nombre']) . "</td>";
-                            echo "<td>" . htmlspecialchars($producto['Precio']) . "</td>";
-                            echo "<td>" . htmlspecialchars($producto['Categoria']) . "</td>";
-                            echo "<td>" . htmlspecialchars($producto['Cantidad']) . "</td>";
-                            echo "</tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+<div class="container">
+<h2 class="text-center mb-4">
+                <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Productos Mandados
+            </h2>
+    <!-- Formulario de búsqueda -->
+    <form action="" method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-9">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar en todos los campos" value="<?php echo isset($_GET['buscar']) ? htmlspecialchars($_GET['buscar']) : ''; ?>">
             </div>
-        </form>
-
-<!-- ver productos mandados fin -->
-    <!-- Botón de regresar -->
-    <div class="row mt-3">
-        <div class="col-12 text-center">
-            <a href="index.php" class="btn btn-danger">Regresar</a>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                <a href="index.php" class="btn btn-danger">Regresar</a>
+            </div>
         </div>
-    </div>
+    </form>
+
+    <!-- Tabla de productos -->
+    <form action="" method="POST">
+        <div class="modal-body">
+
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Capturar valor de búsqueda
+                    $buscar = isset($_GET['buscar']) ? $_GET['buscar'] : '';
+
+                    // Construir la consulta SQL con parámetros de búsqueda
+                    $query = "SELECT * FROM productos WHERE Estado = 'Pendiente' AND 
+                              (Nombre LIKE :buscar OR 
+                               Precio LIKE :buscar OR 
+                               Categoria LIKE :buscar OR 
+                               Cantidad LIKE :buscar)";
+                    $statement = $con->prepare($query);
+                    $statement->execute([
+                        ':buscar' => '%' . $buscar . '%'
+                    ]);
+                    $productos = $statement->fetchAll();
+
+                    foreach ($productos as $producto) {
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($producto['Nombre']) . "</td>";
+                        echo "<td>" . htmlspecialchars($producto['Precio']) . "</td>";
+                        echo "<td>" . htmlspecialchars($producto['Categoria']) . "</td>";
+                        echo "<td>" . htmlspecialchars($producto['Cantidad']) . "</td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </form>
 
 </div>
 </body>

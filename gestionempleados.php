@@ -135,7 +135,8 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
         <!-- ver Empleados lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-                <h2 class="mb-4">Gestión de Empleados </h2>
+                <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Gestión de Empleados </h2>
                 <table class="table table-dark">
                     <thead>
                         <tr>

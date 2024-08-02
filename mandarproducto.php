@@ -155,7 +155,8 @@ $categorias = $statement_categorias->fetchAll(PDO::FETCH_ASSOC);
 <body>
     
 <div class="container">
-<h2 class="mb-4">Enviar Productos</h2>
+<h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+Enviar Productos</h2>
 <form action="" method="post" enctype="multipart/form-data">
     <div class="row mb-3">
         <div class="col-md-6">

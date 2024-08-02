@@ -93,6 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <title>SpaceMark</title>
 </head>
 <body>
@@ -149,34 +151,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
+        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+
           <a class="navbar-brand" href="#">SpaceMark</a>
+
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             </ul>
-            <form class="d-flex m-2" role="search">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Descubrir</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Lista de compras</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Categorias</a>
-                </li>
-              </ul>
-            </form>
+
 
           <a href="salir.php">
             <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar Sesión</button>
           </a>
-
-            <!-- <form action="pgindex.php" method="post">
-    <button type="submit" class="btn btn-outline-danger btn-sm" name="cerrar_sesion">Cerrar Sesión</button>
-</form> -->
             
       </nav>
 <!-- navergador primaria fin -->
@@ -187,22 +176,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container-fluid">
 
 <!-- buscador ini -->
+<!-- Buscador con filtro de categoría -->
 <div class="collapse navbar-collapse mb-3" id="navbarSupportedContent">
-  <div class="col-5">
-    <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
-  </div>  
-    <button id="search-button" class="btn btn-outline-danger m-1" type="submit">Buscar</button>
+  <div class="row w-100">
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
+      <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
+      <select id="category-select" class="form-control m-1">
+        <option value="">Todas las Categorías</option>
+        <!-- Las categorías se llenan dinámicamente desde el backend -->
+        <?php
+        // Consulta para obtener las categorías
+        $query_categorias = "SELECT DISTINCT Categoria FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
+        $stmt_categorias = $con->prepare($query_categorias);
+        $stmt_categorias->execute();
+        $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($categorias as $categoria) {
+            echo "<option value='" . htmlspecialchars($categoria['Categoria']) . "'>" . htmlspecialchars($categoria['Categoria']) . "</option>";
+        }
+        ?>
+      </select>
+    </div>
+    <div class="col-lg-4 col-md-12 col-sm-12 text-lg-start text-center">
+      <button id="search-button" class="btn btn-outline-primary w-100" type="button">Buscar</button>
+    </div>
+  </div>
 </div>
+
 
 <script>
 document.getElementById('search-button').addEventListener('click', function(event) {
   event.preventDefault();
   var searchTerm = document.getElementById('search-input').value.toLowerCase();
-  var products = document.querySelectorAll('.col-md-3');
+  var selectedCategory = document.getElementById('category-select').value;
+  var products = document.querySelectorAll('.col-md-3'); // Asegúrate de que tus productos tengan esta clase
   
   products.forEach(function(product) {
     var productName = product.querySelector('.product-name').textContent.toLowerCase();
-    if (productName.includes(searchTerm)) {
+    var productCategory = product.dataset.category; // Asegúrate de que tus productos tengan el atributo data-category
+    
+    var matchesSearchTerm = productName.includes(searchTerm);
+    var matchesCategory = (selectedCategory === '' || productCategory === selectedCategory);
+    
+    if (matchesSearchTerm && matchesCategory) {
       product.style.display = 'block';
     } else {
       product.style.display = 'none';
@@ -220,15 +238,15 @@ document.getElementById('search-button').addEventListener('click', function(even
 
     <h5 class=""> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
     if ($tipo_usuario == 1) {
-        echo "<p class='btn btn-outline-success btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse2'>Administrador</p>";
-    } elseif ($tipo_usuario == 2) {
-        echo "<p class='btn btn-outline-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse3'>Cliente</p>";
+        echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse2'>Administrador  <i class='fas fa-ellipsis-v'></i></p>";
+        } elseif ($tipo_usuario == 2) {
+        echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse3'>Cliente  <i class='fas fa-ellipsis-v'></i></p>";
     } elseif ($tipo_usuario == 3) {
-        echo "<p class='btn btn-outline-primary btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse4'>Proveedor</p>";
+        echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse4'>Proveedor  <i class='fas fa-ellipsis-v'></i></p>";
     } elseif ($tipo_usuario == 4) {
-      echo "<p class='btn btn-outline-warning btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse5'>Empleado</p>";
+      echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse5'>Empleado  <i class='fas fa-ellipsis-v'></i></p>";
     } elseif ($tipo_usuario == 5) {
-      echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse6'>Gerente</p>";
+      echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse6'>Gerente  <i class='fas fa-ellipsis-v'></i></p>";
      }else {
         echo "<p class='text-white'>Desconocido</p>";
     }?></h5>
@@ -248,20 +266,45 @@ document.getElementById('search-button').addEventListener('click', function(even
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="modal-body">
+                        <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                             <div class="form-text text-center mb-3"><u>Opciones de Administrador</u></div>
                             <div class="list-group">
-                                <a href="veruser.php" class="list-group-item list-group-item-action">Ver Usuarios</a>
-                                <a href="aceptaruser.php" class="list-group-item list-group-item-action">Registros por Aceptar</a>
-                                <a href="mandarproducto.php" class="list-group-item list-group-item-action">Enviar Producto</a>
-                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action">Confirmar Producto</a>
-                                <a href="gestionproveedores.php" class="list-group-item list-group-item-action">Gestión de Proveedores</a>
-                                <a href="gestiongerentes.php" class="list-group-item list-group-item-action">Gestión de Gerentes</a>
-                                <a href="gestionempleados.php" class="list-group-item list-group-item-action">Gestión de Empleados</a>
-                                <a href="listaproducto.php" class="list-group-item list-group-item-action">Lista de Productos</a>
-                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
-                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
-                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
+                                <a href="veruser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allveruser.png" height="50" class="me-2">
+                                Ver Usuarios</a>
+                                
+                                <a href="aceptaruser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllacepRegistro.png" height="50" class="me-2">
+                                Registros por Aceptar</a>
+                                
+                                <a href="mandarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allsolicitarproducto.png" height="50" class="me-2">
+                                Enviar Producto</a>
+                                
+                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allconfirmaproducto.png" height="50" class="me-2">
+                                Confirmar Producto</a>
+                                
+                                <a href="gestionproveedores.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionproveedores.png" height="50" class="me-2">
+                                Gestión de Proveedores</a>
+                                
+                                <a href="gestiongerentes.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestiongerente.png" height="50" class="me-2">
+                                Gestión de Gerentes</a>
+                                
+                                <a href="gestionempleados.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionempleados.png" height="50" class="me-2">
+                                Gestión de Empleados</a>
+                                
+                                <a href="listaproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllListaproducto.png" height="50" class="me-2">
+                                Lista de Productos</a>
+                                
 
+
+                                <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
+                                Carrito de compras</a>
+                                
+                                <a href="recibos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allrecibo.png" height="50" class="me-2">
+                                Recibos de compra</a>                                
+                                
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductosCom.png" height="50" class="me-2">
+                                Productos Comprados</a>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -352,14 +395,28 @@ document.getElementById('search-button').addEventListener('click', function(even
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="modal-body">
+                        <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                             <div class="form-text text-center mb-3"><u>Opciones de Cliente</u></div>
                             <div class="list-group">
-                                <a href="opcionesuser.php" class="list-group-item list-group-item-action">Opiniones de perfil</a>
-                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
-                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
-                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
-                                <a href="solihelpsuser.php" class="list-group-item list-group-item-action">Solicitud de ayuda</a>
-                                <a href="soliprogreso.php" class="list-group-item list-group-item-action">Progreso de la solicitud</a>
+                                <a href="opcionesuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allusuario.png" height="50" class="me-2">
+                                Opiniones de perfil</a>
+
+                                <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
+                                Carrito de compras</a>
+
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductosCom.png" height="50" class="me-2">
+                                Productos Comprados</a>
+                                
+                                <a href="recibos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allrecibo.png" height="50" class="me-2">
+                                Recibos de compra</a>
+                                
+                                <a href="solihelpsuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allsolicitud.png" height="50" class="me-2">
+                                Solicitud de ayuda</a>
+                                
+                                <a href="soliprogreso.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllcargandoSoli.png" height="50" class="me-2">
+                                Progreso de la solicitud</a>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -390,16 +447,31 @@ document.getElementById('search-button').addEventListener('click', function(even
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="modal-body">
+                        <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                             <div class="form-text text-center mb-3"><u>Opciones de Proveedor</u></div>
                             <div class="list-group">
-                                <a href="soliproducto.php" class="list-group-item list-group-item-action">Ver encargos</a>
-                                <a href="mandarproducto.php" class="list-group-item list-group-item-action">Enviar Producto</a>
-                                <a href="verproductosmandados.php" class="list-group-item list-group-item-action">Productos Enviados</a>
-                                <a href="productosmes.php" class="list-group-item list-group-item-action">Productos del mes</a>
-                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
-                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
-                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
-
+                                <a href="soliproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allverencargos.png" height="50" class="me-2">
+                                Ver encargos</a>
+                                
+                                <a href="mandarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllenviarProducto.png" height="50" class="me-2">
+                                Enviar Producto</a>
+                                
+                                <a href="verproductosmandados.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductoEnviado.png" height="50" class="me-2">
+                                Productos Enviados</a>
+                                
+                                <a href="productosmes.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allmesproducto.png" height="50" class="me-2">
+                                Productos del mes</a>
+                                
+                                <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
+                                Carrito de compras</a>
+                                
+                                <a href="recibos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allrecibo.png" height="50" class="me-2">
+                                Recibos de compra</a>                                
+                                
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductosCom.png" height="50" class="me-2">
+                                Productos Comprados</a>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -427,15 +499,28 @@ document.getElementById('search-button').addEventListener('click', function(even
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="modal-body">
+                        <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                             <div class="form-text text-center mb-3"><u>Opciones de Empleado</u></div>
                             <div class="list-group">
-                                <a href="gestionproductos.php" class="list-group-item list-group-item-action">Gestionar productos</a>
-                                <a href="gestionarventas.php" class="list-group-item list-group-item-action">Gestionar ventas</a>
-                                <a href="solitcliente.php" class="list-group-item list-group-item-action">Ver solicitudes de clientes</a>
-                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
-                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
-                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
-
+                                <a href="gestionproductos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionproduccion.png" height="50" class="me-2">
+                                Gestionar productos</a>
+                               
+                                <a href="gestionarventas.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionventas.png" height="50" class="me-2">
+                                Gestionar ventas</a>
+                               
+                                <a href="solitcliente.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allsoliclientes.png" height="50" class="me-2">
+                                Ver solicitudes de clientes</a>
+                                
+                                <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
+                                Carrito de compras</a>
+                                
+                                <a href="recibos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allrecibo.png" height="50" class="me-2">
+                                Recibos de compra</a>                                
+                                
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductosCom.png" height="50" class="me-2">
+                                Productos Comprados</a>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -461,28 +546,48 @@ document.getElementById('search-button').addEventListener('click', function(even
         <!-- Caja de diálogo -->
         <div class="modal-dialog">
             <div class="modal-content">                    
-                <!-- Cabecera del modal -->
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                
                 <!-- Cuerpo -->
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="modal-body">
+                        <div class="form-text text-center">
+                            <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="70" class="me-2">
+                            </div>
                             <div class="form-text text-center mb-3"><u>Opciones de Gerente</u></div>
                             <div class="list-group">
-                                <a href="gestioninventario.php" class="list-group-item list-group-item-action">Gestion de Productos</a>
-                                <a href="gestionpromo.php" class="list-group-item list-group-item-action">Gestion de Promociones</a>
-                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action">Confirmar Producto</a>
-                                <a href="solicitudproductos.php" class="list-group-item list-group-item-action">Solicitar Producto</a>
-                                <a href="verproductossolicitados.php" class="list-group-item list-group-item-action">Ver progreso solicitud</a>
-                                <a href="gestionproveedores.php" class="list-group-item list-group-item-action">Gestion de Proveedores</a>
-                                <a href="gestionempleados.php" class="list-group-item list-group-item-action">Gestion de Empleados</a>
-                                <a href="listaproducto.php" class="list-group-item list-group-item-action">Lista de productos</a>
-                                <a href="carritouser.php" class="list-group-item list-group-item-action">Carrito de compras</a>
-                                <a href="recibos.php" class="list-group-item list-group-item-action">Recibos de compra</a>
-                                <a href="compradosuser.php" class="list-group-item list-group-item-action">Productos Comprados</a>
-
+                                <a href="gestioninventario.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionproduccion.png" height="50" class="me-2">
+                                Gestion de Productos</a>
+                                
+                                <a href="gestionpromo.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allpromocionproducto.png" height="50" class="me-2">
+                                Gestion de Promociones</a>
+                                
+                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allconfirmaproducto.png" height="50" class="me-2">
+                                Confirmar Producto</a>
+                                
+                                <a href="solicitudproductos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allsolicitarproducto.png" height="50" class="me-2">
+                                Solicitar Producto</a>
+                                
+                                <a href="verproductossolicitados.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllcargandoSoli.png" height="50" class="me-2">
+                                Ver progreso solicitud</a>
+                                
+                                <a href="gestionproveedores.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionproveedores.png" height="50" class="me-2">
+                                Gestion de Proveedores</a>
+                                
+                                <a href="gestionempleados.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionempleados.png" height="50" class="me-2">
+                                Gestion de Empleados</a>
+                                
+                                <a href="listaproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllListaproducto.png" height="50" class="me-2">
+                                Lista de productos</a>
+                                
+                                <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
+                                Carrito de compras</a>
+                                
+                                <a href="recibos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allrecibo.png" height="50" class="me-2">
+                                Recibos de compra</a>                                
+                                
+                                <a href="compradosuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductosCom.png" height="50" class="me-2">
+                                Productos Comprados</a>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -669,7 +774,7 @@ foreach ($productos as $producto) {
         <h2><?php echo htmlspecialchars($categoria); ?></h2>
         <div class="row">
             <?php foreach ($productos as $producto): ?>
-                <div class="col-md-3 mb-4" id="product-<?php echo $producto['IDP']; ?>">
+                <div class="col-md-3 mb-4" data-category="<?php echo htmlspecialchars($categoria); ?>">
                     <div class="card h-100">
                         <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
                             <img class="card-img-top fixed-img" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
@@ -687,7 +792,8 @@ foreach ($productos as $producto) {
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>">Compra del producto <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
+                                    <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="30" class="me-2">
+                                        <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>"> <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -724,8 +830,8 @@ foreach ($productos as $producto) {
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
-                                        <button type="button" class="btn btn-secondary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
+                                        <button type="button" class="btn btn-danger" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
+                                        <button type="button" class="btn btn-primary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
                                     </div>
                                 </div>
                             </div>
@@ -791,18 +897,17 @@ function calcularTotal(idProducto) {
 <div class="container mt-5">
   <footer class="py-3 my-4">
     <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Condiciones de uso</u></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Declaración de privacidad y de cookies</u></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Consentimiento de cookie</u></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary"><u>Cómo funciona el sitio</u></a></li>
+      <li class="nav-item"><a href="CondicionesUso.php" class="nav-link px-2 text-body-secondary"><u>Condiciones de uso</u></a></li>
+      <li class="nav-item"><a href="DeclaracionPrivacidad.php" class="nav-link px-2 text-body-secondary"><u>Declaración de privacidad y de cookies</u></a></li>
+      <li class="nav-item"><a href="FuncionSitio.php" class="nav-link px-2 text-body-secondary"><u>Cómo funciona el sitio</u></a></li>
     </ul>
     <ul class="nav justify-content-center list-unstyled d-flex">
-      <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
-      <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
-      <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li>
+      <li class="ms-3"><a class="link-body-emphasis" href="https://x.com/spacemarksag"target="_blank"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"/></svg></a></li>
+      <li class="ms-3"><a class="link-body-emphasis" href="https://www.instagram.com/spacemarksag/?utm_source=ig_web_button_share_sheet"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"/></svg></a></li>
+      <!-- <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"/></svg></a></li> -->
     </ul>
-    <p class="text-center text-body-secondary mt-4">&copy; 2024 SpaceMark, Inc</p>
-    <p class="text-center text-body-secondary mt-4"><small>2023 SpaceMark. Todos los derechos reservados. Todas las marcas registradas pertenecen a sus respectivos dueños en EE. UU. y otros países. Todos los precios incluyen IVA (donde sea aplicable).
+    <p class="text-center text-body-secondary mt-4">&copy; 2023 SpaceMark, Inc</p>
+    <p class="text-center text-body-secondary mt-4"><small>2024 SpaceMark. Todos los derechos reservados. Todas las marcas registradas pertenecen a sus respectivos dueños en EE. UU. y otros países. Todos los precios incluyen IVA (donde sea aplicable).
       Política de Privacidad | Información legal | Acuerdo de Suscriptor a SpaceMark | Reembolsos | Cookies</small></p>
 
   </footer>

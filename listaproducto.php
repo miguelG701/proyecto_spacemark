@@ -79,7 +79,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_buscar'])) {
     <!-- ver productos ini -->
     <form action="" method="post">
         <div class="modal-body">
-        <h2 class="mb-4">Lista de Productos</h2>
+        <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Lista de Productos</h2>
         <div class="row justify-content-center">
             <div class="col-5 mt-5">
                 <input type="text" name="busqueda" placeholder="Buscar por nombre o categoría..." class="form-control" value="<?php echo htmlspecialchars($busqueda_text); ?>">

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $estado = $_POST['estado'][$id_historial];
     
     // Obtener datos actuales de la compra
-    $query = "SELECT IDP, Cantidad, Total FROM historial_ventas WHERE ID = :id_historial";
+    $query = "SELECT IDP, Cantidad, Total, Estado FROM historial_ventas WHERE ID = :id_historial";
     $statement = $con->prepare($query);
     $statement->bindParam(':id_historial', $id_historial);
     $statement->execute();
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
                     icon: 'error'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'historial_ventas.php';
+                        window.location.href = 'gestionarventas.php';
                     }
                 });
               </script>";
@@ -40,6 +40,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $id_producto = $venta['IDP'];
     $cantidad_actual = $venta['Cantidad'];
     $total_actual = $venta['Total'];
+    $estado_actual = $venta['Estado'];
+
+    // Verificar si no hubo cambios en cantidad y estado
+    if ($cantidad == $cantidad_actual && $estado == $estado_actual) {
+        echo "<script>
+                Swal.fire({
+                    title: 'Sin Cambios',
+                    text: 'No se realizaron cambios en los datos de la compra.',
+                    icon: 'info'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'gestionarventas.php';
+                    }
+                });
+              </script>";
+        exit;
+    }
 
     // Obtener datos del producto
     $query = "SELECT Precio, Cantidad FROM productos WHERE IDP = :id_producto";
@@ -56,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
                     icon: 'error'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'historial_ventas.php';
+                        window.location.href = 'gestionarventas.php';
                     }
                 });
               </script>";
@@ -78,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
                     icon: 'error'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'historial_ventas.php';
+                        window.location.href = 'gestionarventas.php';
                     }
                 });
               </script>";
@@ -169,6 +186,7 @@ $statement->execute([
 $historial = $statement->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,7 +227,8 @@ $historial = $statement->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container">
-        <h2>Historial de Ventas</h2>
+        <h2>        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Historial de Ventas</h2>
 
         <!-- Formulario de búsqueda -->
         <form action="" method="GET" class="mb-4">

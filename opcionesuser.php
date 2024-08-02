@@ -218,7 +218,8 @@ $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mb-4">Perfil de Usuario</h2>
+        <h2 class="text-center mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Perfil de Usuario</h2>
         <form action="" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nombre">Nombre:</label>

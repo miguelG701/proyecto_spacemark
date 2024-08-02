@@ -170,7 +170,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center">Gestión de Promociones</h2>
+        <h2 class="text-center">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Gestión de Promociones</h2>
         <form action="" method="POST">
             <div class="modal-body">
                 <table class="table table-dark">

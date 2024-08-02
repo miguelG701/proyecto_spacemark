@@ -95,7 +95,8 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mt-4 mb-4">Gestión de Productos</h2>
+        <h2 class="text-center mt-4 mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Gestión de Productos</h2>
 
         <!-- Formulario de búsqueda -->
         <form action="" method="GET" class="mb-4">
