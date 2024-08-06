@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['guardar_empleado'])) {
 }
 
 // Obtener los empleados (con o sin búsqueda)
-$query_empleados = "SELECT * FROM usuarios WHERE id_tipos = 4 AND aceptado = 'si'";
+$query_empleados = "SELECT * FROM usuarios WHERE id_tipos = 4 AND aceptado = 'si' ORDER BY Nombre ASC";
 if ($searchQuery) {
     $query_empleados .= " AND (usuario LIKE :searchQuery OR nombre LIKE :searchQuery)";
 }
@@ -72,9 +72,9 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<style>
+    <style>
         body {
             background-color: #212529;
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
@@ -86,12 +86,15 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
             padding: 20px; /* Espaciado interior */
             border-radius: 10px; /* Bordes redondeados para el contenedor */
             margin-top: 20px; /* Margen superior */
+            max-width: 100%; /* Asegura que el contenedor no exceda el ancho disponible */
+            overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
         }
         .table-dark {
             background-color: #343a40; /* Color de fondo oscuro para la tabla */
             color: #ffffff; /* Texto blanco */
             border-radius: 10px; /* Bordes redondeados para la tabla */
             margin-top: 20px; /* Margen superior */
+            width: 100%; /* Asegura que la tabla ocupe todo el ancho disponible */
         }
         .form-control {
             background-color: #495057; /* Color de fondo para controles de formulario */
@@ -111,10 +114,39 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
             background-color: #dc3545;
             color: #ffffff;
         }
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px; /* Menos espaciado en pantallas pequeñas */
+            }
+            .table-dark th, .table-dark td {
+                padding: 0.5rem; /* Menos padding en celdas de la tabla en pantallas pequeñas */
+            }
+            .btn {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para botones en pantallas pequeñas */
+            }
+            .modal-body h2 {
+                font-size: 1.5rem; /* Tamaño de fuente más pequeño para el título en pantallas pequeñas */
+            }
+            .form-control {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para inputs en pantallas pequeñas */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <h2 class="mb-4 text-center">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Gestión de Empleados
+        </h2>
+    
+        <!-- Botón de regresar -->
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <a href="index.php" class="btn btn-danger">Regresar</a>
+            </div>
+        </div>
+
         <!-- Formulario de búsqueda -->
         <form method="GET" action="">
             <div class="input-group mb-3">
@@ -124,64 +156,56 @@ $empleados = $statement_empleados->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         </form>
-            <!-- Botón de regresar -->
-    <div class="row mt-3">
-        <div class="col-12 text-center">
-            <a href="index.php" class="btn btn-danger">Regresar</a>
-        </div>
-    </div>
-    
 
-        <!-- ver Empleados lista ini -->
+
+        <!-- Ver Empleados lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-                <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-                Gestión de Empleados </h2>
-                <table class="table table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col">Número</th>
-                            <th scope="col">Usuario</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Teléfono</th>
-                            <th scope="col">Correo electrónico</th>
-                            <th scope="col">Tipo de Usuario</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // Mostrar en la tabla Empleados aceptados
-                        $numero = 1;
-                        foreach ($empleados as $empleado) {
-                            echo "<tr>";
-                            echo "<td>" . $numero++ . "</td>";
-                            echo "<td><input type='text' class='form-control' name='usuario[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['usuario']) . "' readonly></td>";
-                            echo "<td><input type='text' class='form-control' name='nombre[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['nombre']) . "' readonly></td>";
-                            echo "<td><input type='text' class='form-control' name='telefono[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['telefono']) . "'></td>";
-                            echo "<td><input type='email' class='form-control' name='correo_electronico[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['correo_electronico']) . "'></td>";
-                            echo "<td>";
-                            echo "<select name='tipo_usuario[" . htmlspecialchars($empleado['id_usuario']) . "]' class='form-control'>";
-                            echo "<option value='1'" . ($empleado['id_tipos'] == 1 ? ' selected' : '') . ">Administrador</option>";
-                            echo "<option value='2'" . ($empleado['id_tipos'] == 2 ? ' selected' : '') . ">Cliente</option>";
-                            echo "<option value='3'" . ($empleado['id_tipos'] == 3 ? ' selected' : '') . ">Proveedor</option>";
-                            echo "<option value='4'" . ($empleado['id_tipos'] == 4 ? ' selected' : '') . ">Empleado</option>";
-                            echo "<option value='5'" . ($empleado['id_tipos'] == 5 ? ' selected' : '') . ">Gerente</option>";
-                            echo "</select>";
-                            echo "</td>";
-                            echo "</tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+
+                <div class="table-responsive">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col">Número</th>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Teléfono</th>
+                                <th scope="col">Correo electrónico</th>
+                                <th scope="col">Tipo de Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Mostrar en la tabla Empleados aceptados
+                            $numero = 1;
+                            foreach ($empleados as $empleado) {
+                                echo "<tr>";
+                                echo "<td>" . $numero++ . "</td>";
+                                echo "<td><input type='text' class='form-control' name='usuario[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['usuario']) . "' readonly></td>";
+                                echo "<td><input type='text' class='form-control' name='nombre[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['nombre']) . "' readonly></td>";
+                                echo "<td><input type='text' class='form-control' name='telefono[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['telefono']) . "'></td>";
+                                echo "<td><input type='email' class='form-control' name='correo_electronico[" . htmlspecialchars($empleado['id_usuario']) . "]' value='" . htmlspecialchars($empleado['correo_electronico']) . "'></td>";
+                                echo "<td>";
+                                echo "<select name='tipo_usuario[" . htmlspecialchars($empleado['id_usuario']) . "]' class='form-control'>";
+                                echo "<option value='1'" . ($empleado['id_tipos'] == 1 ? ' selected' : '') . ">Administrador</option>";
+                                echo "<option value='2'" . ($empleado['id_tipos'] == 2 ? ' selected' : '') . ">Cliente</option>";
+                                echo "<option value='3'" . ($empleado['id_tipos'] == 3 ? ' selected' : '') . ">Proveedor</option>";
+                                echo "<option value='4'" . ($empleado['id_tipos'] == 4 ? ' selected' : '') . ">Empleado</option>";
+                                echo "<option value='5'" . ($empleado['id_tipos'] == 5 ? ' selected' : '') . ">Gerente</option>";
+                                echo "</select>";
+                                echo "</td>";
+                                echo "</tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_empleado">Guardar Cambios</button>
             </div>
         </form>
-
-        <!-- ver Empleados lista fin -->
+        <!-- Ver Empleados lista fin -->
     </div>
-
-
 </body>
 </html>

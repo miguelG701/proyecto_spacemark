@@ -42,12 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $statement_insert = $con->prepare($query_insert);
                 $statement_insert->execute([$id_usuario, $metodo_pago, $cantidad, $estado, $id_producto, $total]);
 
-                if ($accion != 'carrito') {
-                    $nueva_cantidad = $producto['Cantidad'] - $cantidad;
-                    $query_update = "UPDATE productos SET Cantidad = ? WHERE IDP = ?";
-                    $statement_update = $con->prepare($query_update);
-                    $statement_update->execute([$nueva_cantidad, $id_producto]);
-                }
+                // Reducir la cantidad en stock tanto al agregar al carrito como al realizar una compra directa
+                $nueva_cantidad = $producto['Cantidad'] - $cantidad;
+                $query_update = "UPDATE productos SET Cantidad = ? WHERE IDP = ?";
+                $statement_update = $con->prepare($query_update);
+                $statement_update->execute([$nueva_cantidad, $id_producto]);
 
                 $con->commit();
 

@@ -2,11 +2,15 @@
 include_once 'conexion.php';
 session_start();
 include_once("sweetarch.php");
+
 if (!isset($_SESSION['usuario_id'])) {
     // Si no está autenticado, redirige al formulario de inicio de sesión
     header("Location: pgindex.php");
     exit;
 }
+
+// Obtener el ID del usuario autenticado
+$usuario_id = $_SESSION['usuario_id'];
 
 // Procesamiento de la nueva categoría
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_nueva_categoria'])) {
@@ -87,10 +91,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['btn_nueva_categoria']
   
     $estado = 'Pendiente';  // Estado inicial predeterminado
   
-    $query_insert = "INSERT INTO productos (Nombre, Precio, Categoria, Cantidad, Descripcion, Foto, Estado) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $query_insert = "INSERT INTO productos (Nombre, Precio, Categoria, Cantidad, Descripcion, Foto, Estado, usuario_id) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $statement_insert = $con->prepare($query_insert);
-    $statement_insert->execute([$nombre, $precio, $categoria, $cantidad, $descripcion, $foto_name, $estado]);
+    $statement_insert->execute([$nombre, $precio, $categoria, $cantidad, $descripcion, $foto_name, $estado, $usuario_id]);
   
     echo "<script>
             Swal.fire({
@@ -155,65 +159,66 @@ $categorias = $statement_categorias->fetchAll(PDO::FETCH_ASSOC);
 <body>
     
 <div class="container">
-<h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-Enviar Productos</h2>
-<form action="" method="post" enctype="multipart/form-data">
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="nombre" class="form-label text-white">Nombre producto</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
+    <h2 class="mb-4">
+        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+        Enviar Productos
+    </h2>
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nombre" class="form-label text-white">Nombre producto</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+            </div>
+            <div class="col-md-6">
+                <label for="precio" class="form-label text-white">Precio</label>
+                <input type="number" step="0.01" class="form-control" id="precio" name="precio" required>
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="precio" class="form-label text-white">Precio</label>
-            <input type="number" step="0.01" class="form-control" id="precio" name="precio" required>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="categoria" class="form-label text-white">Categoría</label>
+                <select class="form-control" id="categoria" name="categoria">
+                    <?php foreach ($categorias as $categoria) { 
+                        echo '<option value="' . htmlspecialchars($categoria['Nombre_Categoria']) . '">' . htmlspecialchars($categoria['Nombre_Categoria']) . '</option>';
+                    } ?>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="cantidad" class="form-label text-white">Cantidad</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad">
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="categoria" class="form-label text-white">Categoría</label>
-            <select class="form-control" id="categoria" name="categoria">
-                <?php foreach ($categorias as $categoria) { 
-                    echo '<option value="' . $categoria['Nombre_Categoria'] . '">' . $categoria['Nombre_Categoria'] . '</option>';
-                } ?>
-            </select> 
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="descripcion" class="form-label text-white">Descripción</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="cantidad" class="form-label text-white">Cantidad</label>
-            <input type="number" class="form-control" id="cantidad" name="cantidad">
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="foto" class="form-label text-white">Foto</label>
+                <input type="file" class="form-control" id="foto" name="foto">
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="descripcion" class="form-label text-white">Descripción</label>
-            <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <a href="index.php" class="btn btn-danger">Regresar</a>
+                <button type="submit" class="btn btn-primary">Enviar Producto</button>
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="foto" class="form-label text-white">Foto</label>
-            <input type="file" class="form-control" id="foto" name="foto">
-        </div>
-    </div>
+    </form>
 
-    <div class="row">
-        <div class="col-12 text-center">
-            <a href="index.php" class="btn btn-danger">Regresar</a>
-            <button type="submit" class="btn btn-primary">Enviar Producto</button>
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nueva_categoria" class="form-label text-white">Nueva Categoría</label>
+                <input type="text" class="form-control" id="nueva_categoria" name="nueva_categoria" required>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary" name="btn_nueva_categoria">Agregar Categoría</button>
+            </div>
         </div>
-    </div>
-</form>
-
-<form action="" method="post" enctype="multipart/form-data">
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="nueva_categoria" class="form-label text-white">Nueva Categoría</label>
-            <input type="text" class="form-control" id="nueva_categoria" name="nueva_categoria" required>
-        </div>
-        <div class="col-md-6 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary" name="btn_nueva_categoria">Agregar Categoría</button>
-        </div>
-    </div>
-</form>
+    </form>
 
 </div>
 

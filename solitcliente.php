@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($accion == 'actualizar') {
         $nuevo_estado = $_POST['estado'];
 
-        $update_query = "UPDATE solicitudes SET estado = :estado WHERE id_solicitud = :id_solicitud";
+        $update_query = "UPDATE solicitudes SET estado = :estado WHERE id_solicitud = :id_solicitud ORDER BY hv.ID ASC";
         $update_statement = $con->prepare($update_query);
         $update_statement->bindParam(':estado', $nuevo_estado);
         $update_statement->bindParam(':id_solicitud', $id_solicitud);
@@ -44,11 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Redirigir de nuevo a la página para ver los cambios
     echo "<script>swal.fire({title:'Ejecución exitosa.',
-    icon: 'success'}).then(function(){window.location.href='index.php';});</script>";
+    icon: 'success'}).then(function(){window.location.href='solitcliente.php';});</script>";
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,13 +62,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #212529;
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
         }
+        .table-container {
+            overflow-x: auto; /* Permite el desplazamiento horizontal en pantallas pequeñas */
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mt-4 mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Solicitudes de Clientes</h2>
-        <form method="post" action="">
+        <h2 class="text-center mt-4 mb-4">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Solicitudes de Clientes
+        </h2>
+        <div class="table-container">
             <table class="table table-dark">
                 <thead>
                     <tr>
@@ -86,32 +98,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <td><?php echo htmlspecialchars($solicitud['nombre']); ?></td>
                         <td><?php echo htmlspecialchars($solicitud['descripcion']); ?></td>
                         <td>
-                            <select name="estado" class="form-control">
-                                <option value="Pendiente" <?php echo ($solicitud['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
-                                <option value="En proceso" <?php echo ($solicitud['estado'] == 'En proceso') ? 'selected' : ''; ?>>En proceso</option>
-                                <option value="Listo" <?php echo ($solicitud['estado'] == 'Listo') ? 'selected' : ''; ?>>Listo</option>
-                            </select>
+                            <form method="post" action="">
+                                <select name="estado" class="form-control form-control-sm">
+                                    <option value="Pendiente" <?php echo ($solicitud['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
+                                    <option value="En proceso" <?php echo ($solicitud['estado'] == 'En proceso') ? 'selected' : ''; ?>>En proceso</option>
+                                    <option value="Listo" <?php echo ($solicitud['estado'] == 'Listo') ? 'selected' : ''; ?>>Listo</option>
+                                </select>
                         </td>
                         <td>
                             <input type="hidden" name="id_solicitud" value="<?php echo $solicitud['id_solicitud']; ?>">
-                            <select name="accion" class="form-control">
+                            <select name="accion" class="form-control form-control-sm">
                                 <option value="actualizar">Actualizar</option>
                                 <option value="eliminar">Eliminar</option>
                             </select>
                         </td>
                         <td>
-                            <button type="submit" class="btn btn-primary">Ejecutar</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Ejecutar</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
-        </form>
-    </div>
-    <div class="row">
-        <div class="col-12 text-center">
-            <a href="index.php" class="btn btn-danger">Regresar</a>
         </div>
+    </div>
+    <div class="container text-center mt-4">
+        <a href="index.php" class="btn btn-danger">Regresar</a>
     </div>
     <!-- Scripts de Bootstrap y otros -->
     <script src="JS/bootstrap.bundle.min.js"></script>

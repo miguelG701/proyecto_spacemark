@@ -15,6 +15,12 @@ $statement_categorias = $con->prepare($query_categorias);
 $statement_categorias->execute();
 $categorias = $statement_categorias->fetchAll(PDO::FETCH_ASSOC);
 
+// Obtener proveedores (id_tipos = 3 para Proveedores)
+$query_proveedores = "SELECT id_usuario, nombre FROM usuarios WHERE id_tipos = 3";
+$statement_proveedores = $con->prepare($query_proveedores);
+$statement_proveedores->execute();
+$proveedores = $statement_proveedores->fetchAll(PDO::FETCH_ASSOC);
+
 // Verificar si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recuperar los datos del formulario
@@ -23,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cantidad = $_POST['cantidad'];
     $descripcion = $_POST['descripcion'];
     $id_usuario = $_POST['id_usuario']; // Obtener el ID de usuario del campo oculto
+    $id_proveedor = $_POST['id_proveedor']; // Obtener el ID del proveedor
 
     // Estado predeterminado
     $estado = 'Pendiente';
@@ -44,10 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Consulta SQL para insertar la solicitud en la tabla
-    $query_insert = "INSERT INTO solicitudes (nombre, categoria, cantidad, descripcion, estado, id_usuario) 
-                     VALUES (?, ?, ?, ?, ?, ?)";
+    $query_insert = "INSERT INTO solicitudes (nombre, categoria, cantidad, descripcion, estado, id_usuario, id_proveedor) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?)";
     $statement_insert = $con->prepare($query_insert);
-    $statement_insert->execute([$nombre, $categoria, $cantidad, $descripcion, $estado, $id_usuario]);
+    $statement_insert->execute([$nombre, $categoria, $cantidad, $descripcion, $estado, $id_usuario, $id_proveedor]);
 
     // Redirigir a una página de confirmación o a donde sea necesario
     echo "<script>
@@ -111,12 +118,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Ingrese una breve descripción (opcional)"></textarea>
                </div>
             </div>
+            <div class="row mb-3">
+                <div class="col-md-4 mb-3">
+                    <label for="id_proveedor" class="form-label">Proveedor</label>
+                    <select class="form-control" id="id_proveedor" name="id_proveedor" required>
+                        <option value="">Seleccione un proveedor</option>
+                        <?php foreach ($proveedores as $proveedor) : ?>
+                            <option value="<?php echo htmlspecialchars($proveedor['id_usuario']); ?>"><?php echo htmlspecialchars($proveedor['nombre']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
             <!-- Campo oculto para el ID de usuario -->
             <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION['usuario_id']); ?>">
             <div class="row">
                 <div class="col-12 text-center">
                     <a href="index.php" class="btn btn-danger">Regresar</a>
-                    <button type="submit" class="btn btn-primary">Mandar solicitud</button>
+                    <button type="submit" class="btn btn-primary">Enviar solicitud</button>
                 </div>
             </div>
         </form>

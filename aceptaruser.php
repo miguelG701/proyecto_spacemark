@@ -117,69 +117,72 @@ if (isset($_GET['message']) && isset($_GET['type'])) {
         </script>
     <?php endif; ?>
 
-    <!-- confirmar registro ini -->
-
+    <!-- Confirmar registro ini -->
     <form id="userForm" action="" method="post">
-        <div class="">
-            
-        <h2 class="mb-4"><img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Usuarios por Aceptar</h2>
-            <table class="table table-dark">
-                <thead>
-                    <tr>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Tipo de Usuario</th>
-                        <th scope="col">Verificar</th>
-                        <th scope="col">Eliminar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    // Consulta para obtener usuarios con "no" en la columna "aceptado"
-                    $query = "SELECT * FROM usuarios WHERE aceptado = 'no'";
-                    $statement = $con->prepare($query);
-                    $statement->execute();
-                    $usuarios = $statement->fetchAll();
+        <div class="mb-4">
+            <h2 class="mb-4">
+                <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Usuarios por Aceptar
+            </h2>
+            <!-- Tabla responsive -->
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Tipo de Usuario</th>
+                            <th scope="col">Verificar</th>
+                            <th scope="col">Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Consulta para obtener usuarios con "no" en la columna "aceptado"
+                        $query = "SELECT * FROM usuarios WHERE aceptado = 'no'";
+                        $statement = $con->prepare($query);
+                        $statement->execute();
+                        $usuarios = $statement->fetchAll();
 
-                    // Consulta para obtener todos los tipos de usuario
-                    $query_tipos = "SELECT * FROM tipos_usuarios";
-                    $statement_tipos = $con->prepare($query_tipos);
-                    $statement_tipos->execute();
-                    $tipos_usuarios = $statement_tipos->fetchAll(PDO::FETCH_ASSOC);
+                        // Consulta para obtener todos los tipos de usuario
+                        $query_tipos = "SELECT * FROM tipos_usuarios";
+                        $statement_tipos = $con->prepare($query_tipos);
+                        $statement_tipos->execute();
+                        $tipos_usuarios = $statement_tipos->fetchAll(PDO::FETCH_ASSOC);
 
-                    foreach ($usuarios as $usuario) {
-                        echo "<tr>";
-                        echo "<td>" . $usuario['usuario'] . "</td>";
-                        echo "<td>" . $usuario['nombre'] . "</td>";
-                        echo "<td>";
-                        echo "<select class='form-control' name='tipo_usuario[" . $usuario['id_usuario'] . "]'>";
-                        foreach ($tipos_usuarios as $tipo) {
-                            $selected = ($tipo['id_tipos'] == $usuario['id_tipos']) ? "selected" : "";
-                            echo "<option value='" . $tipo['id_tipos'] . "' $selected>" . $tipo['nom_tipos'] . "</option>";
+                        foreach ($usuarios as $usuario) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($usuario['usuario']) . "</td>";
+                            echo "<td>" . htmlspecialchars($usuario['nombre']) . "</td>";
+                            echo "<td>";
+                            echo "<select class='form-control' name='tipo_usuario[" . $usuario['id_usuario'] . "]'>";
+                            foreach ($tipos_usuarios as $tipo) {
+                                $selected = ($tipo['id_tipos'] == $usuario['id_tipos']) ? "selected" : "";
+                                echo "<option value='" . $tipo['id_tipos'] . "' $selected>" . htmlspecialchars($tipo['nom_tipos']) . "</option>";
+                            }
+                            echo "</select>";
+                            echo "</td>";
+                            echo "<td>";
+                            echo "<input class='form-check-input' type='checkbox' name='usuarios_aceptar[]' value='" . $usuario['id_usuario'] . "' id='aceptar-" . $usuario['id_usuario'] . "'>";
+                            echo "<label class='text-white opacity-75 form-check-label' for='aceptar-" . $usuario['id_usuario'] . "'>SI</label>";
+                            echo "</td>";
+                            echo "<td>";
+                            echo "<input class='form-check-input' type='checkbox' name='usuarios_eliminar[]' value='" . $usuario['id_usuario'] . "' id='eliminar-" . $usuario['id_usuario'] . "'>";
+                            echo "<label class='text-white opacity-75 form-check-label' for='eliminar-" . $usuario['id_usuario'] . "'>NO</label>";
+                            echo "</td>";
+                            echo "</tr>";
                         }
-                        echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                        echo "<input class='form-check-input' type='checkbox' name='usuarios_aceptar[]' value='" . $usuario['id_usuario'] . "' id='aceptar-" . $usuario['id_usuario'] . "'>";
-                        echo "<label class='text-white opacity-75 form-check-label' for='aceptar-" . $usuario['id_usuario'] . "'>SI</label>";
-                        echo "</td>";
-                        echo "<td>";
-                        echo "<input class='form-check-input' type='checkbox' name='usuarios_eliminar[]' value='" . $usuario['id_usuario'] . "' id='eliminar-" . $usuario['id_usuario'] . "'>";
-                        echo "<label class='text-white opacity-75 form-check-label' for='eliminar-" . $usuario['id_usuario'] . "'>NO</label>";
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="modal-footer">
+        <div class="text-center">
             <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar">Guardar</button>
         </div>
     </form>
+    <!-- Confirmar registro fin -->
 
-    <!-- confirmar registro fin -->
     <!-- Botón de regresar -->
     <div class="row mt-3">
         <div class="col-12 text-center">
@@ -225,3 +228,4 @@ if (isset($_GET['message']) && isset($_GET['type'])) {
 
 </body>
 </html>
+

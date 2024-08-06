@@ -70,18 +70,19 @@ if (isset($_POST['guardar_producto'])) {
             padding: 20px; /* Espaciado interior */
             border-radius: 10px; /* Bordes redondeados para el contenedor */
             margin-top: 20px; /* Margen superior */
+            margin-right: 10px; /* Espacio adicional en la derecha */
+            overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
         }
         .table-dark {
             background-color: #343a40; /* Color de fondo oscuro para la tabla */
             border-radius: 10px; /* Bordes redondeados para la tabla */
             margin-top: 20px; /* Margen superior */
+            margin-left: auto; /* Margen izquierdo automático para centrar */
+            margin-right: auto; /* Margen derecho automático para centrar */
+            max-width: 100%; /* Asegura que la tabla no exceda el ancho del contenedor */
         }
         .table-dark th, .table-dark td {
             vertical-align: middle; /* Alinear contenido verticalmente en celdas */
-        }
-        .form-control {
-            display: inline-block; /* Alinear controles de formulario en línea */
-            width: auto; /* Ancho automático para controles */
         }
         .btn-outline-danger {
             color: #dc3545;
@@ -99,26 +100,27 @@ if (isset($_POST['guardar_producto'])) {
 </head>
 <body>
     <div class="container">
-        <!-- confirmar productos ini -->
-
+        <!-- Confirmar productos ini -->
         <form action="" method="POST">
-            <div class="modal-body">
-            <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-            Confirmar Producto</h2>
+            <h2 class="mb-4 text-center">
+                <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Confirmar Producto
+            </h2>
 
+            <div class="table-responsive">
                 <table class="table table-dark">
                     <thead>
                         <tr>
                             <th scope="col">Nombre</th>
                             <th scope="col">Precio</th>
-                            <th scope="col">Categoria</th>
+                            <th scope="col">Categoría</th>
                             <th scope="col">Cantidad</th>
                             <th scope="col">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $query = "SELECT * FROM productos WHERE Estado = 'Pendiente'";
+                        $query = "SELECT * FROM productos WHERE Estado = 'Pendiente' ORDER BY Nombre ASC";
                         $statement = $con->prepare($query);
                         $statement->execute();
                         $productos = $statement->fetchAll();
@@ -130,7 +132,7 @@ if (isset($_POST['guardar_producto'])) {
                             echo "<td>" . htmlspecialchars($producto['Categoria']) . "</td>";
                             echo "<td>" . htmlspecialchars($producto['Cantidad']) . "</td>";
                             echo "<td>";
-                            echo "<select name='Estado[" . $producto['IDP'] . "]'>";
+                            echo "<select class='form-select' name='Estado[" . $producto['IDP'] . "]'>";
                             echo "<option value='Pendiente'>Pendiente</option>";
                             echo "<option value='Aceptado'>Aceptado</option>";
                             echo "<option value='No aceptado'>No aceptado</option>";
@@ -142,15 +144,15 @@ if (isset($_POST['guardar_producto'])) {
                     </tbody>
                 </table>
             </div>
-            <div class="modal-footer">
+
+            <div class="text-center mt-3">
                 <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_producto">Guardar Producto</button>
             </div>
         </form>
-
-        <!-- confirmar productos fin -->
+        <!-- Confirmar productos fin -->
 
         <!-- Botón de regresar -->
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-12 text-center">
                 <a href="index.php" class="btn btn-danger btn-regresar">Regresar</a>
             </div>
@@ -163,3 +165,4 @@ if (isset($_POST['guardar_producto'])) {
     </script>
 </body>
 </html>
+

@@ -66,7 +66,7 @@ $nombre_buscar = isset($_GET['nombre_buscar']) ? $_GET['nombre_buscar'] : '';
 $categoria_buscar = isset($_GET['categoria_buscar']) ? $_GET['categoria_buscar'] : '';
 
 // Obtener los productos de la base de datos con estado "Aceptado"
-$query = "SELECT * FROM productos WHERE Estado = 'Aceptado' AND Nombre LIKE :nombre AND Categoria LIKE :categoria";
+$query = "SELECT * FROM productos WHERE Estado = 'Aceptado' AND Nombre LIKE :nombre AND Categoria LIKE :categoria ORDER BY Nombre ASC";
 $statement = $con->prepare($query);
 $statement->execute([
     ':nombre' => '%' . $nombre_buscar . '%',
@@ -74,7 +74,6 @@ $statement->execute([
 ]);
 $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,18 +88,23 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
             background-color: #212529;
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
         }
+        .table-container {
+            overflow-x: auto; /* Permite desplazamiento horizontal en pantallas pequeñas */
+        }
     </style>
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mt-4 mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Gestión de Productos</h2>
+        <h2 class="text-center mt-4 mb-4">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Gestión de Productos
+        </h2>
 
         <!-- Formulario de búsqueda -->
         <form action="" method="GET" class="mb-4">
-            <div class="row">
+            <div class="row g-3">
                 <div class="col-md-4">
                     <input type="text" name="nombre_buscar" class="form-control" placeholder="Buscar por nombre" value="<?php echo htmlspecialchars($nombre_buscar); ?>">
                 </div>
@@ -108,45 +112,49 @@ $productos = $statement->fetchAll(PDO::FETCH_ASSOC);
                     <input type="text" name="categoria_buscar" class="form-control" placeholder="Buscar por categoría" value="<?php echo htmlspecialchars($categoria_buscar); ?>">
                 </div>
                 <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
-                    <a href="index.php" class="btn btn-danger">Regresar</a>
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    <a href="index.php" class="btn btn-danger w-100 mt-2">Regresar</a>
                 </div>
             </div>
         </form>
 
+        <!-- Formulario de gestión de productos -->
         <form action="" method="POST" onsubmit="return validateForm()">
-            <table class="table table-dark">
-                <thead>
-                    <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Categoría</th>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($productos as $producto): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($producto['Nombre']); ?></td>
-                        <td><input type="number" step="0.01" name="precio[<?php echo $producto['IDP']; ?>]" value="<?php echo htmlspecialchars($producto['Precio']); ?>" class="form-control" min="0"></td>
-                        <td>
-                            <select class="form-control" name="categoria[<?php echo $producto['IDP']; ?>]">
-                                <?php foreach ($categorias as $categoria): ?>
-                                    <option value="<?php echo htmlspecialchars($categoria['Nombre_Categoria']); ?>" <?php echo $producto['Categoria'] == $categoria['Nombre_Categoria'] ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($categoria['Nombre_Categoria']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </td>
-                        <td><input type="text" name="descripcion[<?php echo $producto['IDP']; ?>]" value="<?php echo htmlspecialchars($producto['Descripcion']); ?>" class="form-control"></td>
-                        <td><button type="submit" name="actualizar" value="<?php echo $producto['IDP']; ?>" class="btn btn-primary">Actualizar</button></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($productos as $producto): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($producto['Nombre']); ?></td>
+                            <td><input type="number" step="0.01" name="precio[<?php echo $producto['IDP']; ?>]" value="<?php echo htmlspecialchars($producto['Precio']); ?>" class="form-control" min="0"></td>
+                            <td>
+                                <select class="form-control" name="categoria[<?php echo $producto['IDP']; ?>]">
+                                    <?php foreach ($categorias as $categoria): ?>
+                                        <option value="<?php echo htmlspecialchars($categoria['Nombre_Categoria']); ?>" <?php echo $producto['Categoria'] == $categoria['Nombre_Categoria'] ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($categoria['Nombre_Categoria']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                            <td><input type="text" name="descripcion[<?php echo $producto['IDP']; ?>]" value="<?php echo htmlspecialchars($producto['Descripcion']); ?>" class="form-control"></td>
+                            <td><button type="submit" name="actualizar" value="<?php echo $producto['IDP']; ?>" class="btn btn-primary w-100">Actualizar</button></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </form>
     </div>
+
     <!-- Scripts de Bootstrap y otros -->
     <script src="JS/bootstrap.bundle.min.js"></script>
     <script>

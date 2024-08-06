@@ -21,13 +21,12 @@ $statement = $con->prepare($query);
 $statement->execute(['mes' => ($buscarFecha ? $buscarFecha : $mesActual)]);
 $productos = $statement->fetchAll();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="CSS/bootstrap.css">
+    <link rel="stylesheet" href="CSS/bootstrap.min.css">
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
@@ -44,6 +43,9 @@ $productos = $statement->fetchAll();
             border-radius: 10px; /* Bordes redondeados para el contenedor */
             margin-top: 20px; /* Margen superior */
         }
+        .table-container {
+            overflow-x: auto; /* Permite el desplazamiento horizontal en pantallas pequeñas */
+        }
         .table-dark {
             background-color: #343a40; /* Color de fondo oscuro para la tabla */
             color: #ffffff; /* Texto blanco */
@@ -58,28 +60,35 @@ $productos = $statement->fetchAll();
             background-color: #c82333;
             border-color: #bd2130;
         }
+        .navbar-brand img {
+            margin-right: 10px; /* Espacio a la derecha del logo */
+        }
+        .input-group-append {
+            margin-left: 10px; /* Espacio entre el botón y el input */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Buscar productos por mes -->
-        <nav class="navbar navbar-dark">
-            <a class="navbar-brand">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-            Buscar por mes</a>
-            <form class="form-inline" method="POST">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand">
+                <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Buscar por mes
+            </a>
+            <form class="form-inline ml-auto" method="POST">
                 <div class="input-group">
                     <input class="form-control mr-sm-2" type="month" name="fecha" placeholder="Fecha" aria-label="Fecha" value="<?php echo htmlspecialchars($buscarFecha); ?>">
                     <div class="input-group-append">
                         <button class="btn btn-outline-success" type="submit" name="buscar_fecha">Buscar</button>
-                        <a href="index.php" class="btn btn-danger">Regresar</a>
-
+                        <a href="index.php" class="btn btn-danger ml-2">Regresar</a>
                     </div>
                 </div>
             </form>
         </nav>
-
+        
         <!-- Mostrar productos -->
-        <div class="mt-3">
+        <div class="mt-3 table-container">
             <table class="table table-dark">
                 <thead>
                     <tr>
@@ -104,10 +113,6 @@ $productos = $statement->fetchAll();
             </table>
         </div>
     </div>
-        <!-- Botón de regresar -->
-        <div class="row mt-3">
-        <div class="col-12 text-center">
-        </div>
-    </div>
 </body>
 </html>
+

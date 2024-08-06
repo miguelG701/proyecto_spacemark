@@ -14,14 +14,13 @@ $usuario_id = $_SESSION['usuario_id'];
 $query = "SELECT hv.ID, p.Nombre as NombreProducto, hv.Cantidad, hv.Metodo_pago, hv.Total, hv.Estado
           FROM historial_ventas hv
           INNER JOIN productos p ON hv.IDP = p.IDP
-          WHERE hv.id_usuario = :usuario_id AND hv.Estado = 'Pendiente'";
+          WHERE hv.id_usuario = :usuario_id AND hv.Estado = 'Entregado' ORDER BY Nombre ASC";
 $statement = $con->prepare($query);
 $statement->bindParam(':usuario_id', $usuario_id);
 $statement->execute();
 $historial_ventas = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,13 +41,16 @@ $historial_ventas = $statement->fetchAll(PDO::FETCH_ASSOC);
             color: #ffffff; /* Texto blanco */
             padding: 20px; /* Espaciado interior */
             border-radius: 10px; /* Bordes redondeados para el contenedor */
-            margin-top: 20px; /* Margen superior */
+            margin: 0 auto; /* Centrar el contenedor */
+            max-width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
+            overflow-x: auto; /* Permite el desplazamiento horizontal si el contenido es más ancho */
         }
         .table-dark {
             background-color: #343a40; /* Color de fondo oscuro para la tabla */
             color: #ffffff; /* Texto blanco */
             border-radius: 10px; /* Bordes redondeados para la tabla */
             margin-top: 20px; /* Margen superior */
+            width: 100%; /* Asegura que la tabla ocupe todo el ancho disponible */
         }
         .btn-danger {
             background-color: #dc3545;
@@ -58,37 +60,54 @@ $historial_ventas = $statement->fetchAll(PDO::FETCH_ASSOC);
             background-color: #c82333;
             border-color: #bd2130;
         }
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px; /* Menos espaciado en pantallas pequeñas */
+                margin: 0 10px; /* Añade margen horizontal en pantallas pequeñas para evitar el borde */
+            }
+            .btn {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para botones en pantallas pequeñas */
+            }
+            .table-dark {
+                margin-top: 10px; /* Menos margen en pantallas pequeñas */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Historial de Compras</h2>
-        <table class="table table-dark">
-            <thead>
-                <tr>
-                    <th scope="col">Nombre del Producto</th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Método de Pago</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($historial_ventas as $venta): ?>
+        <h2 class="text-center mb-4">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Historial de Compras
+        </h2>
+        <div class="table-responsive">
+            <table class="table table-dark">
+                <thead>
                     <tr>
-                        <td><?= htmlspecialchars($venta['NombreProducto']) ?></td>
-                        <td><?= htmlspecialchars($venta['Cantidad']) ?></td>
-                        <td><?= htmlspecialchars($venta['Metodo_pago']) ?></td>
-                        <td><?= htmlspecialchars($venta['Total']) ?></td>
-                        <td><?= htmlspecialchars($venta['Estado']) ?></td>
+                        <th scope="col">Nombre del Producto</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Método de Pago</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Estado</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($historial_ventas as $venta): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($venta['NombreProducto']) ?></td>
+                            <td><?= htmlspecialchars($venta['Cantidad']) ?></td>
+                            <td><?= htmlspecialchars($venta['Metodo_pago']) ?></td>
+                            <td><?= htmlspecialchars($venta['Total']) ?></td>
+                            <td><?= htmlspecialchars($venta['Estado']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-        <!-- Botón de regresar -->
-        <div class="row mt-3">
+    <!-- Botón de regresar -->
+    <div class="row mt-3">
         <div class="col-12 text-center">
             <a href="index.php" class="btn btn-danger">Regresar</a>
         </div>

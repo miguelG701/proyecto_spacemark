@@ -618,6 +618,8 @@ foreach ($productos as $producto) {
                                             </div>
                                           <div class="col-md-6">
                                               <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
+                                              <p>Cantidad disponible: <?php echo htmlspecialchars($producto['Cantidad']); ?></p> <!-- Nueva línea para mostrar la cantidad disponible -->
+
                                               <form id="compra-form-<?php echo $producto['IDP']; ?>" action="" method="post">
                                                   <div class="mb-3 d-flex align-items-center">
                                                       <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>

@@ -63,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,15 +77,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #212529;
             color: #ffffff; /* Color de texto blanco para contrastar con el fondo oscuro */
         }
+        .form-container {
+            background-color: #343a40; /* Fondo oscuro para el contenedor del formulario */
+            padding: 20px; /* Espaciado interior */
+            border-radius: 10px; /* Bordes redondeados para el contenedor del formulario */
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 15px; /* Menos espaciado en pantallas pequeñas */
+            }
+            .btn {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para botones en pantallas pequeñas */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mt-4 mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Solicitud de Usuario</h2>
-        <form action="" method="post" enctype="multipart/form-data" class="bg-dark p-4 rounded">
+        <h2 class="text-center mt-4 mb-4">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Solicitud de Usuario
+        </h2>
+        <form action="" method="post" enctype="multipart/form-data" class="form-container">
             <div class="row mb-3">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="nombre" class="form-label">Nombre del usuario</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" required>
                 </div>
@@ -105,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="row">
                 <div class="col-12 text-center">
                     <a href="index.php" class="btn btn-danger">Regresar</a>
-                    <button type="submit" class="btn btn-primary">Mandar solicitud</button>
+                    <button type="submit" class="btn btn-primary">Enviar solicitud</button>
                 </div>
             </div>
         </form>

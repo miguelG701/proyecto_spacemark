@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
 </head>
 <body>
@@ -401,7 +401,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             <div class="form-text text-center mb-3"><u>Opciones de Cliente</u></div>
                             <div class="list-group">
                                 <a href="opcionesuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allusuario.png" height="50" class="me-2">
-                                Opiniones de perfil</a>
+                                Opciones de perfil</a>
 
                                 <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
                                 Carrito de compras</a>
@@ -461,8 +461,8 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="verproductosmandados.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductoEnviado.png" height="50" class="me-2">
                                 Productos Enviados</a>
                                 
-                                <a href="productosmes.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allmesproducto.png" height="50" class="me-2">
-                                Productos del mes</a>
+                                <!-- <a href="productosmes.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allmesproducto.png" height="50" class="me-2">
+                                Productos del mes</a> -->
                                 
                                 <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
                                 Carrito de compras</a>
@@ -622,12 +622,13 @@ document.getElementById('search-button').addEventListener('click', function(even
         }
     </style>
 
-<h5 class="container"> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
-    if ($tipo_usuario == 1) {?>
+<h5 class="container">
+    <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
+    if ($tipo_usuario == 1) { ?>
 
-<div class="container mt-5">
+    <div class="container mt-5">
         <h2 class="mb-4">Lista de Usuarios por Aceptar</h2>
-        <div class="table-container">
+        <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover table-light m-0">
                 <thead class="thead-light">
                     <tr>
@@ -659,11 +660,8 @@ document.getElementById('search-button').addEventListener('click', function(even
             </table>
         </div>
     </div>
-
-
-  </h5>
-  <?php
-  }?>
+    </h5>
+    <?php } ?>
 
 
 <!-- carousel inicio-->
@@ -789,53 +787,55 @@ foreach ($productos as $producto) {
                       </div>
                         <!-- Modal -->
                         <div class="modal fade" id="modal-<?php echo $producto['IDP']; ?>" tabindex="-1" aria-labelledby="label-modal-<?php echo $producto['IDP']; ?>" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                    <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="30" class="me-2">
-                                        <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>"> <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
-                                                    <img class="img-fluid" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
-                                                <?php else: ?>
-                                                    <img class="img-fluid" src="uploads/default.jpg" alt="Imagen no disponible">
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
-                                                <form id="compra-form-<?php echo $producto['IDP']; ?>" action="procesar_compra.php" method="post">
-                                                    <div class="mb-3 d-flex align-items-center">
-                                                        <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>
-                                                        <input type="number" class="form-control" id="cantidad-<?php echo $producto['IDP']; ?>" name="cantidad" min="1" max="<?php echo htmlspecialchars($producto['Cantidad']); ?>" value="1" required onchange="calcularTotal(<?php echo $producto['IDP']; ?>)">
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="metodo_pago-<?php echo $producto['IDP']; ?>" class="form-label">Método de Pago:</label>
-                                                        <select class="form-control" id="metodo_pago-<?php echo $producto['IDP']; ?>" name="metodo_pago" required>
-                                                            <option value="Efectivo">Efectivo</option>
-                                                            <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
-                                                            <option value="Transferencia">Transferencia Bancaria</option>
-                                                        </select>
-                                                    </div>
-                                                    <input type="hidden" name="id_producto" value="<?php echo $producto['IDP']; ?>">
-                                                    <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION['usuario_id']); ?>">
-                                                    <p>Precio: $<span id="precio-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Precio']); ?></span></p>
-                                                    <p>Total: $<span id="total-<?php echo $producto['IDP']; ?>">0.00</span></p>
-                                                    <input type="hidden" name="accion" value="comprar">
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
-                                        <button type="button" class="btn btn-primary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
-                                    </div>
-                                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="30" class="me-2">
+                <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Nombre']); ?></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
+                            <img class="img-fluid" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
+                        <?php else: ?>
+                            <img class="img-fluid" src="uploads/default.jpg" alt="Imagen no disponible">
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
+                        <p>Cantidad disponible: <?php echo htmlspecialchars($producto['Cantidad']); ?></p> <!-- Nueva línea para mostrar la cantidad disponible -->
+                        <form id="compra-form-<?php echo $producto['IDP']; ?>" action="procesar_compra.php" method="post">
+                            <div class="mb-3 d-flex align-items-center">
+                                <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>
+                                <input type="number" class="form-control" id="cantidad-<?php echo $producto['IDP']; ?>" name="cantidad" min="1" max="<?php echo htmlspecialchars($producto['Cantidad']); ?>" value="1" required onchange="calcularTotal(<?php echo $producto['IDP']; ?>)">
                             </div>
-                        </div>
+                            <div class="mb-3">
+                                <label for="metodo_pago-<?php echo $producto['IDP']; ?>" class="form-label">Método de Pago:</label>
+                                <select class="form-control" id="metodo_pago-<?php echo $producto['IDP']; ?>" name="metodo_pago" required>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                                    <option value="Transferencia">Transferencia Bancaria</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="id_producto" value="<?php echo $producto['IDP']; ?>">
+                            <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION['usuario_id']); ?>">
+                            <p>Precio: $<span id="precio-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Precio']); ?></span></p>
+                            <p>Total: $<span id="total-<?php echo $producto['IDP']; ?>">0.00</span></p>
+                            <input type="hidden" name="accion" value="comprar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
+                <button type="button" class="btn btn-primary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
+            </div>
+        </div>
+    </div>
+</div>
+
                     </div>
                 <?php endforeach; ?>
             </div>

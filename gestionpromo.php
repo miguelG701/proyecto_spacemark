@@ -110,7 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -131,10 +130,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #ffffff; /* Texto blanco */
             padding: 20px; /* Espaciado interior */
             border-radius: 10px; /* Bordes redondeados para el contenedor */
-            margin-top: 20px; /* Margen superior */
+            margin: 20px auto; /* Centrar el contenedor en la página y agregar margen */
             max-width: 900px; /* Ancho máximo para evitar que sea demasiado ancho en pantallas grandes */
-            margin-left: auto; /* Centrar el contenedor en la página */
-            margin-right: auto;
         }
         .table-dark {
             background-color: #343a40; /* Color de fondo oscuro para la tabla */
@@ -161,8 +158,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             width: auto;
             display: inline-block;
         }
-        .form-row, .modal-body, .modal-footer {
-            justify-content: center;
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px; /* Menos espaciado en pantallas pequeñas */
+            }
+            .table-dark {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para la tabla en pantallas pequeñas */
+            }
+            .form-group, .form-row, .modal-footer {
+                text-align: center; /* Centrar el contenido en pantallas pequeñas */
+            }
+            .btn {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para botones en pantallas pequeñas */
+            }
+            .form-control {
+                width: 100%; /* Ancho completo para controles de formulario en pantallas pequeñas */
+            }
+        }
+        /* Estilos para pantallas medianas y grandes */
+        @media (min-width: 768px) {
+            .col-md-6 {
+                max-width: 45%; /* Limitar el ancho máximo de las columnas en pantallas medianas y grandes */
+            }
+        }
+        .form-container {
+            max-width: 600px; /* Ancho máximo del formulario */
+            margin: 0 auto; /* Centrar el formulario */
         }
     </style>
     <!-- Scripts de SweetAlert -->
@@ -170,53 +192,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Gestión de Promociones</h2>
-        <form action="" method="POST">
+        <h2 class="text-center">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Gestión de Promociones
+        </h2>
+        <form action="" method="POST" class="form-container">
             <div class="modal-body">
-                <table class="table table-dark">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Descuento (%)</th>
-                            <th>Fecha Inicio</th>
-                            <th>Fecha Final</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($promociones as $promocion): ?>
+                <div class="table-responsive"> <!-- Añadido para hacer la tabla receptiva -->
+                    <table class="table table-dark">
+                        <thead>
                             <tr>
-                                <td><?php echo htmlspecialchars($promocion['NombreProducto']); ?></td>
-                                <td><?php echo htmlspecialchars($promocion['Descuento']); ?></td>
-                                <td><?php echo htmlspecialchars($promocion['Fecha_Inicio']); ?></td>
-                                <td><?php echo htmlspecialchars($promocion['Fecha_Final']); ?></td>
-                                <td>
-                                    <select class="form-control" name="promociones[<?php echo $promocion['ID']; ?>][Estado]">
-                                        <option value="Activa" <?php if ($promocion['Estado'] == 'Activa') echo 'selected'; ?>>Activa</option>
-                                        <option value="Eliminar" <?php if ($promocion['Estado'] == 'Eliminar') echo 'selected'; ?>>Eliminar</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_promocion">Guardar Cambio</button>
-                                </td>
-                                <input type="hidden" name="promociones[<?php echo $promocion['ID']; ?>][ID]" value="<?php echo $promocion['ID']; ?>">
+                                <th>Producto</th>
+                                <th>Descuento (%)</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Final</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($promociones as $promocion): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($promocion['NombreProducto']); ?></td>
+                                    <td><?php echo htmlspecialchars($promocion['Descuento']); ?></td>
+                                    <td><?php echo htmlspecialchars($promocion['Fecha_Inicio']); ?></td>
+                                    <td><?php echo htmlspecialchars($promocion['Fecha_Final']); ?></td>
+                                    <td>
+                                        <select class="form-control" name="promociones[<?php echo $promocion['ID']; ?>][Estado]">
+                                            <option value="Activa" <?php if ($promocion['Estado'] == 'Activa') echo 'selected'; ?>>Activa</option>
+                                            <option value="Eliminar" <?php if ($promocion['Estado'] == 'Eliminar') echo 'selected'; ?>>Eliminar</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_promocion">Guardar Cambio</button>
+                                    </td>
+                                    <input type="hidden" name="promociones[<?php echo $promocion['ID']; ?>][ID]" value="<?php echo $promocion['ID']; ?>">
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </form>
         <div class="row mt-3">
-        <div class="col-12 text-center">
-            <a href="index.php" class="btn btn-danger">Regresar</a>
+            <div class="col-12 text-center">
+                <a href="index.php" class="btn btn-danger">Regresar</a>
+            </div>
         </div>
-    </div>
 
         <!-- Formulario para agregar nueva promoción -->
         <h3 class="text-center mt-4">Agregar Nueva Promoción</h3>
-        <form action="" method="POST">
+        <form action="" method="POST" class="form-container">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="ID_Producto">Producto:</label>
