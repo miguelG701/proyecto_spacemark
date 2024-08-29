@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
+<<<<<<< HEAD
 -- Tiempo de generación: 14-08-2024 a las 07:35:34
+=======
+-- Tiempo de generación: 06-08-2024 a las 13:16:58
+>>>>>>> 7ba2cf3d847245476291b52426604944cd704857
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.1.17
 
@@ -165,6 +169,7 @@ INSERT INTO `historial_ventas` (`ID`, `id_usuario`, `Metodo_pago`, `Cantidad`, `
 (103, 39, 'Efectivo', 20, '2024-08-05 20:59:46', 'Entregado', 40, 40.00),
 (104, 32, 'Efectivo', 7, '2024-08-06 02:53:22', 'Entregado', 23, 40.00),
 (105, 32, 'Efectivo', 20, '2024-08-06 02:53:22', 'Entregado', 55, 40.00);
+<<<<<<< HEAD
 
 -- --------------------------------------------------------
 
@@ -191,6 +196,8 @@ INSERT INTO `imagenes` (`id`, `imagen`, `tipo`, `fecha_subida`) VALUES
 (11, 'descuento5.png', 'carrusel', '2024-08-14 05:27:41'),
 (13, 'anun1.png', 'promocion', '2024-08-14 05:28:48'),
 (14, 'aunu2.png', 'promocion', '2024-08-14 05:29:14');
+=======
+>>>>>>> 7ba2cf3d847245476291b52426604944cd704857
 
 -- --------------------------------------------------------
 
@@ -476,12 +483,15 @@ ALTER TABLE `detalles_compra`
 --
 ALTER TABLE `historial_ventas`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+<<<<<<< HEAD
 
 --
 -- AUTO_INCREMENT de la tabla `imagenes`
 --
 ALTER TABLE `imagenes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+=======
+>>>>>>> 7ba2cf3d847245476291b52426604944cd704857
 
 --
 -- AUTO_INCREMENT de la tabla `productos`

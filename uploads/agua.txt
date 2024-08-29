@@ -1,3 +1,8 @@
+<<<<<<< HEAD
                                     precio agua cristal $1,600
 
+=======
+                                    precio agua cristal $1,600
+
+>>>>>>> 7ba2cf3d847245476291b52426604944cd704857
 Una botella de agua es un recipiente diseñado para contener y transportar agua potable. Está disponible en diversas formas, tamaños, y materiales, cada uno de los cuales ofrece características específicas que se adaptan a las necesidades y preferencias del consumidor.
