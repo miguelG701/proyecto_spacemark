@@ -17,12 +17,13 @@ $query = "SELECT u.*, t.nom_tipos FROM usuarios u
           AND (u.usuario LIKE :searchTerm 
           OR u.nombre LIKE :searchTerm 
           OR t.nom_tipos LIKE :searchTerm)
-          ORDER BY u.id_usuario ASC LIMIT 100"; // Excluye a los administradores (id_tipos = 1)
+          ORDER BY u.nombre ASC, u.usuario ASC, t.nom_tipos ASC LIMIT 100"; // Excluye a los administradores (id_tipos = 1)
 
 $statement = $con->prepare($query);
 $statement->execute(['searchTerm' => '%' . $searchTerm . '%']);
 $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -68,8 +69,10 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
     <!-- ver usuarios ini -->
     <form action="" method="post">
         <div class="modal-body">
-            <h2 class="mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-            Lista de Usuarios</h2>
+            <h2 class="mb-4">
+                <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                Lista de Usuarios
+            </h2>
             <!-- Barra de búsqueda -->
             <div class="mb-3">
                 <div class="input-group">
@@ -77,32 +80,33 @@ $usuarios = $statement->fetchAll(PDO::FETCH_ASSOC);
                     <button type="submit" class="btn btn-outline-primary">Buscar</button>
                 </div>
             </div>
-            <table class="table table-dark">
-                <thead>
-                    <tr>
-                        <th scope="col">Número</th>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Tipo de Usuario</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
-                    $numero = 1;
-                    foreach ($usuarios as $usuario) {
-                        echo "<tr>";
-                        echo "<th scope='row'>" . $numero++ . "</th>";
-                        echo "<td>" . htmlspecialchars($usuario['usuario']) . "</td>";
-                        echo "<td>" . htmlspecialchars($usuario['nombre']) . "</td>";
-                        echo "<td>" . htmlspecialchars($usuario['nom_tipos']) . "</td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-footer">
+            <!-- Tabla responsive -->
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Número</th>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Tipo de Usuario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Iterar sobre los usuarios obtenidos y mostrarlos en la tabla
+                        $numero = 1;
+                        foreach ($usuarios as $usuario) {
+                            echo "<tr>";
+                            echo "<th scope='row'>" . $numero++ . "</th>";
+                            echo "<td>" . htmlspecialchars($usuario['usuario']) . "</td>";
+                            echo "<td>" . htmlspecialchars($usuario['nombre']) . "</td>";
+                            echo "<td>" . htmlspecialchars($usuario['nom_tipos']) . "</td>";
+                            echo "</tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </form>
     <!-- ver usuarios fin -->

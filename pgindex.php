@@ -143,37 +143,132 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <title>SpaceMark</title>
+    <style>
+        .navbar {
+            margin-bottom: 20px;
+            background-color: #343a40; /* Color de fondo oscuro */
+
+        }
+        .navbar-dark .form-control {
+            background-color: #495057; /* Color de fondo oscuro para el campo de búsqueda */
+            color: #ffffff; /* Color de texto blanco para el campo de búsqueda */
+            border: none; /* Eliminar borde del campo de búsqueda */
+        }
+        .navbar-nav {
+            margin-left: auto;
+        }
+        .form-inline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-inline .form-control {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-inline .btn {
+            margin-left: 10px;
+        }
+        .btn-regresar {
+            margin-top: 10px;
+        }
+        #search-input::placeholder {
+            color: #fff; /* Cambia este color al deseado */
+            opacity: 1; /* Asegúrate de que el placeholder sea opaco */
+        }
+    </style>
 </head>
 <body>
-  <!-- navergador primario inicio -->
 
-  <!-- alertas de sesion ini  -->
 
-  <!-- alertas de sesion fin  -->
+  <!-- navergador inicio -->
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container-fluid">
+  <nav class="navbar navbar-expand-lg navbar-dark shadow ">
+    <div class="container-fluid">
         <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-          <a class="navbar-brand" href="#">SpaceMark</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#">SpaceMark</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            </ul>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Buscador con filtro de categoría -->
+            <div class="d-flex align-items-center mx-auto my-2 my-lg-0">
+                <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
+                <select id="category-select" class="form-control me-2">
+                    <option value="">Todas las Categorías</option>
+                    <?php
+                    // Consulta para obtener las categorías
+                    $query_categorias = "SELECT DISTINCT Categoria FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
+                    $stmt_categorias = $con->prepare($query_categorias);
+                    $stmt_categorias->execute();
+                    $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($categorias as $categoria) {
+                        echo "<option value='" . htmlspecialchars($categoria['Categoria']) . "'>" . htmlspecialchars($categoria['Categoria']) . "</option>";
+                    }
+                    ?>
+                </select>
+                <button id="search-button" class="btn btn-outline-primary" type="button">Buscar</button>
+            </div>
+            <!-- Botones de acción -->
+            <div class="ms-auto">
+                <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalreg0">Registro</button>
+                <button class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalini1">Iniciar Sesión</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('search-button').addEventListener('click', function(event) {
+    event.preventDefault();
+    var searchTerm = document.getElementById('search-input').value.toLowerCase();
+    var selectedCategory = document.getElementById('category-select').value;
+    var products = document.querySelectorAll('.col-md-3'); // Asegúrate de que tus productos tengan esta clase
+    
+    products.forEach(function(product) {
+        var productName = product.querySelector('.product-name').textContent.toLowerCase();
+        var productCategory = product.dataset.category; // Asegúrate de que tus productos tengan el atributo data-category
+        
+        var matchesSearchTerm = productName.includes(searchTerm);
+        var matchesCategory = (selectedCategory === '' || productCategory === selectedCategory);
+        
+        if (matchesSearchTerm && matchesCategory) {
+            product.style.display = 'block';
+        } else {
+            product.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<!-- navergador fin -->
 
 
 
-            <!-- registro -->
-            <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalreg0">Registro</button>
-            <div class="modal fade"
+
+
+
+
+
+
+
+
+<!-- procesosa del nav ini-->
+
+<!-- registro  -->
+<div class="modal fade"
             id="modalreg0"
             tabindex="1"
             aria-hidden="true"
             aria-labelledby="label-modalreg0">
             <!-- caja de dialogo -->
             <div class="modal-dialog">
-                <div class="modal-content">                    
+                <div class="modal-content">         
+                               
                     <!-- cuerpo -->
                     <div class="modal-body">
                     <form action="" method="post">
@@ -228,7 +323,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div class="col-12">
                                       <div class="form-check">
                                       <input class="form-check-input" type="checkbox" name="terminos" required>
-                                        <label class="text-white opacity-75 form-check-label" for="terminos">
+                                        <label class="text-dark opacity-75 form-check-label" for="terminos">
                                             Acepta los términos y condiciones.
                                             <p>Consentimiento de Cookies. Al continuar navegando en Spacemark, aceptas el uso de cookies de acuerdo con nuestra política de cookies.</p>
                                             <div class="nav-item"><a href="CondicionesUso.php" class="nav-link px-2 text-body-secondary"><u>Condiciones de uso</u></a></div>
@@ -240,88 +335,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                             
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-outline-danger btn-sm" name="registrar">Registrar</button>
+                                <button type="submit" class="mx-auto btn btn-outline-danger btn-sm" name="registrar">Registrar</button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
           </div>
-        
-
-          </div>
-        </div>
-      </nav>
-
-      <!-- fin del registro  -->
-<!-- navergador primaria fin -->
+<!-- fin del registro  -->
 
 
-<!-- navergador secundario inicio -->
-<nav class="shadow mb-4 bg-white navbar navbar-expand-lg bg-body-tertiary rounded-bottom" data-bs-theme="dark">
-  <div class="container-fluid">
-
-<!-- buscador ini -->
-<!-- Buscador con filtro de categoría -->
-<div class="collapse navbar-collapse mb-3" id="navbarSupportedContent">
-  <div class="row w-100">
-    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
-      <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
-    </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
-      <select id="category-select" class="form-control m-1">
-        <option value="">Todas las Categorías</option>
-        <!-- Las categorías se llenan dinámicamente desde el backend -->
-        <?php
-        // Consulta para obtener las categorías
-        $query_categorias = "SELECT DISTINCT Categoria FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
-        $stmt_categorias = $con->prepare($query_categorias);
-        $stmt_categorias->execute();
-        $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($categorias as $categoria) {
-            echo "<option value='" . htmlspecialchars($categoria['Categoria']) . "'>" . htmlspecialchars($categoria['Categoria']) . "</option>";
-        }
-        ?>
-      </select>
-    </div>
-    <div class="col-lg-4 col-md-12 col-sm-12 text-lg-start text-center">
-      <button id="search-button" class="btn btn-outline-primary w-100" type="button">Buscar</button>
-    </div>
-  </div>
-</div>
 
 
-<script>
-document.getElementById('search-button').addEventListener('click', function(event) {
-  event.preventDefault();
-  var searchTerm = document.getElementById('search-input').value.toLowerCase();
-  var selectedCategory = document.getElementById('category-select').value;
-  var products = document.querySelectorAll('.col-md-3'); // Asegúrate de que tus productos tengan esta clase
-  
-  products.forEach(function(product) {
-    var productName = product.querySelector('.product-name').textContent.toLowerCase();
-    var productCategory = product.dataset.category; // Asegúrate de que tus productos tengan el atributo data-category
-    
-    var matchesSearchTerm = productName.includes(searchTerm);
-    var matchesCategory = (selectedCategory === '' || productCategory === selectedCategory);
-    
-    if (matchesSearchTerm && matchesCategory) {
-      product.style.display = 'block';
-    } else {
-      product.style.display = 'none';
-    }
-  });
-});
-</script>
-<!-- buscador fin -->
 
-    <!-- <h4 class="text-white m-3">Estas Adentro </h4> -->
-    
-    
-    <!-- inico de sesion -->
-      <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalini1">Iniciar Sesion</button>
-            <div class="modal fade"
+<!-- inico de sesion -->
+
+<div class="modal fade"
             id="modalini1"
             tabindex="2"
             aria-hidden="true"
@@ -362,7 +393,8 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <div class="col-12 btn text-danger" data-bs-toggle="modal" data-bs-target="#modalreg0">
                                     <u>Regístrate si no lo has hecho</u>
                                 </div>
-                                
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                             
                             </div>
                         </form>
@@ -374,10 +406,7 @@ document.getElementById('search-button').addEventListener('click', function(even
           </div>
         </div>
 
-      <!-- fin del incio de sesion  -->
-
-
-
+<!-- fin del incio de sesion  -->
 
 
 <!-- recupera con ini -->
@@ -414,7 +443,9 @@ document.getElementById('search-button').addEventListener('click', function(even
                     <div class="modal-footer">
                         <!-- Agregar campo oculto para enviar el ID del usuario -->
                         <input type="hidden" name="usuario_id" value="<?php echo isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : ''; ?>">
-                        <button type="submit" class="col-12 btn btn-outline-success btn-sm" name="guardar_contraseña">Guardar Contraseña</button>
+                        <button type="submit" class="mx-auto col-12 btn btn-outline-success btn-sm" name="guardar_contraseña">Guardar Contraseña</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                     </div>
                 </form>
             </div>
@@ -423,54 +454,7 @@ document.getElementById('search-button').addEventListener('click', function(even
 </div>
 <!--recupera con fin-->
 
-
-
-
-  </div>
-<script src="js/bootstrap.js"></script>
-
-</nav>
-
-<!-- navergador secundario fin -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Mostrar una alerta si el usuario intenta retroceder sin iniciar sesión -->
-
-<!-- <script>
-        window.onbeforeunload = function() {
-            return "Por favor, inicia sesión para acceder a esta página.";
-        };
-</script> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!-- procesosa de los nav fin-->
 
 
 
@@ -481,59 +465,46 @@ document.getElementById('search-button').addEventListener('click', function(even
         <div class="row mb-5">
             <div class="col">
             
-                <div class="carousel slide carousel-fade" id="mi-carousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img class="img-fluid rounded" src="IMG/descuento1.png">
-                        </div>
+            <?php
+// Suponiendo que ya tienes la conexión establecida en $con
 
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento2.png">
-                        </div>
-                           
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento3.png">
-                        </div>
+// Consulta para obtener las imágenes de tipo 'carrusel'
+$query = "SELECT imagen FROM imagenes WHERE tipo = 'carrusel'";
+$statement = $con->prepare($query);
+$statement->execute();
+$imagenes = $statement->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento4.png">
-                        </div>
+<div class="carousel slide carousel-fade" id="mi-carousel" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <?php
+        $active = 'active'; // La primera imagen debe ser la activa
+        foreach ($imagenes as $index => $imagen): ?>
+            <div class="carousel-item <?php echo $active; ?>">
+                <img class="img-fluid rounded" src="uploads/<?php echo htmlspecialchars($imagen['imagen']); ?>" alt="Imagen carrusel">
+            </div>
+            <?php
+            $active = ''; // Solo la primera imagen debe tener la clase 'active'
+        endforeach;
+        ?>
+    </div>
 
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento5.png">
-                        </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#mi-carousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+    </button>
 
-                    </div>
+    <button class="carousel-control-next" type="button" data-bs-target="#mi-carousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+    </button>
 
-                    <button class="carousel-control-prev" type="button" data-bs-target="#mi-carousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </button>
-
-                    <button class="carousel-control-next" type="button" data-bs-target="#mi-carousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>                    
-                    </button>
-
-
-                    <div class="carousel-indicators">
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="0" aria-label="Slide 1">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="1" aria-label="Slide 2">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="2" aria-label="Slide 3">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="3" aria-label="Slide 4">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="4" aria-label="Slide 5">
-                        </button>
-                    </div>
-
-                </div>
+    <div class="carousel-indicators">
+        <?php foreach ($imagenes as $index => $imagen): ?>
+            <button type="button" data-bs-target="#mi-carousel" data-bs-slide-to="<?php echo $index; ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>" aria-label="Slide <?php echo $index + 1; ?>"></button>
+        <?php endforeach; ?>
+    </div>
+</div>
                
             </div>
         </div>
@@ -618,6 +589,8 @@ foreach ($productos as $producto) {
                                             </div>
                                           <div class="col-md-6">
                                               <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
+                                              <p>Cantidad disponible: <?php echo htmlspecialchars($producto['Cantidad']); ?></p> <!-- Nueva línea para mostrar la cantidad disponible -->
+
                                               <form id="compra-form-<?php echo $producto['IDP']; ?>" action="" method="post">
                                                   <div class="mb-3 d-flex align-items-center">
                                                       <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>
@@ -640,8 +613,8 @@ foreach ($productos as $producto) {
                                       </div>
                                   </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalini1" title="Debes iniciar sesión para comprar">Comprar</button>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalini1" title="Debes iniciar sesión para añadir al carrito">Añadir al Carrito</button>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalini1" onclick="alertS()">Comprar</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalini1" onclick="alertS2()">Añadir al Carrito</button>
                                     </div>
                               </div>
                           </div>
@@ -652,6 +625,25 @@ foreach ($productos as $producto) {
         <?php endforeach; ?>
     </div>
     
+    <script>
+    function alertS(){
+    Swal.fire({
+    icon: 'warning',
+    title: 'Debes iniciar sesión para comprar',
+    timer: 3000,
+    timerProgressBar: true, 
+    showConfirmButton: false})
+    }
+
+    function alertS2(){
+    Swal.fire({
+    icon: 'warning',
+    title: 'Debes iniciar sesión para añadir al carrito',
+    timer: 3000,
+    timerProgressBar: true, 
+    showConfirmButton: false})
+    }
+    </script>
 <!-- aumenta el total del producto al cambiar la cantidad ini -->
 <script>
 function calcularTotal(idProducto) {
@@ -674,14 +666,22 @@ function calcularTotal(idProducto) {
   <h3>Aprovecha estos descuentos para el hogar</h3>
 </div>
 
-<div class="card-group">
-  <div class="card mb-5">
-    <img src="./IMG/anun1.png" class="rounded" alt="...">
-  </div>
+<?php
+// Consulta para obtener imágenes de tipo "promocion"
+$query = "SELECT imagen FROM imagenes WHERE tipo = 'promocion'";
+$statement = $con->prepare($query);
+$statement->execute();
+$imagenes = $statement->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-  <div class="card mb-5">
-    <img src="./IMG/aunu2.png" class="rounded" alt="...">
-  </div>
+<div>
+    <div class="card-group">
+        <?php foreach ($imagenes as $imagen): ?>
+            <div class="card mb-5">
+                <img src="uploads/<?php echo htmlspecialchars($imagen['imagen']); ?>" class="rounded" alt="Promoción">
+            </div>
+        <?php endforeach; ?>
+    </div>
 </div>
 
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">

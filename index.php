@@ -94,8 +94,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="CSS/alerta.css">
     <link rel="shortcut icon" href="IMG/Spacemark ico_transparent.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <title>SpaceMark</title>
+    <style>
+        .navbar {
+            margin-bottom: 20px;
+            background-color: #343a40; /* Color de fondo oscuro */
+
+        }
+        .navbar-dark .form-control {
+            background-color: #495057; /* Color de fondo oscuro para el campo de búsqueda */
+            color: #ffffff; /* Color de texto blanco para el campo de búsqueda */
+            border: none; /* Eliminar borde del campo de búsqueda */
+        }
+        .navbar-nav {
+            margin-left: auto;
+        }
+        .form-inline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-inline .form-control {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-inline .btn {
+            margin-left: 10px;
+        }
+        .btn-regresar {
+            margin-top: 10px;
+        }
+        #search-input::placeholder {
+            color: #fff; /* Cambia este color al deseado */
+            opacity: 1; /* Asegúrate de que el placeholder sea opaco */
+        }
+    </style>
 </head>
 <body>
 
@@ -147,64 +182,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-  <!-- navergador primario inicio -->
+<!-- navegador inicio -->
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow mb-4">
+    <div class="container-fluid">
         <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-
-          <a class="navbar-brand" href="#">SpaceMark</a>
-
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#">SpaceMark</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            </ul>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Buscador con filtro de categoría -->
+            <div class="d-flex align-items-center mx-auto my-2 my-lg-0">
+                <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
+                <select id="category-select" class="form-control me-2">
+                    <option value="">Todas las Categorías</option>
+                    <?php
+                    // Consulta para obtener las categorías
+                    $query_categorias = "SELECT DISTINCT Categoria FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
+                    $stmt_categorias = $con->prepare($query_categorias);
+                    $stmt_categorias->execute();
+                    $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
 
+                    foreach ($categorias as $categoria) {
+                        echo "<option value='" . htmlspecialchars($categoria['Categoria']) . "'>" . htmlspecialchars($categoria['Categoria']) . "</option>";
+                    }
+                    ?>
+                </select>
+                <button id="search-button" class="btn btn-outline-primary" type="button">Buscar</button>
+            </div>
 
-          <a href="salir.php">
-            <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar Sesión</button>
-          </a>
-            
-      </nav>
-<!-- navergador primaria fin -->
+            <!-- Botones de acción -->
+            <div class="d-flex align-items-center">
 
-
-<!-- navergador secundario inicio -->
-<nav class="shadow mb-4 bg-white navbar navbar-expand-lg bg-body-tertiary rounded-bottom" data-bs-theme="dark">
-  <div class="container-fluid">
-
-<!-- buscador ini -->
-<!-- Buscador con filtro de categoría -->
-<div class="collapse navbar-collapse mb-3" id="navbarSupportedContent">
-  <div class="row w-100">
-    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
-      <input id="search-input" class="form-control me-2" type="search" placeholder="¿ Qué deseas buscar ?" aria-label="Search">
+             
+                <div class="text-white text-center">
+                    <h4 class="mb-0">Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?></h4>
+                    <h5 class="mb-0 me-3">
+                    <?php
+                    $tipo_usuario = $_SESSION['usuario_tipo']; 
+                    $modalId = '';
+                    $btnText = 'Desconocido';
+                    if ($tipo_usuario == 1) {
+                        $modalId = 'modaluse2';
+                        $btnText = 'Administrador';
+                    } elseif ($tipo_usuario == 2) {
+                        $modalId = 'modaluse3';
+                        $btnText = 'Cliente';
+                    } elseif ($tipo_usuario == 3) {
+                        $modalId = 'modaluse4';
+                        $btnText = 'Proveedor';
+                    } elseif ($tipo_usuario == 4) {
+                        $modalId = 'modaluse5';
+                        $btnText = 'Empleado';
+                    } elseif ($tipo_usuario == 5) {
+                        $modalId = 'modaluse6';
+                        $btnText = 'Gerente';
+                    }
+                    echo "<p class='btn btn-outline-info btn-sm mb-0' data-bs-toggle='modal' data-bs-target='#$modalId'>$btnText <i class='fas fa-ellipsis-v'></i></p>";
+                    ?>
+                </h5>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 mb-2 mb-lg-0">
-      <select id="category-select" class="form-control m-1">
-        <option value="">Todas las Categorías</option>
-        <!-- Las categorías se llenan dinámicamente desde el backend -->
-        <?php
-        // Consulta para obtener las categorías
-        $query_categorias = "SELECT DISTINCT Categoria FROM productos WHERE Estado = 'Aceptado' AND Cantidad > 0";
-        $stmt_categorias = $con->prepare($query_categorias);
-        $stmt_categorias->execute();
-        $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
+</nav>
 
-        foreach ($categorias as $categoria) {
-            echo "<option value='" . htmlspecialchars($categoria['Categoria']) . "'>" . htmlspecialchars($categoria['Categoria']) . "</option>";
-        }
-        ?>
-      </select>
-    </div>
-    <div class="col-lg-4 col-md-12 col-sm-12 text-lg-start text-center">
-      <button id="search-button" class="btn btn-outline-primary w-100" type="button">Buscar</button>
-    </div>
-  </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 
 <script>
 document.getElementById('search-button').addEventListener('click', function(event) {
@@ -228,31 +273,22 @@ document.getElementById('search-button').addEventListener('click', function(even
   });
 });
 </script>
-<!-- buscador fin -->
+<!-- navergador fin -->
 
-            
-    
-  <div class="m-3 text-center">
 
-    <h4><?php echo "<h4 class='text-white'>Bienvenido, " . $_SESSION['usuario_nombre'] . "</h4>";?> </h4>
 
-    <h5 class=""> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
-    if ($tipo_usuario == 1) {
-        echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse2'>Administrador  <i class='fas fa-ellipsis-v'></i></p>";
-        } elseif ($tipo_usuario == 2) {
-        echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse3'>Cliente  <i class='fas fa-ellipsis-v'></i></p>";
-    } elseif ($tipo_usuario == 3) {
-        echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse4'>Proveedor  <i class='fas fa-ellipsis-v'></i></p>";
-    } elseif ($tipo_usuario == 4) {
-      echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse5'>Empleado  <i class='fas fa-ellipsis-v'></i></p>";
-    } elseif ($tipo_usuario == 5) {
-      echo "<p class='btn btn-outline-info btn-sm' data-bs-toggle='modal' data-bs-target='#modaluse6'>Gerente  <i class='fas fa-ellipsis-v'></i></p>";
-     }else {
-        echo "<p class='text-white'>Desconocido</p>";
-    }?></h5>
 
-  </div>
 
+
+
+
+
+
+
+
+
+
+<!-- procesos del nav ini -->
   <!-- Administrador ini-->
   <div class="modal fade"
          id="modaluse2"
@@ -277,11 +313,9 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="aceptaruser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllacepRegistro.png" height="50" class="me-2">
                                 Registros por Aceptar</a>
                                 
-                                <a href="mandarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allsolicitarproducto.png" height="50" class="me-2">
-                                Enviar Producto</a>
                                 
-                                <a href="confirmarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allconfirmaproducto.png" height="50" class="me-2">
-                                Confirmar Producto</a>
+                                <a href="informesdinamicos.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allinformes.png" height="50" class="me-2">
+                                Informes</a>
                                 
                                 <a href="gestionproveedores.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestionproveedores.png" height="50" class="me-2">
                                 Gestión de Proveedores</a>
@@ -308,6 +342,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <a href="salir.php" class="mx-auto btn btn-outline-danger btn-sm">Cerrar Sesión</a>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                     </form>
@@ -401,7 +436,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             <div class="form-text text-center mb-3"><u>Opciones de Cliente</u></div>
                             <div class="list-group">
                                 <a href="opcionesuser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allusuario.png" height="50" class="me-2">
-                                Opiniones de perfil</a>
+                                Opciones de perfil</a>
 
                                 <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
                                 Carrito de compras</a>
@@ -420,6 +455,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <a href="salir.php" class="mx-auto btn btn-outline-danger btn-sm">Cerrar Sesión</a>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                     </form>
@@ -461,8 +497,8 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 <a href="verproductosmandados.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/AllproductoEnviado.png" height="50" class="me-2">
                                 Productos Enviados</a>
                                 
-                                <a href="productosmes.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allmesproducto.png" height="50" class="me-2">
-                                Productos del mes</a>
+                                <!-- <a href="productosmes.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allmesproducto.png" height="50" class="me-2">
+                                Productos del mes</a> -->
                                 
                                 <a href="carritouser.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allcarrito.png" height="50" class="me-2">
                                 Carrito de compras</a>
@@ -475,6 +511,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <a href="salir.php" class="mx-auto btn btn-outline-danger btn-sm">Cerrar Sesión</a>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                     </form>
@@ -524,6 +561,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <a href="salir.php" class="mx-auto btn btn-outline-danger btn-sm">Cerrar Sesión</a>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                     </form>
@@ -561,6 +599,9 @@ document.getElementById('search-button').addEventListener('click', function(even
                                 
                                 <a href="gestionpromo.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allpromocionproducto.png" height="50" class="me-2">
                                 Gestion de Promociones</a>
+
+                                <a href="gestionpromoImg.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allgestioncontenido.png" height="50" class="me-2">
+                                Gestion de Imagenes Promocionales</a>
                                 
                                 <a href="confirmarproducto.php" class="list-group-item list-group-item-action"><img class="m-2" src="IMG/Allconfirmaproducto.png" height="50" class="me-2">
                                 Confirmar Producto</a>
@@ -591,6 +632,7 @@ document.getElementById('search-button').addEventListener('click', function(even
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <a href="salir.php" class="mx-auto btn btn-outline-danger btn-sm">Cerrar Sesión</a>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                     </form>
@@ -600,10 +642,9 @@ document.getElementById('search-button').addEventListener('click', function(even
     </div>
 <!-- Gerente fin /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 
-  </div>
-<script src="js/bootstrap.js"></script>
-</nav>
-<!-- navergador secundario fin -->
+<!-- procesos del nav fin -->
+
+
 
 
  <!-- Mostrar una alerta si el usuario intenta retroceder sin cerrar sesión -->
@@ -622,12 +663,13 @@ document.getElementById('search-button').addEventListener('click', function(even
         }
     </style>
 
-<h5 class="container"> <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
-    if ($tipo_usuario == 1) {?>
+<h5 class="container">
+    <?php $tipo_usuario = $_SESSION['usuario_tipo']; 
+    if ($tipo_usuario == 1) { ?>
 
-<div class="container mt-5">
+    <div class="container mt-5">
         <h2 class="mb-4">Lista de Usuarios por Aceptar</h2>
-        <div class="table-container">
+        <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover table-light m-0">
                 <thead class="thead-light">
                     <tr>
@@ -659,11 +701,8 @@ document.getElementById('search-button').addEventListener('click', function(even
             </table>
         </div>
     </div>
-
-
-  </h5>
-  <?php
-  }?>
+    </h5>
+    <?php } ?>
 
 
 <!-- carousel inicio-->
@@ -671,62 +710,53 @@ document.getElementById('search-button').addEventListener('click', function(even
         <div class="row mb-5">
             <div class="col">
             
-                <div class="carousel slide carousel-fade" id="mi-carousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img class="img-fluid rounded" src="IMG/descuento1.png">
-                        </div>
+            <?php
+// Suponiendo que ya tienes la conexión establecida en $con
 
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento2.png">
-                        </div>
-                           
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento3.png">
-                        </div>
+// Consulta para obtener las imágenes de tipo 'carrusel'
+$query = "SELECT imagen FROM imagenes WHERE tipo = 'carrusel'";
+$statement = $con->prepare($query);
+$statement->execute();
+$imagenes = $statement->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento4.png">
-                        </div>
+<div class="carousel slide carousel-fade" id="mi-carousel" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <?php
+        $active = 'active'; // La primera imagen debe ser la activa
+        foreach ($imagenes as $index => $imagen): ?>
+            <div class="carousel-item <?php echo $active; ?>">
+                <img class="img-fluid rounded" src="uploads/<?php echo htmlspecialchars($imagen['imagen']); ?>" alt="Imagen carrusel">
+            </div>
+            <?php
+            $active = ''; // Solo la primera imagen debe tener la clase 'active'
+        endforeach;
+        ?>
+    </div>
 
-                        <div class="carousel-item">
-                            <img class="img-fluid rounded" src="IMG/descuento5.png">
-                        </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#mi-carousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+    </button>
 
-                    </div>
+    <button class="carousel-control-next" type="button" data-bs-target="#mi-carousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+    </button>
 
-                    <button class="carousel-control-prev" type="button" data-bs-target="#mi-carousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </button>
-
-                    <button class="carousel-control-next" type="button" data-bs-target="#mi-carousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>                    
-                    </button>
-
-
-                    <div class="carousel-indicators">
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="0" aria-label="Slide 1">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="1" aria-label="Slide 2">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="2" aria-label="Slide 3">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="3" aria-label="Slide 4">
-                        </button>
-
-                        <button type="button" class="active" data-bs-target="#mi-carousel" data-bs-slide-to="4" aria-label="Slide 5">
-                        </button>
-                    </div>
-
-                </div>
+    <div class="carousel-indicators">
+        <?php foreach ($imagenes as $index => $imagen): ?>
+            <button type="button" data-bs-target="#mi-carousel" data-bs-slide-to="<?php echo $index; ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>" aria-label="Slide <?php echo $index + 1; ?>"></button>
+        <?php endforeach; ?>
+    </div>
+</div>
                
             </div>
         </div>
+
+
+
+        
 <!-- carousel fin-->
 
 <!-- inicio de Super mercado de SpaceMark -->
@@ -789,53 +819,55 @@ foreach ($productos as $producto) {
                       </div>
                         <!-- Modal -->
                         <div class="modal fade" id="modal-<?php echo $producto['IDP']; ?>" tabindex="-1" aria-labelledby="label-modal-<?php echo $producto['IDP']; ?>" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                    <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="30" class="me-2">
-                                        <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>"> <?php echo htmlspecialchars($producto['Nombre']); ?></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
-                                                    <img class="img-fluid" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
-                                                <?php else: ?>
-                                                    <img class="img-fluid" src="uploads/default.jpg" alt="Imagen no disponible">
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
-                                                <form id="compra-form-<?php echo $producto['IDP']; ?>" action="procesar_compra.php" method="post">
-                                                    <div class="mb-3 d-flex align-items-center">
-                                                        <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>
-                                                        <input type="number" class="form-control" id="cantidad-<?php echo $producto['IDP']; ?>" name="cantidad" min="1" max="<?php echo htmlspecialchars($producto['Cantidad']); ?>" value="1" required onchange="calcularTotal(<?php echo $producto['IDP']; ?>)">
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="metodo_pago-<?php echo $producto['IDP']; ?>" class="form-label">Método de Pago:</label>
-                                                        <select class="form-control" id="metodo_pago-<?php echo $producto['IDP']; ?>" name="metodo_pago" required>
-                                                            <option value="Efectivo">Efectivo</option>
-                                                            <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
-                                                            <option value="Transferencia">Transferencia Bancaria</option>
-                                                        </select>
-                                                    </div>
-                                                    <input type="hidden" name="id_producto" value="<?php echo $producto['IDP']; ?>">
-                                                    <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION['usuario_id']); ?>">
-                                                    <p>Precio: $<span id="precio-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Precio']); ?></span></p>
-                                                    <p>Total: $<span id="total-<?php echo $producto['IDP']; ?>">0.00</span></p>
-                                                    <input type="hidden" name="accion" value="comprar">
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
-                                        <button type="button" class="btn btn-primary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
-                                    </div>
-                                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="30" class="me-2">
+                <h5 class="modal-title" id="label-modal-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Nombre']); ?></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <?php if (!empty($producto['Foto']) && file_exists("uploads/" . htmlspecialchars($producto['Foto']))): ?>
+                            <img class="img-fluid" src="uploads/<?php echo htmlspecialchars($producto['Foto']); ?>" alt="Producto">
+                        <?php else: ?>
+                            <img class="img-fluid" src="uploads/default.jpg" alt="Imagen no disponible">
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><?php echo htmlspecialchars($producto['Descripcion']); ?></h5>
+                        <p>Cantidad disponible: <?php echo htmlspecialchars($producto['Cantidad']); ?></p> <!-- Nueva línea para mostrar la cantidad disponible -->
+                        <form id="compra-form-<?php echo $producto['IDP']; ?>" action="procesar_compra.php" method="post">
+                            <div class="mb-3 d-flex align-items-center">
+                                <label for="cantidad-<?php echo $producto['IDP']; ?>" class="form-label me-2">Cantidad:</label>
+                                <input type="number" class="form-control" id="cantidad-<?php echo $producto['IDP']; ?>" name="cantidad" min="1" max="<?php echo htmlspecialchars($producto['Cantidad']); ?>" value="1" required onchange="calcularTotal(<?php echo $producto['IDP']; ?>)">
                             </div>
-                        </div>
+                            <div class="mb-3">
+                                <label for="metodo_pago-<?php echo $producto['IDP']; ?>" class="form-label">Método de Pago:</label>
+                                <select class="form-control" id="metodo_pago-<?php echo $producto['IDP']; ?>" name="metodo_pago" required>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                                    <option value="Transferencia">Transferencia Bancaria</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="id_producto" value="<?php echo $producto['IDP']; ?>">
+                            <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION['usuario_id']); ?>">
+                            <p>Precio: $<span id="precio-<?php echo $producto['IDP']; ?>"><?php echo htmlspecialchars($producto['Precio']); ?></span></p>
+                            <p>Total: $<span id="total-<?php echo $producto['IDP']; ?>">0.00</span></p>
+                            <input type="hidden" name="accion" value="comprar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('compra-form-<?php echo $producto['IDP']; ?>').submit();">Comprar</button>
+                <button type="button" class="btn btn-primary" onclick="agregarAlCarrito(<?php echo $producto['IDP']; ?>);">Añadir al Carrito</button>
+            </div>
+        </div>
+    </div>
+</div>
+
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -871,16 +903,24 @@ function calcularTotal(idProducto) {
 <div class="">
   <h3>Aprovecha estos descuentos para el hogar</h3>
 </div>
+<?php
+// Consulta para obtener imágenes de tipo "promocion"
+$query = "SELECT imagen FROM imagenes WHERE tipo = 'promocion'";
+$statement = $con->prepare($query);
+$statement->execute();
+$imagenes = $statement->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-<div class="card-group">
-  <div class="card mb-5">
-    <img src="./IMG/anun1.png" class="rounded" alt="...">
-  </div>
-
-  <div class="card mb-5">
-    <img src="./IMG/aunu2.png" class="rounded" alt="...">
-  </div>
+<div>
+    <div class="card-group">
+        <?php foreach ($imagenes as $imagen): ?>
+            <div class="card mb-5">
+                <img src="uploads/<?php echo htmlspecialchars($imagen['imagen']); ?>" class="rounded" alt="Promoción">
+            </div>
+        <?php endforeach; ?>
+    </div>
 </div>
+
 
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
   <symbol id="facebook" viewBox="0 0 16 16">

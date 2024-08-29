@@ -104,7 +104,6 @@ if (isset($_POST['btn_buscar'])) {
     $busqueda_text = $_POST['busqueda'];
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,6 +125,8 @@ if (isset($_POST['btn_buscar'])) {
             padding: 20px; /* Espaciado interior */
             border-radius: 10px; /* Bordes redondeados para el contenedor */
             margin-top: 20px; /* Margen superior */
+            max-width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
+            overflow-x: auto; /* Permite el desplazamiento horizontal si el contenido es más ancho */
         }
         .table-dark {
             background-color: #343a40; /* Color de fondo oscuro para la tabla */
@@ -137,7 +138,7 @@ if (isset($_POST['btn_buscar'])) {
         }
         .form-control {
             display: inline-block; /* Alinear controles de formulario en línea */
-            width: auto; /* Ancho automático para controles */
+            width: 100%; /* Ancho completo para controles de formulario */
         }
         .btn-outline-danger {
             color: #dc3545;
@@ -147,6 +148,27 @@ if (isset($_POST['btn_buscar'])) {
             background-color: #dc3545;
             color: #ffffff;
         }
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px; /* Menos espaciado en pantallas pequeñas */
+            }
+            .btn {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para botones en pantallas pequeñas */
+            }
+            .form-control {
+                width: 100%; /* Ancho completo para campos de formulario en pantallas pequeñas */
+            }
+            .table-dark {
+                margin-top: 10px; /* Menos margen en pantallas pequeñas */
+            }
+        }
+        /* Estilos para pantallas medianas y grandes */
+        @media (min-width: 768px) {
+            .col-md-5 {
+                max-width: 45%; /* Limitar el ancho máximo de las columnas en pantallas medianas y grandes */
+            }
+        }
     </style>
 </head>
 <body>
@@ -154,82 +176,85 @@ if (isset($_POST['btn_buscar'])) {
         <!-- ver inventario lista ini -->
         <form action="" method="POST">
             <div class="modal-body">
-            <h1 class="mt-5">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-            Gestion productos</h1>
+                <h1 class="mt-5 text-center">
+                    <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+                    Gestión de Productos
+                </h1>
                 <div class="row justify-content-center">
-                    <div class="col-5 mt-5">
+                    <div class="col-md-5 mt-5">
                         <input type="text" name="busqueda" placeholder="Nombre o Categoría..." class="form-control" value="<?php echo htmlspecialchars($busqueda_text); ?>">
                     </div>
-                    <div class="col-5 mt-5">
+                    <div class="col-md-5 mt-5 d-flex justify-content-between">
                         <button class="btn btn-primary" type="submit" name="btn_buscar">Buscar</button>
                         <a href="index.php" class="btn btn-danger">Regresar</a>
                         <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_inventario">Guardar Cambios</button>
                     </div>
                 </div>
-  
-                <table class="table table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Categoría</th>
-                            <th scope="col">Cantidad</th>
-                            <th scope="col">Descripción</th>
-                            <th scope="col">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        if ($busqueda_text != '') {
-                            $query_inventarios = "SELECT * FROM productos WHERE Estado = 'Aceptado' AND (Nombre LIKE :busqueda OR Categoria LIKE :busqueda)";
-                            $statement_inventarios = $con->prepare($query_inventarios);
-                            $statement_inventarios->bindValue(':busqueda', '%' . $busqueda_text . '%');
-                        } else {
-                            $query_inventarios = "SELECT * FROM productos WHERE Estado = 'Aceptado'";
-                            $statement_inventarios = $con->prepare($query_inventarios);
-                        }
-                        
-                        $statement_inventarios->execute();
-                        $inventarios = $statement_inventarios->fetchAll(PDO::FETCH_ASSOC);
 
-                        foreach ($inventarios as $inventario) {
-                            echo "<tr>";
-                            echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][nombre]' value='" . htmlspecialchars($inventario['Nombre']) . "'></td>";
-                            echo "<td><input type='number' step='0.01' min='0' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][precio]' value='" . htmlspecialchars($inventario['Precio']) . "'></td>";
-                            echo "<td><select class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][categoria]'>";
-                            foreach ($categorias as $categoria) {
-                                echo "<option value='" . htmlspecialchars($categoria['Nombre_Categoria']) . "'" . ($categoria['Nombre_Categoria'] == $inventario['Categoria'] ? ' selected' : '') . ">" . htmlspecialchars($categoria['Nombre_Categoria']) . "</option>";
+                <div class="table-responsive">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Categoría</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($busqueda_text != '') {
+                                $query_inventarios = "SELECT * FROM productos WHERE Estado = 'Aceptado' AND (Nombre LIKE :busqueda OR Categoria LIKE :busqueda) ORDER BY Nombre ASC";
+                                $statement_inventarios = $con->prepare($query_inventarios);
+                                $statement_inventarios->bindValue(':busqueda', '%' . $busqueda_text . '%');
+                            } else {
+                                $query_inventarios = "SELECT * FROM productos WHERE Estado = 'Aceptado' ORDER BY Nombre ASC";
+                                $statement_inventarios = $con->prepare($query_inventarios);
                             }
-                            echo "</select></td>";
-                            echo "<td><input type='number' min='0' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][cantidad]' value='" . htmlspecialchars($inventario['Cantidad']) . "'></td>";
-                            echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][descripcion]' value='" . htmlspecialchars($inventario['Descripcion']) . "'></td>";
-                            
-                            echo "<td>";
-                            echo "<select class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][estado]'>";
-                            echo "<option value='Aceptado'" . ($inventario['Estado'] == 'Aceptado' ? ' selected' : '') . ">Aceptado</option>";
-                            echo "<option value='Pendiente'" . ($inventario['Estado'] == 'Pendiente' ? ' selected' : '') . ">Pendiente</option>";
-                            echo "<option value='Eliminar'>Eliminar</option>";
-                            echo "</select>";
-                            echo "</td>";
-                            echo "</tr>";
 
-                            // Agregar campos hidden para almacenar los valores originales
-                            echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][nombre]' value='" . htmlspecialchars($inventario['Nombre']) . "'>";
-                            echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][precio]' value='" . htmlspecialchars($inventario['Precio']) . "'>";
-                            echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][categoria]' value='" . htmlspecialchars($inventario['Categoria']) . "'>";
-                            echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][cantidad]' value='" . htmlspecialchars($inventario['Cantidad']) . "'>";
-                            echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][descripcion]' value='" . htmlspecialchars($inventario['Descripcion']) . "'>";
-                            echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][estado]' value='" . htmlspecialchars($inventario['Estado']) . "'>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                            $statement_inventarios->execute();
+                            $inventarios = $statement_inventarios->fetchAll(PDO::FETCH_ASSOC);
+
+                            foreach ($inventarios as $inventario) {
+                                echo "<tr>";
+                                echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][nombre]' value='" . htmlspecialchars($inventario['Nombre']) . "'></td>";
+                                echo "<td><input type='number' step='0.01' min='0' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][precio]' value='" . htmlspecialchars($inventario['Precio']) . "'></td>";
+                                echo "<td><select class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][categoria]'>";
+                                foreach ($categorias as $categoria) {
+                                    echo "<option value='" . htmlspecialchars($categoria['Nombre_Categoria']) . "'" . ($categoria['Nombre_Categoria'] == $inventario['Categoria'] ? ' selected' : '') . ">" . htmlspecialchars($categoria['Nombre_Categoria']) . "</option>";
+                                }
+                                echo "</select></td>";
+                                echo "<td><input type='number' min='0' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][cantidad]' value='" . htmlspecialchars($inventario['Cantidad']) . "'></td>";
+                                echo "<td><input type='text' class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][descripcion]' value='" . htmlspecialchars($inventario['Descripcion']) . "'></td>";
+
+                                echo "<td>";
+                                echo "<select class='form-control' name='productos[" . htmlspecialchars($inventario['IDP']) . "][estado]'>";
+                                echo "<option value='Aceptado'" . ($inventario['Estado'] == 'Aceptado' ? ' selected' : '') . ">Aceptado</option>";
+                                echo "<option value='Pendiente'" . ($inventario['Estado'] == 'Pendiente' ? ' selected' : '') . ">Pendiente</option>";
+                                echo "<option value='Eliminar'>Eliminar</option>";
+                                echo "</select>";
+                                echo "</td>";
+                                echo "</tr>";
+
+                                // Agregar campos hidden para almacenar los valores originales
+                                echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][nombre]' value='" . htmlspecialchars($inventario['Nombre']) . "'>";
+                                echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][precio]' value='" . htmlspecialchars($inventario['Precio']) . "'>";
+                                echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][categoria]' value='" . htmlspecialchars($inventario['Categoria']) . "'>";
+                                echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][cantidad]' value='" . htmlspecialchars($inventario['Cantidad']) . "'>";
+                                echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][descripcion]' value='" . htmlspecialchars($inventario['Descripcion']) . "'>";
+                                echo "<input type='hidden' name='original[" . htmlspecialchars($inventario['IDP']) . "][estado]' value='" . htmlspecialchars($inventario['Estado']) . "'>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-outline-danger btn-sm" name="guardar_inventario">Guardar Cambios</button>
             </div>
         </form>
-
         <!-- ver inventario lista fin -->
     </div>
 </body>

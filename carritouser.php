@@ -136,6 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
             color: #ffffff;
             border-radius: 10px;
             margin-top: 20px;
+            width: 100%;
         }
         .btn-danger {
             background-color: #dc3545;
@@ -145,45 +146,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cancelar_compra'])) {
             background-color: #c82333;
             border-color: #bd2130;
         }
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px;
+            }
+            .btn {
+                font-size: 0.875rem;
+            }
+            .row {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Carrito de Compras</h2>
+        <h2 class="mb-4 text-center">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Carrito de Compras
+        </h2>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <table class="table table-dark">
-                <thead>
-                    <tr>
-                        <th scope="col">Nombre del Producto</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col">Método de Pago</th>
-                        <th scope="col">Total</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($historial_ventas as $venta): ?>
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
                         <tr>
-                            <td><?= htmlspecialchars($venta['NombreProducto']) ?></td>
-                            <td><?= htmlspecialchars($venta['Cantidad']) ?></td>
-                            <td><?= htmlspecialchars($venta['Metodo_pago']) ?></td>
-                            <td><?= htmlspecialchars($venta['Total']) ?></td>
-                            <td><?= htmlspecialchars($venta['Estado']) ?></td>
-                            <td>
-                                <?php if ($venta['Estado'] === 'En Carrito'): ?>
-                                    <button type="submit" name="finalizar_compra" class="btn btn-primary btn-sm" onclick="return confirm('¿Estás seguro de finalizar la compra?')">Finalizar Compra</button>
-                                    <button type="submit" name="cancelar_compra" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de cancelar la compra?')" value="<?= $venta['ID'] ?>">Cancelar Compra</button>
-                                    <input type="hidden" name="id_historial" value="<?= htmlspecialchars($venta['ID']) ?>">
-                                    <input type="hidden" name="cantidad" value="<?= htmlspecialchars($venta['Cantidad']) ?>">
-                                    <input type="hidden" name="id_producto" value="<?= htmlspecialchars($venta['IDP']) ?>">
-                                <?php endif; ?>
-                            </td>
+                            <th scope="col">Nombre del Producto</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Método de Pago</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($historial_ventas as $venta): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($venta['NombreProducto']) ?></td>
+                                <td><?= htmlspecialchars($venta['Cantidad']) ?></td>
+                                <td><?= htmlspecialchars($venta['Metodo_pago']) ?></td>
+                                <td><?= htmlspecialchars($venta['Total']) ?></td>
+                                <td><?= htmlspecialchars($venta['Estado']) ?></td>
+                                <td>
+                                    <?php if ($venta['Estado'] === 'En Carrito'): ?>
+                                        <button type="submit" name="finalizar_compra" class="btn btn-primary btn-sm" onclick="return confirm('¿Estás seguro de finalizar la compra?')">Finalizar Compra</button>
+                                        <button type="submit" name="cancelar_compra" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de cancelar la compra?')">Cancelar Compra</button>
+                                        <input type="hidden" name="id_historial" value="<?= htmlspecialchars($venta['ID']) ?>">
+                                        <input type="hidden" name="cantidad" value="<?= htmlspecialchars($venta['Cantidad']) ?>">
+                                        <input type="hidden" name="id_producto" value="<?= htmlspecialchars($venta['IDP']) ?>">
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </form>
     </div>
     <!-- Botón de regresar -->

@@ -177,7 +177,6 @@ $statement_usuario->bindParam(':usuario_id', $usuario_id);
 $statement_usuario->execute();
 $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -214,12 +213,29 @@ $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
             background-color: #c82333;
             border-color: #bd2130;
         }
+        .btn-block {
+            width: 100%; /* Botones de ancho completo */
+        }
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px; /* Menos espaciado en pantallas pequeñas */
+            }
+            .form-control {
+                width: 100%; /* Ancho completo para controles de formulario en pantallas pequeñas */
+            }
+            .btn-block {
+                font-size: 0.875rem; /* Tamaño de fuente más pequeño para botones en pantallas pequeñas */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center mb-4">        <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
-        Perfil de Usuario</h2>
+        <h2 class="text-center mb-4">
+            <img class="m-1" src="IMG/Spacemark ico_transparent.ico" alt="SpaceMark Logo" height="50">
+            Perfil de Usuario
+        </h2>
         <form action="" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nombre">Nombre:</label>
@@ -237,7 +253,7 @@ $usuario = $statement_usuario->fetch(PDO::FETCH_ASSOC);
                 <label for="foto">Cambiar Foto de Perfil:</label>
                 <input type="file" class="form-control-file" id="foto" name="foto">
             </div> -->
-            <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+            <button type="submit" class="btn btn-info btn-block">Guardar Cambios</button>
         </form>
     </div>
     <!-- Botón de regresar -->
