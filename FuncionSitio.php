@@ -63,55 +63,62 @@ include_once("sweetarch.php");
         <h2>Registro</h2>
         <p>Para acceder a todas las funciones, debes registrarte y crear una cuenta.</p>
         <div class="mb-5 d-flex justify-content-center">
-        <video class="rounded" controls width="75%">
+        <iframe class="rounded" width="1095" height="615" src="https://www.youtube.com/embed/B_ndoOCkAls?si=wGMaPaoHP6tAOhfI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+        <!-- <video class="rounded" controls width="75%">
             <source src="IMG/registro-capture.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video.
-        </video>
+        </video> -->
         </div>
         
         <h2>Inicio de Sesión</h2>
         <p>Una vez registrado, puedes iniciar sesión con tu nombre de usuario y contraseña.</p>
         <div class="mb-5 d-flex justify-content-center">
-        <video class="rounded" controls width="75%">
+        <iframe class="rounded" width="1095" height="615" src="https://www.youtube.com/embed/_HsYUOr0I0U?si=kHch6T_woc6pIM-K" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- <video class="rounded" controls width="75%">
             <source src="IMG/inicio-capture.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video.
-        </video>
+        </video> -->
         </div>
 
         <h2>Buscar Información</h2>
         <p>Utiliza la barra de búsqueda en la parte superior para encontrar productos, usuarios y más. Puedes filtrar tus búsquedas por diferentes criterios.</p>
         <div class="mb-5 d-flex justify-content-center">
-        <video class="rounded" controls width="75%">
+        <iframe class="rounded" width="1095" height="615" src="https://www.youtube.com/embed/N8365ZTpuLA?si=qvcp54p4bGSXiJYK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- <video class="rounded" controls width="75%">
             <source src="IMG/navegar-capture.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video.
-        </video>
+        </video> -->
         </div>
 
         <h2>Actualizar Información</h2>
         <p>Para actualizar tu información personal, accede a tu perfil y realiza los cambios necesarios. Asegúrate de guardar los cambios.</p>
         <div class="mb-5 d-flex justify-content-center">
-        <video class="rounded" controls width="75%">
+        <iframe class="rounded" width="1095" height="615" src="https://www.youtube.com/embed/snE-D1dk3es?si=oDoAGWAMvZs7Rup1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- <video class="rounded" controls width="75%">
             <source src="IMG/opciones-capture.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video.
-        </video>
+        </video> -->
         </div>
 
         <h2>Realizar Compras</h2>
         <p>Navega por nuestro catálogo de productos y añade los artículos que desees a tu carrito. Procede al checkout para completar la compra.</p>
         <div class="mb-5 d-flex justify-content-center">
-        <video class="rounded" controls width="75%">
+        <iframe class="rounded" width="1095" height="615" src="https://www.youtube.com/embed/Eee-_LHkDk0?si=eHsSZAwr4vWh_RiA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- <video class="rounded" controls width="75%">
             <source src="IMG/compra-capture.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video.
-        </video>
+        </video> -->
         </div>
 
         <h2>Soporte y Contacto</h2>
         <p>Si necesitas ayuda, puedes contactarnos a través del formulario de contacto o por correo electrónico en [spacemarksag@gmail.com].</p>
         <div class="mb-5 d-flex justify-content-center">
-        <video class="rounded" controls width="75%">
+        <iframe class="rounded" width="1095" height="615" src="https://www.youtube.com/embed/k6XKSQcYJTk?si=CdnTz4NkW5gbHlKV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- <video class="rounded" controls width="75%">
             <source src="IMG/ayuda-capture.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video.
-        </video>
+        </video> -->
         </div>
 
     </div>
